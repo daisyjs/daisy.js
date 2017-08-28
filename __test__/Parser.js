@@ -6,6 +6,8 @@ console.log(Parser('<img/>'));
 
 console.log(Parser('<img>'));
 
+console.log(Parser('<img></img>'));
+
 console.log(jsonStringify(Parser('<div><img a=1>2</div>')));
 
 console.log(jsonStringify(Parser('<div a=2></div>')));
