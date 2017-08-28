@@ -59,7 +59,7 @@ console.log(
 console.log(
     jsonStringify(
         Parser(`
-            <Test/>
+            <Test/>122121
         `)
     )
 );
@@ -74,25 +74,12 @@ console.log(
     )
 );
 
-console.log(
-    jsonStringify(
-        Parser(`
-            { a
-        `)
-    )
-);
+console.log(jsonStringify(Parser(`{ a`)));
+
+console.log(jsonStringify(Parser(`<a <!-- a -->></a>`)));
+
+console.log(jsonStringify(Parser(`<a></a>`)));
 
 console.log(
-    jsonStringify(
-        Parser(`
-            <a <!-- a -->></a>`)
-    )
-);
-
-console.log(
-    jsonStringify(
-        Parser(`
-            <a></a>
-        `)
-    )
+    jsonStringify(Parser('<div class=1// />'))
 );
