@@ -1,26 +1,69 @@
 const {Parser} = require('../lib/Parser');
-const jsonStringify = (str) => JSON.stringify(str, null, 2);
-console.log(Parser('<div></div>'));
+const FormatJSON = (str) => JSON.stringify(str, null, 2);
 
-console.log(Parser('<img/>'));
+console.log(
+    FormatJSON(
+        Parser('<div></div>')
+    )
+);
 
-console.log(Parser('<img>'));
+console.log(
+    FormatJSON(
+        Parser('<img/>')
+    )
+);
 
-console.log(Parser('<img></img>'));
+console.log(
+    FormatJSON(
+        Parser('<img>')
+    )
+);
 
-console.log(jsonStringify(Parser('<div><img a=1>2</div>')));
+console.log(
+    FormatJSON(
+        Parser('<img></img>')
+    )
+);
 
-console.log(jsonStringify(Parser('<div a=2></div>')));
+console.log(
+    FormatJSON(
+        Parser('<div><img a=1>2</div>')
+    )
+);
 
-console.log(jsonStringify(Parser('<div>1</div>')));
+console.log(
+    FormatJSON(
+        Parser('<div a=2></div>')
+    )
+);
 
-console.log(jsonStringify(Parser('<block d:if={a}>1</block>')));
+console.log(
+    FormatJSON(
+        Parser('<div>1</div>')
+    )
+);
 
-console.log(jsonStringify(Parser('<div d:for={list} d:item="item" d:itemIndex="i"></div>')));
+console.log(
+    FormatJSON(
+        Parser('<block d:if={a}>1</block>')
+    )
+);
 
-console.log(jsonStringify(Parser('<div d:for={list} d:for-item="item" d:for-index="i" class="a"></div>')));
+console.log(
+    FormatJSON(
+        Parser('<div d:for={list} d:item="item" d:itemIndex="i"></div>')
+    )
+);
 
-console.log(jsonStringify(Parser(`
+console.log(
+    FormatJSON(
+        Parser('<div d:for={list} d:for-item="item" d:for-index="i" class="a"></div>')
+    )
+);
+
+console.log(
+    FormatJSON(
+        Parser(`
 <div>
     <block d:if={a}>1</block>
     <block d:elif={a}>1</block>
@@ -28,7 +71,7 @@ console.log(jsonStringify(Parser(`
 </div>
 `)));
 
-console.log(jsonStringify(Parser(`
+console.log(FormatJSON(Parser(`
     <div>
         <block d:if={a}>
         1
@@ -45,7 +88,7 @@ console.log(jsonStringify(Parser(`
 `)));
 
 console.log(
-    jsonStringify(
+    FormatJSON(
         Parser(`
             <div>
                 <block d:for="{list}" d:for-item="item" d:for-index="index">
@@ -57,7 +100,7 @@ console.log(
 );
 
 console.log(
-    jsonStringify(
+    FormatJSON(
         Parser(`
             <Test/>122121
         `)
@@ -65,7 +108,7 @@ console.log(
 );
 
 console.log(
-    jsonStringify(
+    FormatJSON(
         Parser(`
             <!-- a
 
@@ -74,12 +117,26 @@ console.log(
     )
 );
 
-console.log(jsonStringify(Parser(`{ a`)));
-
-console.log(jsonStringify(Parser(`<a <!-- a -->></a>`)));
-
-console.log(jsonStringify(Parser(`<a></a>`)));
+console.log(
+    FormatJSON(
+        Parser(`{ a`)
+    )
+);
 
 console.log(
-    jsonStringify(Parser('<div class=1// />'))
+    FormatJSON(
+        Parser(`<a <!-- a -->></a>`)
+    )
+);
+
+console.log(
+    FormatJSON(
+        Parser(`<a></a>`)
+    )
+);
+
+console.log(
+    FormatJSON(
+        Parser('<div class=1// />')
+    )
 );

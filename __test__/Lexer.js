@@ -89,31 +89,31 @@ describe('Lexer', function(){
 
 
     it('case - 14', function(){
-        expect(StringifyLexer('{aaa}')).to.be.equal('[{"type":"EXPR","content":"aaa"},{"type":"EOF"}]');
+        expect(StringifyLexer('{{aaa}}')).to.be.equal('[{"type":"EXPR","content":"aaa"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 15', function(){
-        expect(StringifyLexer('<div>a{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
+        expect(StringifyLexer('<div>a{{aaa}}</div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 16', function(){
-        expect(StringifyLexer('<<div>a{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
+        expect(StringifyLexer('<<div>a{{aaa}}</div>')).to.be.equal('[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 17', function(){
-        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":">{{"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
+        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":">{{{aaa}</div>"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 18', function(){
-        expect(StringifyLexer('<d<iv>{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"d<iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
+        expect(StringifyLexer('<d<iv>{{aaa}}</div>')).to.be.equal('[{"type":"TAGNAME","content":"d<iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
@@ -121,11 +121,16 @@ describe('Lexer', function(){
     it('case - 19', function(){
         expect(StringifyLexer(`< d
 
-<iv>{aaa}</div>`)).to.be.equal('[{"type":"TEXT","content":" d\\n\\n"},{"type":"TAGNAME","content":"iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
+<iv>{{aaa}}</div>`)).to.be.equal('[{"type":"TEXT","content":" d\\n\\n"},{"type":"TAGNAME","content":"iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
     it('case - 20', function(){
         expect(StringifyLexer('<block $if={a=1}></block>')).to.be.equal('[{"type":"TAGNAME","content":"block"},{"type":"ATTR","content":"$if"},{"type":"VALUE","content":"{a=1}"},{"type":"END_TAG","content":"block"},{"type":"EOF"}]');
+    });
+
+
+    it('case - 18', function(){
+        expect(StringifyLexer('<div>{{{aaa}}</div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"EXPR","content":"{aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 });
