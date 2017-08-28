@@ -51,3 +51,11 @@ console.log(
         `)
     )
 );
+
+console.log(
+    jsonStringify(
+        Parser(`
+            <Test/>
+        `)
+    )
+);
