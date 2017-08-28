@@ -1,7 +1,7 @@
 const {Lexer} = require('../lib/Lexer');
-const StringifyLexer = (str) => {
+const StringifyLexer = (str, isFormat = 0) => {
     const tokens = Lexer(str);
-    return JSON.stringify(tokens.map(({type, content}) => ({type, content})));
+    return JSON.stringify(tokens.map(({type, content, isSelfClose}) => ({type, content, isSelfClose})), null, isFormat ? 4: null);
 };
 const {expect} = require('chai');
 
@@ -129,8 +129,17 @@ describe('Lexer', function(){
     });
 
 
-    it('case - 18', function(){
+    it('case - 21', function(){
         expect(StringifyLexer('<div>{{{aaa}}</div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"EXPR","content":"{aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
+    it('case - 21', function(){
+        expect(StringifyLexer('<div class="{ a: 1, b: []""></div>')).to.be.equal('');
+    });
+
 });
+
+console.log(StringifyLexer(`<div class="{{{'a' : 1}}"></</div>`, true))
+console.log( StringifyLexer( `<div class="{{{'a' : 1}}"> {{dsa> 1}}<a /> </div>`, true ) )
+console.log( StringifyLexer( `<div class="{{{'a' : 1}}"> {{dsa> 1}}< a /> </div>`, true ) )
+console.log( StringifyLexer( `<div class="\\d"> {{dsa> 1}}<br> </div>`, true ) )
