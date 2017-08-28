@@ -65,55 +65,55 @@ describe('Lexer', function(){
 
 
     it('case - 10', function(){
-        expect(StringifyLexer('<div id=xxxx></div>') === '[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"xxxx"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<div id=xxxx></div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"xxxx"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 11', function(){
-        expect(StringifyLexer('<div id=1 class=2></div>') === '[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"1"},{"type":"ATTR","content":"class"},{"type":"VALUE","content":"2"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<div id=1 class=2></div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"1"},{"type":"ATTR","content":"class"},{"type":"VALUE","content":"2"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 12', function(){
-        expect(StringifyLexer('<div id= 1 class= 2></div>') === '[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"1"},{"type":"ATTR","content":"class"},{"type":"VALUE","content":"2"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<div id= 1 class= 2></div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"1"},{"type":"ATTR","content":"class"},{"type":"VALUE","content":"2"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 13', function(){
-        expect(StringifyLexer('<div id="a 1" class= 2></div>') === '[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"\\"a 1\\""},{"type":"ATTR","content":"class"},{"type":"VALUE","content":"2"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<div id="a 1" class= 2></div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"ATTR","content":"id"},{"type":"VALUE","content":"\\"a 1\\""},{"type":"ATTR","content":"class"},{"type":"VALUE","content":"2"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 14', function(){
-        expect(StringifyLexer('{aaa}') === '[{"type":"EXPR","content":"aaa"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('{aaa}')).to.be.equal('[{"type":"EXPR","content":"aaa"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 15', function(){
-        expect(StringifyLexer('<div>a{aaa}</div>') === '[{"type":"TAGNAME","content":"div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<div>a{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 16', function(){
-        expect(StringifyLexer('<<div>a{aaa}</div>') === '[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<<div>a{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":"a"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 17', function(){
-        expect(StringifyLexer('<<div>>{{{aaa}</div>') === '[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":">{{"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"<div"},{"type":"TEXT","content":">{{"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
 
     it('case - 18', function(){
-        expect(StringifyLexer('<d<iv>{aaa}</div>') === '[{"type":"TAGNAME","content":"d<iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<d<iv>{aaa}</div>')).to.be.equal('[{"type":"TAGNAME","content":"d<iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
 
@@ -121,11 +121,11 @@ describe('Lexer', function(){
     it('case - 19', function(){
         expect(StringifyLexer(`< d
 
-<iv>{aaa}</div>`) === '[{"type":"TEXT","content":" d\\n\\n"},{"type":"TAGNAME","content":"iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]').to.be.equal(true);
+<iv>{aaa}</div>`)).to.be.equal('[{"type":"TEXT","content":" d\\n\\n"},{"type":"TAGNAME","content":"iv"},{"type":"EXPR","content":"aaa"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]');
     });
 
     it('case - 20', function(){
-        expect(StringifyLexer('<block $if={a=1}></block>') === '[{"type":"TAGNAME","content":"block"},{"type":"ATTR","content":"$if"},{"type":"VALUE","content":"{a=1}"},{"type":"END_TAG","content":"block"},{"type":"EOF"}]').to.be.equal(true);
+        expect(StringifyLexer('<block $if={a=1}></block>')).to.be.equal('[{"type":"TAGNAME","content":"block"},{"type":"ATTR","content":"$if"},{"type":"VALUE","content":"{a=1}"},{"type":"END_TAG","content":"block"},{"type":"EOF"}]');
     });
 
 });
