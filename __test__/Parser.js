@@ -1,6 +1,10 @@
 const {
     Parser
 } = require('../lib/Parser');
+
+const {
+    Lexer
+} = require('../lib/Lexer');
 const FormatJSON = (str) => JSON.stringify(str, null, 2);
 
 console.log(
@@ -47,19 +51,19 @@ console.log(
 
 console.log(
     FormatJSON(
-        Parser('<block d:if={a}>1</block>')
+        Parser('<block :if={a}>1</block>')
     )
 );
 
 console.log(
     FormatJSON(
-        Parser('<div d:for={list} d:item="item" d:itemIndex="i"></div>')
+        Parser('<div :for={list} :item="item" :itemIndex="i"></div>')
     )
 );
 
 console.log(
     FormatJSON(
-        Parser('<div d:for={list} d:for-item="item" d:for-index="i" class="a"></div>')
+        Parser('<div :for={list} :for-item="item" :for-index="i" class="a"></div>')
     )
 );
 
@@ -67,27 +71,27 @@ console.log(
     FormatJSON(
         Parser(`
 <div>
-    <block d:if={a}>1</block>
-    <block d:elif={b}>
-        <block d:if={c}>1</block>
-        <block d:elif={d}>1</block>
+    <block :if={a}>1</block>
+    <block :elif={b}>
+        <block :if={c}>1</block>
+        <block :elif={d}>1</block>
     </block>
-    <block d:else></block>
+    <block :else></block>
 </div>
 `)));
 
 console.log(FormatJSON(Parser(`
     <div>
-        <block d:if={a}>
+        <block :if={a}>
         1
         </block>
-        <block d:elif={b}>
+        <block :elif={b}>
         1
         </block>
-        <block d:elif={c}>
+        <block :elif={c}>
         1
         </block>
-        <block d:else>
+        <block :else>
         </block>
     </div>
 `)));
@@ -96,7 +100,7 @@ console.log(
     FormatJSON(
         Parser(`
             <div>
-                <block d:for="{list}" d:for-item="item" d:for-index="index">
+                <block :for="{list}" :for-item="item" :for-index="index">
                     {item.type}
                 </block>
             </div>
@@ -143,5 +147,11 @@ console.log(
 console.log(
     FormatJSON(
         Parser('<div class=1// />')
+    )
+);
+
+console.log(
+    FormatJSON(
+        Parser('<div @onClick={{this.onClick()}} />')
     )
 );
