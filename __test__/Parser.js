@@ -8,6 +8,8 @@ console.log(Parser('<img>'));
 
 console.log(jsonStringify(Parser('<div><img a=1>2</div>')));
 
+console.log(jsonStringify(Parser('<div a=2></div>')));
+
 console.log(jsonStringify(Parser('<div>1</div>')));
 
 console.log(jsonStringify(Parser('<block d:if={a}>1</block>')));
@@ -56,6 +58,39 @@ console.log(
     jsonStringify(
         Parser(`
             <Test/>
+        `)
+    )
+);
+
+console.log(
+    jsonStringify(
+        Parser(`
+            <!-- a
+
+            aaa
+        `)
+    )
+);
+
+console.log(
+    jsonStringify(
+        Parser(`
+            { a
+        `)
+    )
+);
+
+console.log(
+    jsonStringify(
+        Parser(`
+            <a <!-- a -->></a>`)
+    )
+);
+
+console.log(
+    jsonStringify(
+        Parser(`
+            <a></a>
         `)
     )
 );
