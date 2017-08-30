@@ -21,67 +21,50 @@ const {
 
 describe('Lexer', function () {
     it('case - 0', function () {
-        expect(StringifyLexer('<div>')).to.be.equal(JSON.stringify([{
-            'type': 'TAGNAME',
-            'content': 'div'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<div>');
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
 
     it('case - 1', function () {
-        expect(StringifyLexer('<div >')).to.be.equal(JSONStringify([{
-            'type': 'TAGNAME',
-            'content': 'div'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<div >');
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
 
 
     it('case - 2', function () {
-        expect(StringifyLexer('<div id>')).to.be.equal(JSONStringify([{
-            'type': 'TAGNAME',
-            'content': 'div'
-        }, {
-            'type': 'ATTR',
-            'content': 'id'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<div id>');
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
 
 
     it('case - 3', function () {
-        expect(StringifyLexer('<div id=>')).to.be.equal(JSONStringify([{
-            'type': 'TAGNAME',
-            'content': 'div'
-        }, {
-            'type': 'ATTR',
-            'content': 'id'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<div id=>');
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
 
 
     it('case - 4', function () {
-        expect(StringifyLexer('<div id=1>')).to.be.equal(JSONStringify([{
-            'type': 'TAGNAME',
-            'content': 'div'
-        }, {
-            'type': 'ATTR',
-            'content': 'id'
-        }, {
-            'type': 'VALUE',
-            'content': '1'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<div id=1>');
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
 
@@ -301,76 +284,44 @@ describe('Lexer', function () {
     });
 
 
-
     it('case - 16', function () {
-        expect(StringifyLexer('<<div>a{{aaa}}</div>')).to.be.equal(JSONStringify([{
-            'type': 'TAGNAME',
-            'content': '<div'
-        }, {
-            'type': 'TEXT',
-            'content': 'a'
-        }, {
-            'type': 'EXPR',
-            'content': 'aaa'
-        }, {
-            'type': 'END_TAG',
-            'content': 'div'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<<div>a{{aaa}}</div>');
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
 
 
     it('case - 17', function () {
-        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal(JSONStringify([{
-            'type': 'TAGNAME',
-            'content': '<div'
-        }, {
-            'type': 'TEXT',
-            'content': '>{{{aaa}</div>'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<<div>>{{{aaa}</div>');
+        } catch(e) {
+            expect(e.toString().includes('expression')).to.be.equal(true);
+        }
     });
 
 
 
     it('case - 18', function () {
-        expect(StringifyLexer('<d<iv>{{aaa}}</div>')).to.be.equal(JSONStringify([{
-            'type': 'TAGNAME',
-            'content': 'd<iv'
-        }, {
-            'type': 'EXPR',
-            'content': 'aaa'
-        }, {
-            'type': 'END_TAG',
-            'content': 'div'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('<d<iv>{{aaa}}</div>');
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
 
 
     it('case - 19', function () {
-        expect(StringifyLexer(`< d
-
-<iv>{{aaa}}</div>`)).to.be.equal(JSONStringify([{
-            'type': 'TEXT',
-            'content': '< d\n\n'
-        }, {
-            'type': 'TAGNAME',
-            'content': 'iv'
-        }, {
-            'type': 'EXPR',
-            'content': 'aaa'
-        }, {
-            'type': 'END_TAG',
-            'content': 'div'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer(`< d
+            
+            <iv>{{aaa}}</div>`);
+        } catch(e) {
+            expect(e.toString().includes('TAG')).to.be.equal(true);
+        }
     });
 
     it('case - 20', function () {
@@ -390,7 +341,6 @@ describe('Lexer', function () {
             'type': 'EOF'
         }]));
     });
-
 
     it('case - 21', function () {
         expect(StringifyLexer('<div>{{{aaa}}</div>')).to.be.equal(JSONStringify([{
@@ -568,12 +518,12 @@ describe('Lexer', function () {
     });
 
     it('case - 30', function () {
-        expect(StringifyLexer('{{ aaa')).to.be.equal(JSONStringify([{
-            'type': 'TEXT',
-            'content': '{{ aaa'
-        }, {
-            'type': 'EOF'
-        }]));
+        try {
+            StringifyLexer('{{ aaa');
+        } catch(e) {
+            expect(e.toString().includes('expression')).to.be.equal(true);
+        }
+
     });
 
     it('case - 31', function () {
@@ -595,19 +545,12 @@ describe('Lexer', function () {
     });
 
     it('case - 33', function () {
-        expect(StringifyLexer('<aaa <!-- a ')).to.be.equal(
-            JSONStringify([{
-                'type': 'TAGNAME',
-                'content': 'aaa'
-            }, {
-                'type': 'ATTR',
-                'content': '<!--'
-            }, {
-                'type': 'ATTR',
-                'content': 'a'
-            }, {
-                'type': 'EOF'
-            }]));
+        try {
+            StringifyLexer('<aaa <!-- a ');
+        } catch (e) {
+            expect(e.toString().includes('ATTR')).to.be.equal(true);
+        }
+        
     });
 
     it('case - 34', function () {
