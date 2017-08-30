@@ -158,6 +158,14 @@ console.log(
 
 console.log(
     FormatJSON(
-        Parser('<div @onClick={{onClick()}} />')
+        Parser('{ {div')
     )
 );
+
+try {
+    FormatJSON(
+        Parser('<div a=')
+    );
+} catch(e) {
+    console.log(e);
+}
