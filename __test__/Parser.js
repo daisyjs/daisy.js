@@ -155,3 +155,9 @@ console.log(
         Parser('<div @onClick={{this.onClick()}} />')
     )
 );
+
+console.log(
+    FormatJSON(
+        Parser('<div @onClick={{onClick()}} />')
+    )
+);
