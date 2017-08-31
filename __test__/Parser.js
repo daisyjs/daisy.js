@@ -80,10 +80,12 @@ const FormatJSON = (str) => JSON.stringify(str, null, 2);
 // </div>
 // `)));
 
-console.log(FormatJSON(Parser(`<div><block :if={a}>1</block>
-        <block :elif={b}>1</block>
-        <block :elif={c}>1</block>
-        <block :else></block></div>`)));
+console.log(FormatJSON(Parser(`<div>
+    <block :if={{a}>1</block>
+    <block :elif={{b}}>1</block>
+    <block :elif={{c}}>1</block>
+    <block :else></block>
+</div>`)));
 
 /**
 console.log(
