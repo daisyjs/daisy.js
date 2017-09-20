@@ -1,2 +1,4 @@
 node_modules/
+lib/Lexer0.js
+__test__/Lexernew.js
 **.DS_Store**

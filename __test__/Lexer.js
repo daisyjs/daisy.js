@@ -53,6 +53,7 @@ describe('Lexer', function () {
         try {
             StringifyLexer('<div id=>');
         } catch(e) {
+          console.log(e)
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
@@ -295,11 +296,7 @@ describe('Lexer', function () {
 
 
     it('case - 17', function () {
-        try {
-            StringifyLexer('<<div>>{{{aaa}</div>');
-        } catch(e) {
-            expect(e.toString().includes('expression')).to.be.equal(true);
-        }
+        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal(JSONStringify([{"type":"TEXT","content":"<"},{"type":"TAGNAME","content":"div"},{"type":"TEXT","content":">{{{aaa}"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]));
     });
 
 
@@ -317,7 +314,7 @@ describe('Lexer', function () {
     it('case - 19', function () {
         try {
             StringifyLexer(`< d
-            
+
             <iv>{{aaa}}</div>`);
         } catch(e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
@@ -550,7 +547,7 @@ describe('Lexer', function () {
         } catch (e) {
             expect(e.toString().includes('ATTR')).to.be.equal(true);
         }
-        
+
     });
 
     it('case - 34', function () {
