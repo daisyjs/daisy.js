@@ -1,5 +1,26 @@
 {
   "devDependencies": {
-    "chai": "^4.1.1"
-  }
+    "chai": "^4.1.1",
+    "eslint": "^4.7.2"
+  },
+  "name": "daisy",
+  "description": "",
+  "version": "1.0.0",
+  "main": ".eslintrc.js",
+  "dependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --fix ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ImHype/Daisy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ImHype/Daisy/issues"
+  },
+  "homepage": "https://github.com/ImHype/Daisy#readme"
 }

@@ -53,7 +53,7 @@ describe('Lexer', function () {
         try {
             StringifyLexer('<div id=>');
         } catch(e) {
-          console.log(e)
+            console.log(e);
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
@@ -296,7 +296,7 @@ describe('Lexer', function () {
 
 
     it('case - 17', function () {
-        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal(JSONStringify([{"type":"TEXT","content":"<"},{"type":"TAGNAME","content":"div"},{"type":"TEXT","content":">{{{aaa}"},{"type":"END_TAG","content":"div"},{"type":"EOF"}]));
+        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal(JSONStringify([{'type':'TEXT','content':'<'},{'type':'TAGNAME','content':'div'},{'type':'TEXT','content':'>{{{aaa}'},{'type':'END_TAG','content':'div'},{'type':'EOF'}]));
     });
 
 
