@@ -24,10 +24,15 @@
             }
 
             const component = new Component({
+                state: {
+                    a: true,
+                    expression: 1,
+                    expression2: 2
+                },
                 template: `
-                    <div>
+                    <block :if={{a}}>
                         {{expression * expression2}}
-                    </div>
+                    </block>
                 `,
             });
 
