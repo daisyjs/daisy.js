@@ -1,7 +1,7 @@
 # Daisy
 
 ## Credits
-* expression parser based on [https://github.com/soney/jsep](jsep)
+* expression parser based on [jsep](https://github.com/soney/jsep)
 
 ## LICENSE
 MIT
