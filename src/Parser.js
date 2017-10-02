@@ -50,7 +50,7 @@ function Parser(source) {
             condition(la())
         ) {
             const node = recurse(body);
-           
+
             if (node) {
                 body.push(node);
             }
@@ -91,7 +91,7 @@ function Parser(source) {
     function element(nodes) {
         const token = ll();
         const {content} = token;
-        
+
         next();
 
         let children, directives, statements;
@@ -120,9 +120,9 @@ function Parser(source) {
         element = wrapForStatement(element, statements);
 
         element = wrapElseStatement(element, statements, lastIfNode);
-        
+
         if (element) {
-            element = wrapIfStatement(element, statements);    
+            element = wrapIfStatement(element, statements);
         } else {
             nodes.splice(nodes.indexOf(lastIfNode) + 1);
         }
@@ -136,20 +136,20 @@ function Parser(source) {
         let elseIfValue = statements[ELSE_IF_DIRECTIVE];
 
         const keys = Object.keys(statements);
- 
+
         if (lastIfNode) {
             // find the empty alternate
             while (lastIfNode.alternate) {
                 lastIfNode = lastIfNode.alternate;
             }
-    
+
             if (keys.includes(ELSE_DIRECTIVE)) {
                 lastIfNode.alternate = element;
                 return null;
             } else if (elseIfValue) {
                 lastIfNode.alternate = If(elseIfValue, element);
                 return null;
-            }    
+            }
         }
 
         return element;
@@ -221,7 +221,7 @@ function Parser(source) {
             if (!value) {
                 value = Expression(expression(consume(EXPR).content));
             }
-            
+
             const attr = Attribute(name, value);
             attrs.push(attr);
         }

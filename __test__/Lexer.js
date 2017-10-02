@@ -1,6 +1,6 @@
 const {
     Lexer
-} = require('../lib/Lexer');
+} = require('../src/Lexer');
 const JSONStringify = str => JSON.stringify(str);
 
 const StringifyLexer = (str, isFormat = 0) => {

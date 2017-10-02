@@ -2,6 +2,13 @@ const {COMMENT, END_TAG, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} = require('./Sta
 const {isSlash, isSpace, isOpenTag, isExclamationMark, isDash, isCloseTag, isEqual, isQuote, isTagClosed} = require('./helper');
 const {isOpenExpr, isCloseExpr, getExpressionBounds} = require('./Expression');
 
+function createToken(tokenType, temp) {
+    const content = temp.join('');
+    return {
+        type: tokenType,
+        content
+    };
+}
 
 function Lexer(source) {
     let pos = 0;
@@ -9,13 +16,6 @@ function Lexer(source) {
     let length = source.length;
     const {open: EXPR_OPEN_BOUNDS, close: EXPR_CLOSE_BOUNDS} = getExpressionBounds();
 
-    function createToken(tokenType, temp) {
-        const content = temp.join('');
-        return {
-            type: tokenType,
-            content
-        };
-    }
 
     function consumeSpaces(pos) {
         while (isSpace(source[pos])) {pos++;}
@@ -94,7 +94,7 @@ function Lexer(source) {
                     };
                     // eslint-disable-next-line
                 } else if (closeTagResult = consumeCloseTag(pos)) {
-                    
+
                     if (temp.length > 0) {
                         const token = createToken(VALUE, temp);
                         return {

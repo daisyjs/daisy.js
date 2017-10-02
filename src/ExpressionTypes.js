@@ -10,7 +10,7 @@ const COMPOUND = 'Compound',
     CONDITIONAL_EXP = 'ConditionalExpression',
     ARRAY_EXP = 'ArrayExpression';
 
-function createBinaryExpression (operator, left, right) {
+function createBinaryExpression(operator, left, right) {
     var type = (operator === '||' || operator === '&&') ? LOGICAL_EXP : BINARY_EXP;
     return {
         type: type,
@@ -102,6 +102,15 @@ exports.createBinaryExpression = createBinaryExpression;
 exports.createUnaryExpression = createUnaryExpression;
 
 exports.Types = {
-    COMPOUND, IDENTIFIER, MEMBER_EXP, LITERAL,
-    THIS_EXP, CALL_EXP, UNARY_EXP, BINARY_EXP, LOGICAL_EXP, CONDITIONAL_EXP, ARRAY_EXP
+    COMPOUND,
+    IDENTIFIER,
+    MEMBER_EXP,
+    LITERAL,
+    THIS_EXP,
+    CALL_EXP,
+    UNARY_EXP,
+    BINARY_EXP,
+    LOGICAL_EXP,
+    CONDITIONAL_EXP,
+    ARRAY_EXP
 };

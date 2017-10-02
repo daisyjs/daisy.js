@@ -1,6 +1,6 @@
 const {
     Parser
-} = require('../lib/Parser');
+} = require('../src/Parser');
 
 const {
     Lexer

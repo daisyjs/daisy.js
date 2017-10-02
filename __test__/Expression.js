@@ -1,4 +1,4 @@
-const {Expression} = require('../lib/Expression');
+const {Expression} = require('../src/Expression');
 
 // console.log();
 // const result = Expression('1{{ a+1 }}12122121');
