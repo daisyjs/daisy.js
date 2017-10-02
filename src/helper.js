@@ -1,4 +1,4 @@
-const {TAGNAME, END_TAG} = require('./StateTypes');
+import {TAGNAME, END_TAG} from './StateTypes';
 //
 function isSpace(letter = '') {
     const code = letter.charCodeAt(0);
@@ -159,25 +159,25 @@ function error(message) {
     console.warn(message);
 }
 
-exports.isSpace = isSpace;
-exports.isCloseTag = isCloseTag;
-exports.isDash = isDash;
-exports.isDollar = isDollar;
-exports.isEqual = isEqual;
-exports.isExclamationMark = isExclamationMark;
-exports.isLowerCase = isLowerCase;
-exports.isNumber = isNumber;
-exports.isOpenTag = isOpenTag;
-exports.isQuote = isQuote;
-exports.isSlash = isSlash;
-exports.isUnderscore = isUnderscore;
-exports.isUpperCase = isUpperCase;
-exports.isWord = isWord;
-
-exports.isTagClosed = isTagClosed;
-exports.isVoidTag = isVoidTag;
-exports.isSelfClose = isSelfClose;
-exports.returnUnLegalEndError = returnUnLegalEndError;
-exports.returnUnclosedExprError = returnUnclosedExprError;
-exports.error = error;
-exports.warn = warn;
+export{
+    isSpace,
+    isCloseTag,
+    isDash,
+    isDollar,
+    isEqual,
+    isExclamationMark,
+    isLowerCase,
+    isNumber,
+    isOpenTag,
+    isQuote,
+    isSlash,
+    isUnderscore,
+    isUpperCase,
+    isWord,
+    isTagClosed,
+    isVoidTag,
+    isSelfClose,
+    returnUnLegalEndError,
+    returnUnclosedExprError,
+    error
+}

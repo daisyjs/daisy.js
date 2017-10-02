@@ -1,7 +1,9 @@
-const jsep = require('../lib/jsep');
+import parse from '../lib/jsep';
 
 function ParseExpression(source) {
-    return jsep(source);
+    return parse(source);
 }
 
-exports.ParseExpression = ParseExpression;
+export {
+    ParseExpression
+};

@@ -1,8 +1,8 @@
-const {Lexer} = require('./Lexer');
-const {END_TAG, COMMENT, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} = require('./StateTypes');
-const {Program, If, For, Element, Comment, Attribute, Expression, Text, Types} = require('./NodeTypes');
-const {Expression: expression, isIncludeExpr} = require('./Expression');
-const {isSelfClose, error} = require('./helper');
+import {Lexer} from './Lexer';
+import {END_TAG, COMMENT, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} from'./StateTypes';
+import {Program, If, For, Element, Comment, Attribute, Expression, Text, Types} from'./NodeTypes';
+import {Expression as expression, isIncludeExpr} from'./Expression';
+import {isSelfClose, error} from'./helper';
 
 const STATEMENT_MARK = ':';
 const DIRECTIVE_MARK = '@';
@@ -41,10 +41,10 @@ function Parser(source) {
     }
 
     function program() {
-        return package(type => type !== END_TAG && type !== EOF);
+        return doPackage(type => type !== END_TAG && type !== EOF);
     }
 
-    function package(condition) {
+    function doPackage(condition) {
         const body = [];
         while (
             condition(la())
@@ -243,4 +243,4 @@ function Parser(source) {
 }
 
 
-exports.Parser = Parser;
+export {Parser};

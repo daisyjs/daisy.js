@@ -13,6 +13,6 @@ const EQUAL = 'EQUAL';
 const VALUE = 'VALUE';
 const EOF = 'EOF';
 
-module.exports = {
+export {
     INIT, OPEN_TAG, OPEN_COMMENT, COMMENT, CLOSE_TAG, END_TAG, TAGNAME, TAG, EXPR, TEXT, ATTR, EQUAL, VALUE, EOF
 };

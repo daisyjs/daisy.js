@@ -89,28 +89,28 @@ function createUnaryExpression(operator, argument, prefix) {
         prefix
     };
 }
-
-exports.createConditionalExpression = createConditionalExpression;
-exports.createArrayExpression = createArrayExpression;
-exports.createMemberExpression = createMemberExpression;
-exports.createIdentifier = createIdentifier;
-exports.createCallExpression = createCallExpression;
-exports.createThisExpression = createThisExpression;
-exports.createLiteral = createLiteral;
-exports.createCompound = createCompound;
-exports.createBinaryExpression = createBinaryExpression;
-exports.createUnaryExpression = createUnaryExpression;
-
-exports.Types = {
-    COMPOUND,
-    IDENTIFIER,
-    MEMBER_EXP,
-    LITERAL,
-    THIS_EXP,
-    CALL_EXP,
-    UNARY_EXP,
-    BINARY_EXP,
-    LOGICAL_EXP,
-    CONDITIONAL_EXP,
-    ARRAY_EXP
-};
+export = {
+    createConditionalExpression,
+    createArrayExpression,
+    createMemberExpression,
+    createIdentifier,
+    createCallExpression,
+    createThisExpression,
+    createLiteral,
+    createCompound,
+    createBinaryExpression,
+    createUnaryExpression,
+    Types: {
+        COMPOUND,
+        IDENTIFIER,
+        MEMBER_EXP,
+        LITERAL,
+        THIS_EXP,
+        CALL_EXP,
+        UNARY_EXP,
+        BINARY_EXP,
+        LOGICAL_EXP,
+        CONDITIONAL_EXP,
+        ARRAY_EXP
+    }
+}

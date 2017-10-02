@@ -1,6 +1,6 @@
-const {COMMENT, END_TAG, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} = require('./StateTypes');
-const {isSlash, isSpace, isOpenTag, isExclamationMark, isDash, isCloseTag, isEqual, isQuote, isTagClosed} = require('./helper');
-const {isOpenExpr, isCloseExpr, getExpressionBounds} = require('./Expression');
+import {COMMENT, END_TAG, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} from './StateTypes';
+import {isSlash, isSpace, isOpenTag, isExclamationMark, isDash, isCloseTag, isEqual, isQuote, isTagClosed} from './helper';
+import {isOpenExpr, isCloseExpr, getExpressionBounds} from './Expression';
 
 function createToken(tokenType, temp) {
     const content = temp.join('');
@@ -354,7 +354,7 @@ function Lexer(source) {
 
     /* eslint-disable */
     while (pos < length) {
-      letter = source[pos];
+        const letter = source[pos];
     /* eslint-enable */
         const refs = consumeEndTag(pos) || consumeComment(pos) || consumeTag(pos) || consumeExpression(pos) || consumeText(pos) || {};
 
@@ -388,4 +388,6 @@ function Lexer(source) {
     return tokens;
 }
 
-exports.Lexer = Lexer;
+export {
+    Lexer
+};

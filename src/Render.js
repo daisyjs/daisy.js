@@ -1,5 +1,12 @@
-function Render() {
-    
+function Render(nodes) {
+    const create = () => {}
+    const render = () => {}
+    return {
+        render() {
+            return document.createElement('div');
+        },
+        patch() {}
+    }
 }
 
-exports.Render = Render;
+export {Render};

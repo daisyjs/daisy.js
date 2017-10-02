@@ -1,10 +1,10 @@
-const Parser = require('./Parser');
-const Render = require('./Render');
+import {Parser} from './Parser';
+import {Render} from './Render';
 
 class Daisy {
   constructor({
     template = ''
-  }) {
+  } = {}) {
     let nodes, vTree;
     try {
       nodes = Parser(template);
@@ -14,9 +14,10 @@ class Daisy {
 
     vTree = Render(nodes);
 
-    this.mount = () => {
+    this.mount = (mountNode) => {
       this.beforeMounted();
-      vTree.mount();
+      const tree = vTree.render();
+      mountNode.appendChild(tree);
       this.afterMounted();
     };
   }
@@ -36,4 +37,4 @@ class Daisy {
   }
 }
 
-module.exports = Daisy;
+export default Daisy;

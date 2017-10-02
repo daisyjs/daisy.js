@@ -62,16 +62,18 @@ function Comment(comment) {
     };
 }
 
-module.exports = {
+const Types = {
+    Program: 'Program',
+    If: 'If',
+    For: 'For',
+    Element: 'Element',
+    Attribute: 'Attribute',
+    Expression: 'Expression',
+    Text: 'Text',
+    Comment: 'Comment'
+}
+
+export {
     Program, If, For, Element, Attribute, Expression, Text, Comment,
-    Types: {
-        Program: 'Program', 
-        If: 'If', 
-        For: 'For', 
-        Element: 'Element', 
-        Attribute: 'Attribute', 
-        Expression: 'Expression',
-        Text: 'Text',
-        Comment: 'Comment'
-    }
+    Types
 };

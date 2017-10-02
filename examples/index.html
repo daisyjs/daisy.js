@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <div id="node"></div>
+        <script type="text/javascript" src="../dist/daisy.js"></script>
+        <script type="text/javascript">
+            class Component extends Daisy {
+                beforeMounted() {
+                    console.log('-- beforeMounted --');
+                }
+                afterMounted() {
+                    console.log('-- afterMounted --');
+                }
+            }
+
+            const component = new Component({
+                template: `
+                    <div>
+                        {{expression * expression2}}
+                    </div>
+                `,
+            });
+            component.mount(document.querySelector('#node'))
+        </script>
+    </body>
+</html>
