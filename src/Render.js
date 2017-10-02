@@ -1,5 +1,5 @@
 function createViewTree(nodes) {
-    return document.createElement('div')
+    return document.createElement('div');
 }
 
 function diffVirtualDOM(prevVirtualDom, nextVirtualDom) {
@@ -14,7 +14,7 @@ function createVirtualDOM(abstractSyntaxNode, state) {
     // create virtual dom
     return {
 
-    }
+    };
 }
 
 export {

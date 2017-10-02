@@ -89,7 +89,21 @@ function createUnaryExpression(operator, argument, prefix) {
         prefix
     };
 }
-export = {
+const Types = {
+    COMPOUND,
+    IDENTIFIER,
+    MEMBER_EXP,
+    LITERAL,
+    THIS_EXP,
+    CALL_EXP,
+    UNARY_EXP,
+    BINARY_EXP,
+    LOGICAL_EXP,
+    CONDITIONAL_EXP,
+    ARRAY_EXP
+};
+
+export {
     createConditionalExpression,
     createArrayExpression,
     createMemberExpression,
@@ -100,17 +114,5 @@ export = {
     createCompound,
     createBinaryExpression,
     createUnaryExpression,
-    Types: {
-        COMPOUND,
-        IDENTIFIER,
-        MEMBER_EXP,
-        LITERAL,
-        THIS_EXP,
-        CALL_EXP,
-        UNARY_EXP,
-        BINARY_EXP,
-        LOGICAL_EXP,
-        CONDITIONAL_EXP,
-        ARRAY_EXP
-    }
-}
+    Types
+};

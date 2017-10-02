@@ -1,67 +1,69 @@
 import {Parser} from './Parser';
 import {
-    Render, createVirtualDOM, createViewTree,
+    createVirtualDOM, createViewTree,
     diffVirtualDOM, patch
 } from './Render';
 // import events from 'events';
 
 class Daisy {
-  constructor({
-    template = '',
-    state = {}
-  } = {}) {
-    this.state = state;
+    constructor({
+        template = '',
+        state = {}
+    } = {}) {
+        this.state = state;
 
-    try {
-      this.ast = Parser(template);
-    } catch (e) {
-      throw new Error('Error in Parser: \n' + (e.stack || e.toString()));
+        try {
+            this.abstractSyntaxNode = Parser(template);
+        } catch (e) {
+            throw new Error('Error in Parser: \n\t' + e.stack);
+        }
     }
-  }
 
-  mount(node) {
-      this.virtualDOM = createVirtualDOM(this.state);
-      this.beforeMounted();
-      const viewTree = createViewTree(this.virtualDOM);
-      node.appendChild(viewTree);
-      this.afterMounted();
-  }
+    mount(node) {
+        const {abstractSyntaxNode} = this;
+        this.virtualDOM = createVirtualDOM(abstractSyntaxNode, this.state);
+        this.beforeMounted();
+        const viewTree = createViewTree(this.virtualDOM);
+        node.appendChild(viewTree);
+        this.afterMounted();
+    }
 
-  setState(state) {
-      if (state === this.state) {
-          return false;
-      }
-      // setState
-      this.state = state;
+    setState(state) {
 
-      // create virtualDOM
-      const lastVirtualDOM = this.virtualDOM;
-      const newVirtualDOM = createVirtualDOM(state);
+        if (state === this.state) {
+            return false;
+        }
+        // setState
+        this.state = state;
 
-      // diff virtualDOMs
-      const difference = diffVirtualDOM(newVirtualDOM, lastVirtualDOM);
+        // create virtualDOM
+        const {abstractSyntaxNode, virtualDOM: lastVirtualDOM} = this;
+        const newVirtualDOM = createVirtualDOM(abstractSyntaxNode, state);
 
-      // patch to dom
-      this.beforePatched();
-      patch(difference);
-      this.afterPatched();
-  }
+        // diff virtualDOMs
+        const difference = diffVirtualDOM(newVirtualDOM, lastVirtualDOM);
 
-  beforeMounted() {}
+        // patch to dom
+        this.beforePatched();
+        patch(difference);
+        this.afterPatched();
+    }
 
-  afterMounted() {}
+    beforeMounted() {}
 
-  beforePatched() {}
+    afterMounted() {}
 
-  afterPatched() {}
+    beforePatched() {}
 
-  static directive() {
+    afterPatched() {}
 
-  }
+    static directive() {
 
-  static component() {
+    }
 
-  }
+    static component() {
+
+    }
 }
 
 export default Daisy;

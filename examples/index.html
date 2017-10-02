@@ -6,7 +6,7 @@
     </head>
     <body>
         <div id="node"></div>
-        <script type="text/javascript" src="../dist/daisy.js"></script>
+        <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
             class Component extends Daisy {
                 beforeMounted() {
@@ -30,6 +30,7 @@
                     </div>
                 `,
             });
+
             component.mount(document.querySelector('#node'));
 
             component.setState({

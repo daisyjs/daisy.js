@@ -71,7 +71,7 @@ const Types = {
     Expression: 'Expression',
     Text: 'Text',
     Comment: 'Comment'
-}
+};
 
 export {
     Program, If, For, Element, Attribute, Expression, Text, Comment,
