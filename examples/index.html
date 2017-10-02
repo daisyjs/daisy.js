@@ -15,6 +15,12 @@
                 afterMounted() {
                     console.log('-- afterMounted --');
                 }
+                beforePatched() {
+                    console.log('-- beforePatched --');
+                }
+                afterPatched() {
+                    console.log('-- afterPatched --');
+                }
             }
 
             const component = new Component({
@@ -24,7 +30,13 @@
                     </div>
                 `,
             });
-            component.mount(document.querySelector('#node'))
+            component.mount(document.querySelector('#node'));
+
+            component.setState({
+                expression: 1,
+                expression2: 2
+            });
+
         </script>
     </body>
 </html>

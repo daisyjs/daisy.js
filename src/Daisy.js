@@ -1,32 +1,59 @@
 import {Parser} from './Parser';
-import {Render} from './Render';
+import {
+    Render, createVirtualDOM, createViewTree,
+    diffVirtualDOM, patch
+} from './Render';
+// import events from 'events';
 
 class Daisy {
   constructor({
-    template = ''
+    template = '',
+    state = {}
   } = {}) {
-    let nodes, vTree;
+    this.state = state;
+
     try {
-      nodes = Parser(template);
+      this.ast = Parser(template);
     } catch (e) {
-      console.log('Parsed error: ' + (e.stack || e.toString()));
+      throw new Error('Error in Parser: \n' + (e.stack || e.toString()));
     }
-
-    vTree = Render(nodes);
-
-    this.mount = (mountNode) => {
-      this.beforeMounted();
-      const tree = vTree.render();
-      mountNode.appendChild(tree);
-      this.afterMounted();
-    };
   }
 
-  mount() {}
+  mount(node) {
+      this.virtualDOM = createVirtualDOM(this.state);
+      this.beforeMounted();
+      const viewTree = createViewTree(this.virtualDOM);
+      node.appendChild(viewTree);
+      this.afterMounted();
+  }
+
+  setState(state) {
+      if (state === this.state) {
+          return false;
+      }
+      // setState
+      this.state = state;
+
+      // create virtualDOM
+      const lastVirtualDOM = this.virtualDOM;
+      const newVirtualDOM = createVirtualDOM(state);
+
+      // diff virtualDOMs
+      const difference = diffVirtualDOM(newVirtualDOM, lastVirtualDOM);
+
+      // patch to dom
+      this.beforePatched();
+      patch(difference);
+      this.afterPatched();
+  }
 
   beforeMounted() {}
 
   afterMounted() {}
+
+  beforePatched() {}
+
+  afterPatched() {}
 
   static directive() {
 

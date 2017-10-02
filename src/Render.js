@@ -1,12 +1,26 @@
-function Render(nodes) {
-    const create = () => {}
-    const render = () => {}
+function createViewTree(nodes) {
+    return document.createElement('div')
+}
+
+function diffVirtualDOM(prevVirtualDom, nextVirtualDom) {
+    return []; // difference set
+}
+
+function patch(differenceSet) {
+    // walk the difference set and update
+}
+
+function createVirtualDOM(abstractSyntaxNode, state) {
+    // create virtual dom
     return {
-        render() {
-            return document.createElement('div');
-        },
-        patch() {}
+
     }
 }
 
-export {Render};
+export {
+    Render,
+    createVirtualDOM,
+    createViewTree,
+    diffVirtualDOM,
+    patch
+};
