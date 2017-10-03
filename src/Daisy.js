@@ -1,7 +1,7 @@
 import {Parser} from './Parser';
 import {
-    createVirtualDOM, createViewTree,
-    diffVirtualDOM, patch
+    createVirtualTree, createViewTree,
+    diffVirtualTree, patch
 } from './Render';
 
 const STATE = Symbol('state');
@@ -10,6 +10,7 @@ const DIRECTIVES = Symbol('directives');
 const COMPONENTS = Symbol('components');
 const AST = Symbol('ast');
 const VTREE = Symbol('vTree');
+const ALL_INSTANCES = Symbol('allInstances');
 
 class Daisy {
     constructor({
@@ -31,7 +32,7 @@ class Daisy {
             [METHODS]: methods,
             [DIRECTIVES]: directives,
             [COMPONENTS]: components,
-        }] of Daisy.__allInstances) {
+        }] of Daisy[ALL_INSTANCES]) {
             if (this instanceof Componet) {
                 Object.assign(this[METHODS], methods);
                 Object.assign(this[DIRECTIVES], directives);
@@ -46,13 +47,12 @@ class Daisy {
 
     mount(node) {
         const {
-            [AST]: ast, [STATE]: state,
+            [AST]: ast,
+            [STATE]: state,
             [METHODS]: methods
         } = this;
-        // const methods = this[METHODS];
 
-        // const methods = this.constructor._methods;
-        this[VTREE] = createVirtualDOM(ast, {
+        this[VTREE] = createVirtualTree(ast, {
             state, methods
         });
         this.beforeMounted();
@@ -62,25 +62,25 @@ class Daisy {
     }
 
     setState(state) {
-
         if (state === this[STATE]) {
             return false;
         }
         // setState
         state = Object.assign(this[STATE], state);
-        // const methods = this.constructor._methods;
 
         // create virtualDOM
         const {
-            [AST]: ast, [VTREE]: lastVTree,
+            [AST]: ast,
+            [VTREE]: lastVTree,
             [METHODS]: methods
         } = this;
-        const nextVTree = createVirtualDOM(ast, {
+
+        this[VTREE] = createVirtualTree(ast, {
             state, methods
         });
 
         // diff virtualDOMs
-        const difference = diffVirtualDOM(nextVTree, lastVTree);
+        const difference = diffVirtualTree(this[VTREE], lastVTree);
 
         // patch to dom
         this.beforePatched();
@@ -96,31 +96,30 @@ class Daisy {
 
     afterPatched() {}  // hook
 
-    static directive() {
-        ensuneInstanceNameSpace(this, DIRECTIVES)[name] = method;
+    static directive(name, directive) {
+        this.ensureInheritCache(DIRECTIVES)[name] = directive;
     }
 
-    static component() {
-        ensuneInstanceNameSpace(this, COMPONENTS)[name] = method;
+    static component(name, Component) {
+        this.ensureInheritCache(COMPONENTS)[name] = Component;
     }
 
     static method(name, method) {
-        ensuneInstanceNameSpace(this, METHODS)[name] = method;
+        this.ensureInheritCache(METHODS)[name] = method;
+    }
+
+    static ensureInheritCache(cacheName) {
+        if (!Daisy[ALL_INSTANCES].get(this)) {
+            Daisy[ALL_INSTANCES].set(this, {});
+        }
+        const instantce = Daisy[ALL_INSTANCES].get(this);
+        if (!instantce[cacheName]) {
+            instantce[cacheName] = {};
+        }
+        return instantce[cacheName];
     }
 }
 
-Daisy.__allInstances = new Map();
-function ensuneInstanceNameSpace(ctx, namespace) {
-    if (!Daisy.__allInstances.get(ctx)) {
-        Daisy.__allInstances.set(ctx, {})
-    }
-    const instantce = Daisy.__allInstances.get(ctx);
-
-    if (!instantce[namespace]) {
-        instantce[namespace] = {};
-    }
-
-    return instantce[namespace];
-}
+Daisy[ALL_INSTANCES] = new Map();
 
 export default Daisy;
