@@ -9,7 +9,7 @@ module.exports = {
     },
     output: {
         file: 'dist/daisy.js',
-        format: 'iife'
+        format: ['umd']
     },
     plugins: [
         nodeResolve({

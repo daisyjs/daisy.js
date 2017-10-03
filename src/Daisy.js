@@ -1,3 +1,4 @@
+import {Lexer} from './Lexer';
 import {Parser} from './Parser';
 import {
     createVTree,
@@ -128,3 +129,7 @@ class Daisy {
 Daisy[ALL_INSTANCES] = new Map();
 
 export default Daisy;
+
+export {
+    Lexer, Parser
+}

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title></title>
+        <title>Daisy - TodoList</title>
         <style media="screen">
             body {
                 margin: 0;
@@ -50,6 +50,7 @@
         <div id="node"></div>
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
+            Daisy = Daisy.default;
             class Component extends Daisy {
                 beforeMounted() {
                     console.log('-- beforeMounted --');
@@ -106,9 +107,6 @@
                         <ul class="body {{todoList.length}}">
                             <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
                                 <p> {{todo.name}} {{ComponentMethod(todo.status)}}</p>
-                            </li>
-                            <li>
-                                <p>{{"没有更多了"}}</p>
                             </li>
                         </ul>
                     </block>

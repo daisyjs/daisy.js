@@ -1,6 +1,6 @@
 const {
     Lexer
-} = require('../src/Lexer');
+} = require('../dist/daisy');
 const JSONStringify = str => JSON.stringify(str);
 
 const StringifyLexer = (str, isFormat = 0) => {
@@ -19,40 +19,40 @@ const {
     expect
 } = require('chai');
 
-describe('Lexer', function () {
-    it('case - 0', function () {
+describe('Lexer', function() {
+    it('case - 0', function() {
         try {
             StringifyLexer('<div>');
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
 
 
-    it('case - 1', function () {
+    it('case - 1', function() {
         try {
             StringifyLexer('<div >');
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
 
 
 
-    it('case - 2', function () {
+    it('case - 2', function() {
         try {
             StringifyLexer('<div id>');
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
 
 
 
-    it('case - 3', function () {
+    it('case - 3', function() {
         try {
             StringifyLexer('<div id=>');
-        } catch(e) {
+        } catch (e) {
             console.log(e);
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
@@ -60,17 +60,17 @@ describe('Lexer', function () {
 
 
 
-    it('case - 4', function () {
+    it('case - 4', function() {
         try {
             StringifyLexer('<div id=1>');
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
 
 
 
-    it('case - 5', function () {
+    it('case - 5', function() {
         expect(StringifyLexer('<div></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -84,7 +84,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 6', function () {
+    it('case - 6', function() {
         expect(StringifyLexer('<div id></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -101,7 +101,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 7', function () {
+    it('case - 7', function() {
         expect(StringifyLexer('<div id=></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -117,7 +117,7 @@ describe('Lexer', function () {
     });
 
 
-    it('case - 8', function () {
+    it('case - 8', function() {
         expect(StringifyLexer('<div id=1></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -137,7 +137,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 9', function () {
+    it('case - 9', function() {
         expect(StringifyLexer('<div id="xxxx"></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -146,7 +146,7 @@ describe('Lexer', function () {
             'content': 'id'
         }, {
             'type': 'VALUE',
-            'content': '"xxxx"'
+            'content': 'xxxx'
         }, {
             'type': 'END_TAG',
             'content': 'div'
@@ -157,7 +157,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 10', function () {
+    it('case - 10', function() {
         expect(StringifyLexer('<div id=xxxx></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -177,7 +177,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 11', function () {
+    it('case - 11', function() {
         expect(StringifyLexer('<div id=1 class=2></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -203,7 +203,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 12', function () {
+    it('case - 12', function() {
         expect(StringifyLexer('<div id= 1 class= 2></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -229,7 +229,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 13', function () {
+    it('case - 13', function() {
         expect(StringifyLexer('<div id="a 1" class= 2></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -238,7 +238,7 @@ describe('Lexer', function () {
             'content': 'id'
         }, {
             'type': 'VALUE',
-            'content': '"a 1"'
+            'content': 'a 1'
         }, {
             'type': 'ATTR',
             'content': 'class'
@@ -255,7 +255,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 14', function () {
+    it('case - 14', function() {
         expect(StringifyLexer('{{aaa}}')).to.be.equal(JSONStringify([{
             'type': 'EXPR',
             'content': 'aaa'
@@ -266,7 +266,7 @@ describe('Lexer', function () {
 
 
 
-    it('case - 15', function () {
+    it('case - 15', function() {
         expect(StringifyLexer('<div>a{{aaa}}</div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -285,43 +285,57 @@ describe('Lexer', function () {
     });
 
 
-    it('case - 16', function () {
+    it('case - 16', function() {
         try {
             StringifyLexer('<<div>a{{aaa}}</div>');
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
 
 
 
-    it('case - 17', function () {
-        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal(JSONStringify([{'type':'TEXT','content':'<'},{'type':'TAGNAME','content':'div'},{'type':'TEXT','content':'>{{{aaa}'},{'type':'END_TAG','content':'div'},{'type':'EOF'}]));
+    it('case - 17', function() {
+        expect(StringifyLexer('<<div>>{{{aaa}</div>')).to.be.equal(JSONStringify([{
+            'type': 'TEXT',
+            'content': '<'
+        }, {
+            'type': 'TAGNAME',
+            'content': 'div'
+        }, {
+            'type': 'TEXT',
+            'content': '>{{{aaa}'
+        }, {
+            'type': 'END_TAG',
+            'content': 'div'
+        }, {
+            'type': 'EOF'
+        }]));
     });
 
 
 
-    it('case - 18', function () {
+    it('case - 18', function() {
         try {
             StringifyLexer('<d<iv>{{aaa}}</div>');
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
 
 
 
-    it('case - 19', function () {
+    it('case - 19', function() {
         try {
             StringifyLexer(`< d
 
             <iv>{{aaa}}</div>`);
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('TAG')).to.be.equal(true);
         }
     });
 
-    it('case - 20', function () {
+    it('case - 20', function() {
         expect(StringifyLexer('<block $if={a=1}></block>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'block'
@@ -339,7 +353,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 21', function () {
+    it('case - 21', function() {
         expect(StringifyLexer('<div>{{{aaa}}</div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -354,7 +368,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 22', function () {
+    it('case - 22', function() {
         expect(StringifyLexer('<div class="{ a: 1, b: []""></div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -363,7 +377,7 @@ describe('Lexer', function () {
             'content': 'class'
         }, {
             'type': 'VALUE',
-            'content': '"{ a: 1, b: []"'
+            'content': '{ a: 1, b: []'
         }, {
             'type': 'ATTR',
             'content': '"'
@@ -375,7 +389,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 23', function () {
+    it('case - 23', function() {
         expect(StringifyLexer('<div class="{{{\'a\' : 1}}"></</div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -384,7 +398,7 @@ describe('Lexer', function () {
             'content': 'class'
         }, {
             'type': 'VALUE',
-            'content': '"{{{\'a\' : 1}}"'
+            'content': '{{{\'a\' : 1}}'
         }, {
             'type': 'TEXT',
             'content': '</'
@@ -396,7 +410,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 24', function () {
+    it('case - 24', function() {
         expect(StringifyLexer('<div class="{{{\'a\' : 1}}"> {{dsa> 1}}<a /> </div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -405,7 +419,7 @@ describe('Lexer', function () {
             'content': 'class'
         }, {
             'type': 'VALUE',
-            'content': '"{{{\'a\' : 1}}"'
+            'content': '{{{\'a\' : 1}}'
         }, {
             'type': 'TEXT',
             'content': ' '
@@ -427,7 +441,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 25', function () {
+    it('case - 25', function() {
         expect(StringifyLexer('<div class="{{{\'a\' : 1}}"> {{dsa> 1}}< a /> </div>')).to.be.equal(JSONStringify([{
             'type': 'TAGNAME',
             'content': 'div'
@@ -436,7 +450,7 @@ describe('Lexer', function () {
             'content': 'class'
         }, {
             'type': 'VALUE',
-            'content': '"{{{\'a\' : 1}}"'
+            'content': '{{{\'a\' : 1}}'
         }, {
             'type': 'TEXT',
             'content': ' '
@@ -454,7 +468,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 26', function () {
+    it('case - 26', function() {
         expect(StringifyLexer('<div class="\\d"> {{dsa> 1}}<br> </div>')).to.be.equal(JSONStringify(
             [{
                 'type': 'TAGNAME',
@@ -464,7 +478,7 @@ describe('Lexer', function () {
                 'content': 'class'
             }, {
                 'type': 'VALUE',
-                'content': '"\\d"'
+                'content': '\\d'
             }, {
                 'type': 'TEXT',
                 'content': ' '
@@ -486,7 +500,7 @@ describe('Lexer', function () {
         ));
     });
 
-    it('case - 27', function () {
+    it('case - 27', function() {
         expect(StringifyLexer('<!-- a')).to.be.equal(JSONStringify([{
             type: 'COMMENT',
             content: ' a'
@@ -496,7 +510,7 @@ describe('Lexer', function () {
     });
 
 
-    it('case - 28', function () {
+    it('case - 28', function() {
         expect(StringifyLexer('{ a')).to.be.equal(JSONStringify([{
             type: 'TEXT',
             content: '{ a',
@@ -505,7 +519,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 29', function () {
+    it('case - 29', function() {
         expect(StringifyLexer('<!-- a { a <a')).to.be.equal(JSONStringify([{
             type: 'COMMENT',
             content: ' a { a <a'
@@ -514,16 +528,16 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 30', function () {
+    it('case - 30', function() {
         try {
             StringifyLexer('{{ aaa');
-        } catch(e) {
+        } catch (e) {
             expect(e.toString().includes('expression')).to.be.equal(true);
         }
 
     });
 
-    it('case - 31', function () {
+    it('case - 31', function() {
         expect(StringifyLexer('<!-- <!-- a')).to.be.equal(JSONStringify([{
             'type': 'COMMENT',
             'content': ' <!-- a'
@@ -532,7 +546,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 32', function () {
+    it('case - 32', function() {
         expect(StringifyLexer('aaa')).to.be.equal(JSONStringify([{
             'type': 'TEXT',
             'content': 'aaa'
@@ -541,7 +555,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 33', function () {
+    it('case - 33', function() {
         try {
             StringifyLexer('<aaa <!-- a ');
         } catch (e) {
@@ -550,7 +564,7 @@ describe('Lexer', function () {
 
     });
 
-    it('case - 34', function () {
+    it('case - 34', function() {
         expect(StringifyLexer('</ a')).to.be.equal(JSONStringify([{
             'type': 'TEXT',
             'content': '</ a'
@@ -560,7 +574,7 @@ describe('Lexer', function () {
     });
 
 
-    it('case - 35', function () {
+    it('case - 35', function() {
         expect(StringifyLexer('1 < a >')).to.be.equal(JSONStringify([{
             'type': 'TEXT',
             'content': '1 < a >'
@@ -569,7 +583,7 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 35', function () {
+    it('case - 36', function() {
         expect(StringifyLexer('1 < a')).to.be.equal(JSONStringify([{
             'type': 'TEXT',
             'content': '1 < a'
@@ -578,7 +592,24 @@ describe('Lexer', function () {
         }]));
     });
 
-    it('case - 35', function () {
-        expect(StringifyLexer('<block :if={{a > 5}}>M</block>')).to.be.equal(JSONStringify([]));
+    it('case - 37', function() {
+        expect(StringifyLexer('<block :if={{a > 5}}>M</block>')).to.be.equal(JSONStringify([{
+            "type": "TAGNAME",
+            "content": "block"
+        }, {
+            "type": "ATTR",
+            "content": ":if"
+        }, {
+            "type": "EXPR",
+            "content": "a > 5"
+        }, {
+            "type": "TEXT",
+            "content": "M"
+        }, {
+            "type": "END_TAG",
+            "content": "block"
+        }, {
+            "type": "EOF"
+        }]));
     });
 });
