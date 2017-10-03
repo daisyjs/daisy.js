@@ -52,9 +52,10 @@
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
 
-            Daisy.method('length2', (b) => {
-                return b.length;
-            })
+            Daisy.method('DaisyMethod', (b) => {
+                return 'DaisyMethod';
+            });
+
             class Component extends Daisy {
                 beforeMounted() {
                     console.log('-- beforeMounted --');
@@ -69,9 +70,11 @@
                     console.log('-- afterPatched --');
                 }
             }
-            Component.method('length', (b) => {
-                return b.length;
-            })
+
+            Component.method('ComponentMethod', (b) => {
+                return 'ComponentMethod';
+            });
+
             const component = new Component({
                 state: {
                     todoList: [
@@ -89,20 +92,19 @@
                     </header>
                     <ul class="body">
                         <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
-                            <p><input type="checkbox"> {{todoIndex}}. {{todo}} {{length(todo)}}</p>
+                            <p><input type="checkbox"> {{todoIndex}}. {{todo}} {{ComponentMethod(todo)}}</p>
                         </li>
                     </ul>
                 `,
             });
 
             component.mount(document.querySelector('#node'));
-
             component.setState({
                 // a: 2,
                 expression: 1,
                 expression2: 2
             });
-
+            console.log(component);
         </script>
     </body>
 </html>

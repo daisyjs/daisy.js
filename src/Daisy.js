@@ -3,7 +3,10 @@ import {
     createVirtualDOM, createViewTree,
     diffVirtualDOM, patch
 } from './Render';
-// import events from 'events';
+
+const METHODS = Symbol('methods');
+const DIRECTIVES = Symbol('directives');
+const COMPONENTS = Symbol('components');
 
 class Daisy {
     constructor({
@@ -17,11 +20,27 @@ class Daisy {
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
-        this.methods = Daisy._methods[this.constructor.name];
+
+        this[METHODS] = {};
+        this[DIRECTIVES] = {};
+        this[COMPONENTS] = {};
+        for (let [Componet, {
+            [METHODS]: methods,
+            [DIRECTIVES]: directives,
+            [COMPONENTS]: components,
+        }] of Daisy.__allInstances) {
+            if (this instanceof Componet) {
+                Object.assign(this[METHODS], methods);
+                Object.assign(this[DIRECTIVES], directives);
+                Object.assign(this[COMPONENTS], components);
+            }
+        }
     }
 
     mount(node) {
-        const {abstractSyntaxNode, state, methods} = this;
+        const {abstractSyntaxNode, state, [METHODS]: methods} = this;
+        // const methods = this[METHODS];
+
         // const methods = this.constructor._methods;
         this.virtualDOM = createVirtualDOM(abstractSyntaxNode, {
             state, methods
@@ -42,7 +61,7 @@ class Daisy {
         // const methods = this.constructor._methods;
 
         // create virtualDOM
-        const {abstractSyntaxNode, virtualDOM: lastVirtualDOM, methods} = this;
+        const {abstractSyntaxNode, virtualDOM: lastVirtualDOM, [METHODS]: methods} = this;
         const newVirtualDOM = createVirtualDOM(abstractSyntaxNode, {
             state, methods
         });
@@ -56,31 +75,39 @@ class Daisy {
         this.afterPatched();
     }
 
-    beforeMounted() {}
+    beforeMounted() {} // hook
 
-    afterMounted() {}
+    afterMounted() {}  // hook
 
-    beforePatched() {}
+    beforePatched() {} // hook
 
-    afterPatched() {}
+    afterPatched() {}  // hook
 
     static directive() {
-
+        ensuneInstanceNameSpace(this, DIRECTIVES)[name] = method;
     }
 
     static component() {
-
+        ensuneInstanceNameSpace(this, COMPONENTS)[name] = method;
     }
 
-    static method(name, fn) {
-        if (!this._methods[this.name]) {
-            this._methods[this.name] = {}
-        }
-
-        this._methods[this.name][name] = fn;
+    static method(name, method) {
+        ensuneInstanceNameSpace(this, METHODS)[name] = method;
     }
 }
 
-Daisy._methods = {};
+Daisy.__allInstances = new Map();
+function ensuneInstanceNameSpace(ctx, namespace) {
+    if (!Daisy.__allInstances.get(ctx)) {
+        Daisy.__allInstances.set(ctx, {})
+    }
+    const instantce = Daisy.__allInstances.get(ctx);
+
+    if (!instantce[namespace]) {
+        instantce[namespace] = {};
+    }
+
+    return instantce[namespace];
+}
 
 export default Daisy;
