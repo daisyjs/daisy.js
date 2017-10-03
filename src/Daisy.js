@@ -4,19 +4,22 @@ import {
     diffVirtualDOM, patch
 } from './Render';
 
+const STATE = Symbol('state');
 const METHODS = Symbol('methods');
 const DIRECTIVES = Symbol('directives');
 const COMPONENTS = Symbol('components');
+const AST = Symbol('ast');
+const VTREE = Symbol('vTree');
 
 class Daisy {
     constructor({
         template = '',
         state = {}
     } = {}) {
-        this.state = state;
+        this[STATE] = state;
 
         try {
-            this.abstractSyntaxNode = Parser(template);
+            this[AST] = Parser(template);
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
@@ -37,37 +40,47 @@ class Daisy {
         }
     }
 
+    getState() {
+        return this[STATE];
+    }
+
     mount(node) {
-        const {abstractSyntaxNode, state, [METHODS]: methods} = this;
+        const {
+            [AST]: ast, [STATE]: state,
+            [METHODS]: methods
+        } = this;
         // const methods = this[METHODS];
 
         // const methods = this.constructor._methods;
-        this.virtualDOM = createVirtualDOM(abstractSyntaxNode, {
+        this[VTREE] = createVirtualDOM(ast, {
             state, methods
         });
         this.beforeMounted();
-        const viewTree = createViewTree(this.virtualDOM);
+        const viewTree = createViewTree(this[VTREE]);
         node.appendChild(viewTree);
         this.afterMounted();
     }
 
     setState(state) {
 
-        if (state === this.state) {
+        if (state === this[STATE]) {
             return false;
         }
         // setState
-        this.state = state = Object.assign(this.state, state);
+        state = Object.assign(this[STATE], state);
         // const methods = this.constructor._methods;
 
         // create virtualDOM
-        const {abstractSyntaxNode, virtualDOM: lastVirtualDOM, [METHODS]: methods} = this;
-        const newVirtualDOM = createVirtualDOM(abstractSyntaxNode, {
+        const {
+            [AST]: ast, [VTREE]: lastVTree,
+            [METHODS]: methods
+        } = this;
+        const nextVTree = createVirtualDOM(ast, {
             state, methods
         });
 
         // diff virtualDOMs
-        const difference = diffVirtualDOM(newVirtualDOM, lastVirtualDOM);
+        const difference = diffVirtualDOM(nextVTree, lastVTree);
 
         // patch to dom
         this.beforePatched();

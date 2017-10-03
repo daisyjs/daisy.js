@@ -105,8 +105,6 @@ function createVirtualDOM(abstractSyntaxNode, viewContext) {
     let child, i = 0;
 
     const virtualDOM = render(programBody, viewContext);
-    console.log('virtualDOM created:');
-    console.log(virtualDOM);
     return virtualDOM;
 }
 
