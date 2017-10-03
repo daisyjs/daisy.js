@@ -179,5 +179,6 @@ export{
     isSelfClose,
     returnUnLegalEndError,
     returnUnclosedExprError,
-    error
+    error,
+    warn
 };

@@ -8,6 +8,7 @@
                 margin: 0;
                 padding: 0
             }
+
             .header {
                 padding: 30px;
                 background: #f2f2f2;
@@ -29,20 +30,18 @@
                 margin: 0 auto;
                 margin-top: 20px;
             }
+
             .body, .body li{
                 list-style: none;
                 padding: 0
             }
-
-            /*.body li{
-                background-color: #f2f2f2;
-            }*/
 
             .body li p{
                 background-color: #f2f2f2;
                 margin: 5px 0;
                 padding: 10px 0;
                 text-indent: 10px;
+                text-align: center;
             }
 
         </style>
@@ -51,11 +50,6 @@
         <div id="node"></div>
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
-
-            Daisy.method('DaisyMethod', (b) => {
-                return 'DaisyMethod';
-            });
-
             class Component extends Daisy {
                 beforeMounted() {
                     console.log('-- beforeMounted --');
@@ -71,29 +65,57 @@
                 }
             }
 
-            Component.method('ComponentMethod', (b) => {
-                return 'ComponentMethod';
+            Daisy.method('DaisyMethod', (b) => {
+                return 'DaisyMethod';
+            });
+
+            Component.method('ComponentMethod', (status) => {
+                return status === 0 ? '进行中' : '已完成';
             });
 
             const component = new Component({
                 state: {
                     todoList: [
-                        'ast -> virtual nodes 2017-10-3',
-                        'virtual dom 2017-10-4',
-                        'events 2017-10-5',
-                        'directive 2017-10-6',
-                        'components 2017-10-7'
+                        {
+                            name: 'ast -> virtual nodes 2017-10-3',
+                            status: 0
+                        }, {
+                            name: 'virtual dom 2017-10-4',
+                            status: 0
+                        }, {
+                            name: 'events 2017-10-5',
+                            status: 0
+                        }, {
+                            name: 'directive 2017-10-6',
+                            status: 0
+                        }, {
+                            name: 'directive 2017-10-6',
+                            status: 0
+                        }
                     ],
+                    hello: {
+                        world: 1
+                    }
                 },
                 template: `
-                    <block :if = {{todoList.length > 0}}>
-                        <header class="header">
-                            <h1>Daisy</h1>
-                            <h2>TodoList</h2>
-                        </header>
+                    <header class="header">
+                        <h1>Daisy</h1>
+                        <h2>TodoList</h2>
+                    </header>
+                    <block :if = "{{todoList.length > 0}}">
                         <ul class="body">
                             <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
-                                <p><input type="checkbox"> {{todoIndex}}. {{todo}} {{ComponentMethod(todo)}}</p>
+                                <p> {{todo.name}} {{ComponentMethod(todo.status)}}</p>
+                            </li>
+                            <li>
+                                <p>{{"没有更多了"}}</p>
+                            </li>
+                        </ul>
+                    </block>
+                    <block :else>
+                        <ul class = "body">
+                            <li>
+                                <p>No TodoList!</p>
                             </li>
                         </ul>
                     </block>
@@ -102,7 +124,6 @@
 
             component.mount(document.querySelector('#node'));
             component.setState({
-                // a: 2,
                 expression: 1,
                 expression2: 2
             });

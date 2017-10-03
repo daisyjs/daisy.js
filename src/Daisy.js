@@ -54,7 +54,7 @@ class Daisy {
         } = this;
 
         this[VTREE] = createVTree(ast, {
-            state, methods
+            state, methods, context: this
         });
         this.beforeMounted();
         this[REAL_TREE] = createRealTree(this[VTREE]);
@@ -77,7 +77,7 @@ class Daisy {
         } = this;
 
         this[VTREE] = createVTree(ast, {
-            state, methods
+            state, methods, context: this
         });
 
         // diff virtualDOMs

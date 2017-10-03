@@ -2,6 +2,7 @@ import {
     Types
 } from './NodeTypes';
 import {EvalExpression, codeGen} from './EvalExpression';
+import {warn} from './helper';
 const {
     Program, If, For, Element, Expression, Text
 } = Types;
@@ -18,22 +19,22 @@ function createRealTree(nodes) {
 }
 
 function createNode(element) {
-    if (typeof element !== 'object') {
-        return document.createTextNode(element);
+    if (element instanceof ElementNode) {
+        const {props, tagName, children} = element;
+        const node = document.createElement(tagName);
+
+        node.appendChild(
+            createRealTree(children)
+        );
+
+        props.forEach(({name, value}) => {
+            node.setAttribute(name, value);
+        });
+
+        return node;
     }
 
-    const {props, tagName, children} = element;
-    const node = document.createElement(tagName);
-
-    node.appendChild(
-        createRealTree(children)
-    );
-
-    props.forEach(({name, value}) => {
-        node.setAttribute(name, value);
-    });
-
-    return node;
+    return document.createTextNode(element);
 }
 
 function diffVTree(lastVTree, nextVTree) {
@@ -78,7 +79,7 @@ function renderItem(node, viewContext) {
         }
         return result;
     }
-    case For:{
+    case For: {
         const list = EvalExpression(node.test, viewContext);
         const {item, index} = node.init;
         const itemName = codeGen(item);
@@ -91,10 +92,15 @@ function renderItem(node, viewContext) {
             }),
             methods
         }));
+
         return body;
     }
-    case Expression:{
-        return EvalExpression(node, viewContext);
+    case Expression: {
+        const result = EvalExpression(node, viewContext);
+        if (typeof result !== 'string') {
+            return JSON.stringify(result, null, 4);
+        }
+        return result;
     }
     default:
     }
@@ -125,7 +131,7 @@ function createVTree(ast, viewContext) {
     if (type === Program) {
         return render(body, viewContext);
     } else {
-        console.log('Root node must be Program!');
+        warn('Root node must be Program!');
     }
 }
 

@@ -41,7 +41,6 @@ function Lexer(source) {
     function consumeValue(pos) {
         let letter = source[pos];
         let temp = [];
-        let closeTagReulst;
 
         if (isQuote(letter)) {
             temp.push(letter);
@@ -334,7 +333,7 @@ function Lexer(source) {
     while (pos < length) {
         const letter = source[pos];
     /* eslint-enable */
-        const refs = consumeEndTag(pos) || consumeComment(pos) || consumeTag(pos) || consumeExpression(pos) || consumeText(pos) || {};
+        const refs = consumeEndTag(pos) || consumeComment(pos) || consumeTag(pos) || consumeExpression(pos) || consumeText(pos);
 
         if (!refs) {
             throw new Error('no avaliable token:\n' + source.substr(pos));

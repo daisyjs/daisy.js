@@ -1,17 +1,27 @@
-function EvalExpression(expression, {state, methods}) {
-    const expr = codeGen(expression);
-    const content = `
-        with(context) {
-            return ${expr};
-        }
-    `;
+import {warn} from './helper';
 
-    const codeFn = new Function('context', content);
+const expressionMap = new Map();
+
+function EvalExpression(expression, {state, methods, context}) {
+    // cache expression
+    if (!expressionMap.get(expression)) {
+        const expr = codeGen(expression);
+        const content = `
+            with(context) {
+                return ${expr};
+            }
+        `;
+        expressionMap.set(expression, new Function('context', content));
+    }
+
+    const codeFn = expressionMap.get(expression);
     try {
-        return codeFn(Object.assign({}, methods, state));
+        return codeFn.call(context, Object.assign({}, methods, state));
     } catch(e) {
         if (e instanceof ReferenceError) {
-            throw new Error('Error in EvalExpression: \n expression ' + e.message);
+
+            warn('Error in EvalExpression: expression ' + e.message);
+            return;
         }
         throw new Error('Error in EvalExpression: \n' + e.message);
     }
@@ -19,29 +29,58 @@ function EvalExpression(expression, {state, methods}) {
 
 function codeGen(expression) {
     const {type} = expression;
-
     switch (type) {
     case 'Expression':
         return codeGen(expression.value);
+
     case 'Identifier':
         return expression.name;
+
     case 'BinaryExpression':
+    case 'LogicalExpression': {
         const left = codeGen(expression.left);
         const right = codeGen(expression.right);
         return `${left}${expression.operator}${right}`;
-    case 'MemberExpression':
+    }
+
+    case 'MemberExpression': {
         const object = codeGen(expression.object);
-        const property = codeGen(expression.property);
-        return `${object}['${property}']`;
+        let property = codeGen(expression.property);
+        property = (expression.computed) ? property: ('"'+property+'"');
+        return `${object}[${property}]`;
+    }
+
     case 'Literal':
-        return expression.value;
-    case 'CallExpression':
+        return expression.raw;
+
+    case 'CallExpression': {
         const callee = codeGen(expression.callee);
         const args = expression.arguments.map(codeGen);
         return `${callee}(${args.join(',')})`;
+    }
+
+    case 'ThisExpression':
+        return 'this';
+
+    case 'UnaryExpression': {
+        const operator = expression.operator;
+        const argument = codeGen(expression.argument);
+        return `${operator}(${argument})`;
+    }
+
+    case 'ConditionalExpression': {
+        const test = codeGen(expression.test);
+        const consequent = codeGen(expression.consequent);
+        const alternate = codeGen(expression.alternate);
+        return `${test}?${consequent}:${alternate}`;
+    }
+
+    case 'ArrayExpression':
+        return '[' + expression.elements.map(codeGen).join(',') + ']';
+
     default:
-        console.log('unexpected expression:');
-        console.log(JSON.stringify(expression));
+        warn('unexpected expression:');
+        warn(JSON.stringify(expression));
     }
 }
 

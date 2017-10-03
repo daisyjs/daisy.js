@@ -65,7 +65,6 @@ function setExpressionBounds({
 
 
 function Expression(source = '') {
-    source = source.replace(/^("|')/g, '').replace(/("|')$/g, '');
     if (isIncludeExpr(source)) {
         let stack = [];
         let i = 0;
