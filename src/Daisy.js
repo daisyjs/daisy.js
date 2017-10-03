@@ -1,7 +1,7 @@
 import {Parser} from './Parser';
 import {
-    createVirtualTree, createViewTree,
-    diffVirtualTree, patch
+    createVTree, createRealTree,
+    diffVTree, patch
 } from './Render';
 
 const STATE = Symbol('state');
@@ -11,6 +11,7 @@ const COMPONENTS = Symbol('components');
 const AST = Symbol('ast');
 const VTREE = Symbol('vTree');
 const ALL_INSTANCES = Symbol('allInstances');
+const REAL_TREE = Symbol('realTree');
 
 class Daisy {
     constructor({
@@ -52,12 +53,12 @@ class Daisy {
             [METHODS]: methods
         } = this;
 
-        this[VTREE] = createVirtualTree(ast, {
+        this[VTREE] = createVTree(ast, {
             state, methods
         });
         this.beforeMounted();
-        const viewTree = createViewTree(this[VTREE]);
-        node.appendChild(viewTree);
+        this[REAL_TREE] = createRealTree(this[VTREE]);
+        node.appendChild(this[REAL_TREE]);
         this.afterMounted();
     }
 
@@ -75,16 +76,16 @@ class Daisy {
             [METHODS]: methods
         } = this;
 
-        this[VTREE] = createVirtualTree(ast, {
+        this[VTREE] = createVTree(ast, {
             state, methods
         });
 
         // diff virtualDOMs
-        const difference = diffVirtualTree(this[VTREE], lastVTree);
+        const difference = diffVTree(this[VTREE], lastVTree);
 
         // patch to dom
         this.beforePatched();
-        patch(difference);
+        patch(this[REAL_TREE], difference);
         this.afterPatched();
     }
 

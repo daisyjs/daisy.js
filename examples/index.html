@@ -86,15 +86,17 @@
                     ],
                 },
                 template: `
-                    <header class="header">
-                        <h1>Daisy</h1>
-                        <h2>TodoList</h2>
-                    </header>
-                    <ul class="body">
-                        <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
-                            <p><input type="checkbox"> {{todoIndex}}. {{todo}} {{ComponentMethod(todo)}}</p>
-                        </li>
-                    </ul>
+                    <block :if = {{todoList.length > 0}}>
+                        <header class="header">
+                            <h1>Daisy</h1>
+                            <h2>TodoList</h2>
+                        </header>
+                        <ul class="body">
+                            <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
+                                <p><input type="checkbox"> {{todoIndex}}. {{todo}} {{ComponentMethod(todo)}}</p>
+                            </li>
+                        </ul>
+                    </block>
                 `,
             });
 

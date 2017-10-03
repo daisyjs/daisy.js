@@ -577,4 +577,8 @@ describe('Lexer', function () {
             'type': 'EOF'
         }]));
     });
+
+    it('case - 35', function () {
+        expect(StringifyLexer('<block :if={{a > 5}}>M</block>')).to.be.equal(JSONStringify([]));
+    });
 });

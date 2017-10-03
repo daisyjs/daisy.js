@@ -6,34 +6,41 @@ const {
     Program, If, For, Element, Expression, Text
 } = Types;
 
-function createViewTree(nodes) {
+function createRealTree(nodes) {
     const fragment = document.createDocumentFragment();
+
     const viewItems = nodes.forEach(
         node =>
-            fragment.appendChild(createViewItem(node))
+            fragment.appendChild(createNode(node))
     );
+
     return fragment;
 }
 
-
-function createViewItem(element) {
+function createNode(element) {
     if (typeof element !== 'object') {
         return document.createTextNode(element);
     }
-    const node = document.createElement(element.tagName);
-    node.appendChild(createViewTree(element.children));
-    const props = element.props;
+
+    const {props, tagName, children} = element;
+    const node = document.createElement(tagName);
+
+    node.appendChild(
+        createRealTree(children)
+    );
+
     props.forEach(({name, value}) => {
         node.setAttribute(name, value);
     });
+
     return node;
 }
 
-function diffVirtualTree(prevVirtualTree, nextVirtualTree) {
+function diffVTree(lastVTree, nextVTree) {
     return []; // difference set
 }
 
-function patch(differences) {
+function patch(realTree, differences) {
     // walk the difference set and update
 }
 
@@ -53,8 +60,13 @@ function renderItem(node, viewContext) {
         return node.value;
     case Element: {
         const {
-            attributes, directives, children
+            attributes, directives, children, name
         } = node;
+
+        if (name.toLowerCase() === 'block') {
+            return render(children, viewContext);
+        }
+
         return new ElementNode(node.name, attributes, render(children, viewContext));
     }
     case If: {
@@ -92,6 +104,10 @@ function render(nodes, viewContext) {
     let group = [];
     nodes.forEach((node) => {
         const result = renderItem(node, viewContext);
+        if (result === void 0) {
+            return;
+        }
+
         if (Array.isArray(result)) {
             group = [
                 ...group, ...result
@@ -103,7 +119,7 @@ function render(nodes, viewContext) {
     return group;
 }
 
-function createVirtualTree(ast, viewContext) {
+function createVTree(ast, viewContext) {
     // create virtual dom
     const {type, body} = ast;
     if (type === Program) {
@@ -114,8 +130,8 @@ function createVirtualTree(ast, viewContext) {
 }
 
 export {
-    createVirtualTree,
-    createViewTree,
-    diffVirtualTree,
+    createVTree,
+    createRealTree,
+    diffVTree,
     patch
 };

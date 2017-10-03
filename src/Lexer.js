@@ -41,12 +41,13 @@ function Lexer(source) {
     function consumeValue(pos) {
         let letter = source[pos];
         let temp = [];
+        let closeTagReulst;
+
         if (isQuote(letter)) {
             temp.push(letter);
             pos++;
             while (pos < length) {
                 letter = source[pos];
-
                 if (
                     isQuote(letter) && letter === temp[0] && source[pos - 1] !== '\\'
                 ) {
@@ -55,28 +56,6 @@ function Lexer(source) {
                         pos: pos + 1,
                         token: createToken(VALUE, temp.slice(1, temp.length-1)) // remove ^" "$
                     };
-                } else if (isSpace(letter)) {
-                    if (isQuote(temp[0])) {
-                        temp.push(letter);
-                        pos++;
-                    } else {
-                        return {
-                            pos: pos + 1,
-                            token: createToken(VALUE, temp)
-                        };
-                    }
-                } else if (
-                    consumeCloseTag(pos)
-                ) {
-
-                    if (temp.length > 0) {
-                        return {
-                            pos: pos,
-                            token: createToken(VALUE, temp)
-                        };
-                    } else {
-                        return null;
-                    }
                 } else {
                     temp.push(letter);
                     pos++;
@@ -94,16 +73,15 @@ function Lexer(source) {
                     };
                     // eslint-disable-next-line
                 } else if (closeTagResult = consumeCloseTag(pos)) {
-
                     if (temp.length > 0) {
                         const token = createToken(VALUE, temp);
                         return {
                             pos: pos,
                             token: closeTagResult.isSelfClose ? setTokenSelfClose(token): token
                         };
-                    } else
+                    } else {
                         return;
-
+                    }
                 } else {
                     temp.push(letter);
                     pos++;
@@ -116,6 +94,7 @@ function Lexer(source) {
         let letter = source[pos];
         let temp = [];
         const group = [];
+
         while (pos < length) {
             letter = source[pos];
             if (isEqual(letter)) {
@@ -126,7 +105,7 @@ function Lexer(source) {
                 pos ++;
                 pos = consumeSpaces(pos).pos;
 
-                const {pos: posNext, token} = (consumeValue(pos) || consumeExpression(pos)) || {};
+                const {pos: posNext, token} = (consumeExpression(pos) || consumeValue(pos)) || {};
 
                 if (token) {
                     group.push(token);
@@ -134,8 +113,7 @@ function Lexer(source) {
                 }
 
             } else if (
-                (isSlash(letter) && isCloseTag(source[pos + 1]))
-            || isCloseTag(letter)
+                consumeCloseTag(pos)
             ) {
                 if (temp.length > 0) {
                     group.push(createToken(ATTR, temp));
