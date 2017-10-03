@@ -103,7 +103,7 @@
                         <h2>TodoList</h2>
                     </header>
                     <block :if = "{{todoList.length > 0}}">
-                        <ul class="body">
+                        <ul class="body {{todoList.length}}">
                             <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
                                 <p> {{todo.name}} {{ComponentMethod(todo.status)}}</p>
                             </li>

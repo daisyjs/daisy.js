@@ -1,8 +1,12 @@
 import {Parser} from './Parser';
 import {
-    createVTree, createRealTree,
+    createVTree,
     diffVTree, patch
-} from './Render';
+} from './VTree';
+
+import {
+    createRTree
+} from './RTree';
 
 const STATE = Symbol('state');
 const METHODS = Symbol('methods');
@@ -11,7 +15,7 @@ const COMPONENTS = Symbol('components');
 const AST = Symbol('ast');
 const VTREE = Symbol('vTree');
 const ALL_INSTANCES = Symbol('allInstances');
-const REAL_TREE = Symbol('realTree');
+const RTREE = Symbol('rTree');
 
 class Daisy {
     constructor({
@@ -57,8 +61,8 @@ class Daisy {
             state, methods, context: this
         });
         this.beforeMounted();
-        this[REAL_TREE] = createRealTree(this[VTREE]);
-        node.appendChild(this[REAL_TREE]);
+        this[RTREE] = createRTree(this[VTREE]);
+        node.appendChild(this[RTREE]);
         this.afterMounted();
     }
 
@@ -85,7 +89,7 @@ class Daisy {
 
         // patch to dom
         this.beforePatched();
-        patch(this[REAL_TREE], difference);
+        patch(this[RTREE], difference);
         this.afterPatched();
     }
 
