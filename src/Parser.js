@@ -2,7 +2,7 @@ import {Lexer} from './Lexer';
 import {END_TAG, COMMENT, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} from'./StateTypes';
 import {Program, If, For, Element, Comment, Attribute, Expression, Text, Types} from'./NodeTypes';
 import {Expression as expression, isIncludeExpr} from'./Expression';
-import {isSelfClose, error} from'./helper';
+import {isSelfClose, error, isVoidTag} from'./helper';
 
 const STATEMENT_MARK = ':';
 const DIRECTIVE_MARK = '@';
@@ -103,7 +103,7 @@ function Parser(source) {
         directives = refs.directives;
         statements = refs.statements;
 
-        if (!isSelfClose(token)) {
+        if (!isSelfClose(token) && !isVoidTag(content)) {
             children = program();
         }
 

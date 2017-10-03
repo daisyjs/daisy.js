@@ -1,13 +1,32 @@
 import {
     Types
 } from './NodeTypes';
-
+import {EvalExpression, codeGen} from './EvalExpression';
 const {
     Program, If, For, Element, Attribute, Expression, Text, Comment
 } = Types;
 
 function createViewTree(nodes) {
-    return document.createElement('div');
+    const fragment = document.createDocumentFragment();
+    const viewItems = nodes.forEach(
+        node =>
+            fragment.appendChild(createViewItem(node))
+    );
+    return fragment;
+}
+
+
+function createViewItem(element) {
+    if (typeof element !== 'object') {
+        return document.createTextNode(element);
+    }
+    const node = document.createElement(element.tagName);
+    node.appendChild(createViewTree(element.children));
+    const props = element.props;
+    props.forEach(({name, value}) => {
+        node.setAttribute(name, value);
+    });
+    return node;
 }
 
 function diffVirtualDOM(prevVirtualDom, nextVirtualDom) {
@@ -21,70 +40,74 @@ function patch(differenceSet) {
 class ElementNode {
     constructor(tagName, props, children, key) {
         this.tagName = tagName
-        this.props = props || {}
+        this.props = props || []
         this.children = children || []
         this.key = key;
     }
 }
 
-function renderItem(node, state) {
+function renderItem(node, viewContext) {
+    const {state, methods} = viewContext;
     switch (node.type) {
         case Text:
             return node.value;
         case Element:
             const {
-                attribute, directives, children
+                attributes, directives, children
             } = node;
-            return new ElementNode(node.name, attribute, render(children, state));
+            return new ElementNode(node.name, attributes, render(children, viewContext));
         case If:
             let result;
-            if (evalExpression(node.test, state)) {
-                result = renderItem(node.consequent, state);
+            if (EvalExpression(node.test, viewContext)) {
+                result = renderItem(node.consequent, viewContext);
             } else if (node.alternate) {
-                result = renderItem(node.alternate, state);
+                result = renderItem(node.alternate, viewContext);
             }
             return result;
+        case For:
+            const list = EvalExpression(node.test, viewContext);
+            const {item, index} = node.init;
+            const itemName = codeGen(item);
+            const indexName = codeGen(index);
+
+            const body = list.map((item, index) => renderItem(node.body, {
+                state: Object.assign({}, state, {
+                    [itemName]: item,
+                    [indexName]: index
+                }),
+                methods
+            }))
+            return body;
         case Expression:
-            return evalExpression(node, state);
+            return EvalExpression(node, viewContext);
         default:
     }
 }
 
-function render(nodes, state) {
-    const group = [];
+function render(nodes, viewContext) {
+    let group = [];
     nodes.forEach((node) => {
-        group.push(renderItem(node, state))
+        const result = renderItem(node, viewContext);
+        if (Array.isArray(result)) {
+            group = [
+                ...group, ...result
+            ]
+        } else {
+            group.push(result);
+        }
     });
     return group;
 }
 
-function createVirtualDOM(abstractSyntaxNode, state) {
+function createVirtualDOM(abstractSyntaxNode, viewContext) {
     // create virtual dom
     const programBody = abstractSyntaxNode.body;
     let child, i = 0;
 
-    const virtualDOM = render(programBody, state);
+    const virtualDOM = render(programBody, viewContext);
     console.log('virtualDOM created:');
     console.log(virtualDOM);
     return virtualDOM;
-}
-
-function evalExpression(expression, state) {
-    const {type} = expression;
-
-    switch (type) {
-        case 'Expression':
-            return evalExpression(expression.value, state);
-        case 'Identifier':
-            return state[expression.name];
-        case 'BinaryExpression':
-            const leftResult = evalExpression(expression.left, state);
-            const rightResult = evalExpression(expression.right, state);
-            return new Function('leftResult', 'rightResult', `return leftResult ${expression.operator} rightResult`)(leftResult, rightResult);
-        default:
-            console.log('unexpected expression:');
-            console.log(JSON.stringify(expression));
-    }
 }
 
 export {

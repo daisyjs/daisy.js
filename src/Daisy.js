@@ -17,11 +17,15 @@ class Daisy {
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
+        this.methods = Daisy._methods[this.constructor.name];
     }
 
     mount(node) {
-        const {abstractSyntaxNode} = this;
-        this.virtualDOM = createVirtualDOM(abstractSyntaxNode, this.state);
+        const {abstractSyntaxNode, state, methods} = this;
+        // const methods = this.constructor._methods;
+        this.virtualDOM = createVirtualDOM(abstractSyntaxNode, {
+            state, methods
+        });
         this.beforeMounted();
         const viewTree = createViewTree(this.virtualDOM);
         node.appendChild(viewTree);
@@ -34,11 +38,14 @@ class Daisy {
             return false;
         }
         // setState
-        this.state = state;
+        this.state = state = Object.assign(this.state, state);
+        // const methods = this.constructor._methods;
 
         // create virtualDOM
-        const {abstractSyntaxNode, virtualDOM: lastVirtualDOM} = this;
-        const newVirtualDOM = createVirtualDOM(abstractSyntaxNode, state);
+        const {abstractSyntaxNode, virtualDOM: lastVirtualDOM, methods} = this;
+        const newVirtualDOM = createVirtualDOM(abstractSyntaxNode, {
+            state, methods
+        });
 
         // diff virtualDOMs
         const difference = diffVirtualDOM(newVirtualDOM, lastVirtualDOM);
@@ -64,6 +71,16 @@ class Daisy {
     static component() {
 
     }
+
+    static method(name, fn) {
+        if (!this._methods[this.name]) {
+            this._methods[this.name] = {}
+        }
+
+        this._methods[this.name][name] = fn;
+    }
 }
+
+Daisy._methods = {};
 
 export default Daisy;

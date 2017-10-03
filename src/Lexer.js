@@ -53,7 +53,7 @@ function Lexer(source) {
                     temp.push(letter);
                     return {
                         pos: pos + 1,
-                        token: createToken(VALUE, temp)
+                        token: createToken(VALUE, temp.slice(1, temp.length-1)) // remove ^" "$
                     };
                 } else if (isSpace(letter)) {
                     if (isQuote(temp[0])) {

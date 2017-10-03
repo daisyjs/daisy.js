@@ -3,11 +3,58 @@
     <head>
         <meta charset="utf-8">
         <title></title>
+        <style media="screen">
+            body {
+                margin: 0;
+                padding: 0
+            }
+            .header {
+                padding: 30px;
+                background: #f2f2f2;
+                text-align: center;
+            }
+
+            .header h1 {
+                color: #c13164;
+                font-size: 40px;
+            }
+
+            .header h2 {
+                color: #333;
+                font-size: 20px;
+            }
+
+            .body {
+                max-width: 800px;
+                margin: 0 auto;
+                margin-top: 20px;
+            }
+            .body, .body li{
+                list-style: none;
+                padding: 0
+            }
+
+            /*.body li{
+                background-color: #f2f2f2;
+            }*/
+
+            .body li p{
+                background-color: #f2f2f2;
+                margin: 5px 0;
+                padding: 10px 0;
+                text-indent: 10px;
+            }
+
+        </style>
     </head>
     <body>
         <div id="node"></div>
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
+
+            Daisy.method('length2', (b) => {
+                return b.length;
+            })
             class Component extends Daisy {
                 beforeMounted() {
                     console.log('-- beforeMounted --');
@@ -22,23 +69,36 @@
                     console.log('-- afterPatched --');
                 }
             }
-
+            Component.method('length', (b) => {
+                return b.length;
+            })
             const component = new Component({
                 state: {
-                    a: true,
-                    expression: 1,
-                    expression2: 2
+                    todoList: [
+                        'ast -> virtual nodes 2017-10-3',
+                        'virtual dom 2017-10-4',
+                        'events 2017-10-5',
+                        'directive 2017-10-6',
+                        'components 2017-10-7'
+                    ],
                 },
                 template: `
-                    <block :if={{a}}>
-                        {{expression * expression2}}
-                    </block>
+                    <header class="header">
+                        <h1>Daisy</h1>
+                        <h2>TodoList</h2>
+                    </header>
+                    <ul class="body">
+                        <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
+                            <p><input type="checkbox"> {{todoIndex}}. {{todo}} {{length(todo)}}</p>
+                        </li>
+                    </ul>
                 `,
             });
 
             component.mount(document.querySelector('#node'));
 
             component.setState({
+                // a: 2,
                 expression: 1,
                 expression2: 2
             });
