@@ -81,7 +81,7 @@ function diffVElement(element1 = {}, element2 = {}) {
     }, changes);
 }
 
-function dfsVTree(lastTree = [], nextTree = [], fn, index = -1) {
+function walkVTree(lastTree = [], nextTree = [], fn, index = -1) {
     function hasChild(element) {
         return (element instanceof Element && element.children.length > 0);
     }
@@ -92,7 +92,7 @@ function dfsVTree(lastTree = [], nextTree = [], fn, index = -1) {
 
         if (hasChild(lastTreeLeaf)) {
             const nextTreeLeafChildren = hasChild(nextTreeLeaf) ? nextTreeLeaf.children : [];
-            index = dfsVTree(lastTreeLeaf.children, nextTreeLeafChildren, fn, index);
+            index = walkVTree(lastTreeLeaf.children, nextTreeLeafChildren, fn, index);
         }
     });
 
@@ -106,11 +106,11 @@ function dfsVTree(lastTree = [], nextTree = [], fn, index = -1) {
     return index;
 }
 
-function dfsRTree(tree, fn, index = -1) {
+function walkRTree(tree, fn, index = -1) {
     tree.forEach(item => {
         fn(item, ++index);
         if (item.childNodes.length > 0) {
-            index = dfsRTree(item.childNodes, fn, index);
+            index = walkRTree(item.childNodes, fn, index);
         }
     });
     return index;
@@ -119,7 +119,7 @@ function dfsRTree(tree, fn, index = -1) {
 function diffVTree(lastVTree, nextVTree) {
     const patches = {};
 
-    dfsVTree(lastVTree, nextVTree, (lastTreeLeaf, nextTreeLeaf, index) => {
+    walkVTree(lastVTree, nextVTree, (lastTreeLeaf, nextTreeLeaf, index) => {
         if (void 0 === patches[index]) {
             patches[index] = [];
         }
@@ -180,7 +180,7 @@ function patch(rTree, patches) {
 
     const list = [];
 
-    dfsRTree(rTree, (node, index) => {
+    walkRTree(rTree, (node, index) => {
         list[index] = node;
     });
 
