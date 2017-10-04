@@ -1,86 +1,4 @@
 import {TAGNAME, END_TAG} from './StateTypes';
-//
-function isSpace(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code == 32;
-}
-
-// a-z
-function isLowerCase(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code >= 97 && code <= 122;
-}
-
-// A-Z
-function isUpperCase(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code >= 65 && code <= 90;
-}
-
-function isWord(letter = '') {
-    return isLowerCase(letter) || isUpperCase(letter);
-}
-
-// 0-9
-function isNumber(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code >= 48 && code <= 57;
-}
-
-// _
-function isUnderscore(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 95;
-}
-
-// $
-function isDollar(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 36;
-}
-
-// !
-function isExclamationMark (letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 33;
-}
-
-// !
-function isDash (letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 45;
-}
-
-// <
-function isOpenTag(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 60;
-}
-
-// >
-function isCloseTag(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 62;
-}
-
-
-// /
-function isSlash(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 47;
-}
-
-// =
-function isEqual(letter = '') {
-    const code = letter.charCodeAt(0);
-    return code === 61;
-}
-
-// '||"
-function isQuote(letter = '') {
-    const code = letter.charCodeAt(0);
-    return [34, 39].includes(code);
-}
 
 function isTagClosed(tokens) {
     let stack = [];
@@ -125,46 +43,62 @@ function isTagClosed(tokens) {
 }
 
 const voidTagTypes = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr', 'r-content'];
-function isVoidTag(tag) {
-    return voidTagTypes.includes(tag);
-}
+const isVoidTag = (tag) => voidTagTypes.includes(tag);
 
-function isSelfClose({type, isSelfClose}) {
-    return type === TAGNAME && isSelfClose;
-}
+const isSelfClose = ({type, isSelfClose}) => type === TAGNAME && isSelfClose;
 
-function returnUnclosedTagError({
+const returnUnclosedTagError = ({
     content, line, column
-}) {
-    return `Unclosed TAG ${content} : \nline - ${line}, column - ${column}`;
-}
+}) =>
+    `Unclosed TAG ${content} : \nline - ${line}, column - ${column}`;
 
-function returnUnclosedExprError({
-    content, line, column
-}) {
-    return `Unclosed expression ${content} : \nline - ${line}, column - ${column}`;
-}
+// a-zA-Z
+const isSpace = (letter = '') => letter.charCodeAt(0) === 32;
+// A-Z
+const isLowerCase = (letter = '') => {
+    const code = letter.charCodeAt(0);
+    return code >= 97 && code <= 122;
+};
+// A-Z
+const isUpperCase = (letter = '') => {
+    const code = letter.charCodeAt(0);
+    return code >= 65 && code <= 90;
+};
+// a-zA-Z
+const isWord = (letter = '') => isLowerCase(letter) || isUpperCase(letter);
+//  0-9
+const isNumber = (letter = '') => {
+    const code = letter.charCodeAt(0);
+    return code >= 48 && code <= 57;
+};
+// _
+const isUnderscore = (letter = '') => 95 === letter.charCodeAt(0);
+// $
+const isDollar = (letter = '') => 36 === letter.charCodeAt(0);
+// !
+const isExclamationMark = (letter = '') => 33 === letter.charCodeAt(0);
+// <
+const isOpenTag = (letter = '') => 60 === letter.charCodeAt(0);
+// !
+const isDash = (letter = '') => 45 === letter.charCodeAt(0);
+// '||"
+const isQuote = (letter = '') => [34, 39].includes(letter.charCodeAt(0));
+// =
+const isEqual = (letter = '') => 61 === letter.charCodeAt(0);
+// /
+const isSlash = (letter = '') => 47 === letter.charCodeAt(0);
+// >
+const isCloseTag = (letter = '') => 62 === letter.charCodeAt(0);
 
-function returnUnLegalEndError(state, {
-    content, line, column
-}) {
-    return `UnLegal end ${state} ${content} : \nline - ${line}, column - ${column}`;
-}
+// eslint-disable-next-line
+const warn = (message) => console.warn(message);
+// eslint-disable-next-line
+const error = (message) => console.error(message);
 
-function warn(message) {
-    console.warn(message);
-}
-
-function error(message) {
-    console.warn(message);
-}
-
-function diffObject(objectA, objectB) {
-    if (objectA === objectB) {
-        return false;
-    }
-    return JSON.stringify(objectA) !== JSON.stringify(objectB);
-}
+const isEmpty = o => Object.keys(o).length === 0;
+const isObject = o => o != null && typeof o === 'object';
+const properObject = o => isObject(o) && !o.hasOwnProperty ? Object.assign({}, o) : o;
+const isDate = d => d instanceof Date;
 
 export{
     isSpace,
@@ -184,9 +118,10 @@ export{
     isTagClosed,
     isVoidTag,
     isSelfClose,
-    returnUnLegalEndError,
-    returnUnclosedExprError,
     error,
     warn,
-    diffObject
+    isEmpty,
+    isObject,
+    isDate,
+    properObject
 };

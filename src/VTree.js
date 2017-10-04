@@ -3,8 +3,9 @@ import {
 } from './NodeTypes';
 import {EvalExpression, codeGen} from './EvalExpression';
 import {Element, Elements} from './Element';
-import {createRElement} from './RTree';
-import {warn, diffObject} from './helper';
+import {createRElement, setProps, setStyle} from './RTree';
+import {warn, isEmpty} from './helper';
+import diff from './diff';
 
 const {
     Program, If, For, Element: ElementType, Expression, Text, Attribute
@@ -20,21 +21,23 @@ const BLOCK = 'block';
 
 function diffVElement(element1 = {}, element2 = {}) {
     function diffStyle() {
-        const styleDiff = diffObject(element1.props.style, element2.props.style);
+        const styleDiff = diff(element1.props.style, element2.props.style);
 
-        if (styleDiff) {
+        if (!isEmpty(styleDiff)) {
             return {
                 type: STYLE,
+                changed: styleDiff
             };
         }
     }
 
     function diffProps() {
-        const propsDiff = diffObject(element1.props, element2.props);
+        const propsDiff = diff(element1.props, element2.props);
 
-        if (propsDiff) {
+        if (!isEmpty(propsDiff)) {
             return {
                 type: PROPS,
+                changed: propsDiff
             };
         }
     }
@@ -42,9 +45,17 @@ function diffVElement(element1 = {}, element2 = {}) {
     function diffTagName() {
         if (element1.tagName !== element2.tagName) {
             return {
-                type: REPLACE
+                type: REPLACE,
+                changed: element2
             };
         }
+    }
+
+    if (typeof element1 !== typeof element2) {
+        return [{
+            type: REPLACE,
+            chaneged: element2
+        }];
     }
 
     if (
@@ -52,37 +63,44 @@ function diffVElement(element1 = {}, element2 = {}) {
         typeof element2 === 'string'
     ) {
         if (element1 !== element2) {
-            return {
+            return [{
                 type: TEXT,
-            };
+                changed: element2
+            }];
         }
-        return;
+        return [];
     }
 
-    return diffTagName() || diffStyle () || diffProps() ;
+    const changes = [];
+    return [diffStyle, diffProps, diffTagName].reduce((prev, item) => {
+        const result = item();
+        if (result) {
+            prev.push(result);
+        }
+        return prev;
+    }, changes);
 }
 
-function dfsVtree(lastTree = [], nextTree = [], fn, index = -1) {
-    lastTree.forEach((lastTreeNode, nodeIndex) => {
-        const nextTreeNode = nextTree[nodeIndex];
-        fn(lastTreeNode, nextTreeNode, ++index);
+function dfsVTree(lastTree = [], nextTree = [], fn, index = -1) {
+    function hasChild(element) {
+        return (element instanceof Element && element.children.length > 0);
+    }
 
-        if (
-            (lastTreeNode instanceof Element && lastTreeNode.children.length > 0)
-        ) {
-            const nextTreeNodeChildren =
-                (nextTreeNode instanceof Element && nextTreeNode.children.length > 0)
-                ? nextTreeNode.children
-                : [];
-            index = dfsVtree(lastTreeNode.children, nextTreeNodeChildren, fn, index);
+    lastTree.forEach((lastTreeLeaf, leafIndex) => {
+        const nextTreeLeaf = nextTree[leafIndex];
+        fn(lastTreeLeaf, nextTreeLeaf, ++index);
+
+        if (hasChild(lastTreeLeaf)) {
+            const nextTreeLeafChildren = hasChild(nextTreeLeaf) ? nextTreeLeaf.children : [];
+            index = dfsVTree(lastTreeLeaf.children, nextTreeLeafChildren, fn, index);
         }
     });
 
     if (nextTree.length > lastTree.length) {
         nextTree.slice(lastTree.length).forEach(
-            (nextTreeNode) =>
-                fn(null, nextTreeNode, index)
-        )
+            (nextTreeLeaf) =>
+                fn(null, nextTreeLeaf, index)
+        );
     }
 
     return index;
@@ -101,62 +119,63 @@ function dfsRTree(tree, fn, index = -1) {
 function diffVTree(lastVTree, nextVTree) {
     const patches = {};
 
-    dfsVtree(lastVTree, nextVTree, (lastTreeNode, nextTreeNode, index) => {
-
+    dfsVTree(lastVTree, nextVTree, (lastTreeLeaf, nextTreeLeaf, index) => {
         if (void 0 === patches[index]) {
             patches[index] = [];
         }
 
-        if (!lastTreeNode) {
+        if (!lastTreeLeaf) {
             patches[index].push({
                 type: NEW,
-                element: nextTreeNode
-            })
+                changed: nextTreeLeaf
+            });
             return;
         }
 
-        if (!nextTreeNode) {
+        if (!nextTreeLeaf) {
             patches[index].push({
                 type: REMOVE
-            })
+            });
             return;
         }
 
-        const {type} = diffVElement(lastTreeNode, nextTreeNode) || {};
-        if (type) {
-            console.log(type);
-            patches[index].push({
-                type: REPLACE,
-                element: nextTreeNode
-            })
-        }
+        patches[index] = patches[index].concat(
+            diffVElement(lastTreeLeaf, nextTreeLeaf)
+        );
     });
 
     return patches; // difference set
 }
 
 function patch(rTree, patches) {
-    function patchElement(node, parent) {
+    function patchElement(node, parent, nextElement) {
         return (currentPatch) => {
-            const {type, element} = currentPatch;
+            const {type, changed} = currentPatch;
             switch (type) {
-                case NEW:
-                    if (parent) {
-                        parent.insertBefore(createRElement(element), node.nextSibling);
-                    }
-                    break;
+            case STYLE:
+                return setStyle(node.style, changed);
 
-                case REPLACE:
-                    if (parent) {
-                        parent.replaceChild(createRElement(element), node)
-                    }
-                    break;
+            case PROPS:
+                return setProps(node, changed);
 
-                case REMOVE:
-                    parent.removeChild(node);
-                default:
+            case TEXT:
+                node[node.textContent ? 'textContent' : 'nodeValue'] = changed; // fuck ie
+                break;
+
+            case NEW:
+                parent.insertBefore(createRElement(changed), nextElement);
+                break;
+
+            case REPLACE:
+                parent.replaceChild(createRElement(changed), node);
+                break;
+
+            case REMOVE:
+                parent.removeChild(node);
+                break;
+            default:
             }
-        }
+        };
     }
 
     const list = [];
@@ -169,7 +188,7 @@ function patch(rTree, patches) {
     list.forEach((node, index) => {
         if (patches[index].length > 0) {
             patches[index].forEach(
-                patchElement(node, node.parentNode)
+                patchElement(node, node.parentNode, node.nextSibling)
             );
         }
     });
@@ -199,6 +218,7 @@ function createVElement(node, viewContext) {
 
     case ElementType: {
         const {
+            // eslint-disable-next-line
             attributes, directives, children, name
         } = node;
 

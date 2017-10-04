@@ -6,7 +6,7 @@ class Element {
             Object.assign(prev, {
                 [name]: value
             })
-        , {}) || [];
+            , {}) || [];
 
         this.children = children || [];
         this.key = key;
@@ -30,7 +30,7 @@ class Elements extends Array {
         if (
             element instanceof Element || typeof element === 'string'
         ) {
-            super.push(element)
+            super.push(element);
         } else if (element instanceof Elements) {
             element.forEach(
                 item => super.push(item)
@@ -42,4 +42,4 @@ class Elements extends Array {
 
 export {
     Element, Elements
-}
+};

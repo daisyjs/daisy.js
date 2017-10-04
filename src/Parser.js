@@ -72,7 +72,7 @@ function Parser(source) {
         case COMMENT:
             return comment();
         default:
-            debugger
+            
             throw 'unknow token type!';
         }
     }

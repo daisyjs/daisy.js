@@ -2,9 +2,10 @@ import {
     Element, Elements
 } from './Element';
 
-function createRTree(group) {
+function createRTree(elements) {
     const fragment = document.createDocumentFragment();
-    const viewItems = group.forEach(
+    
+    elements.forEach(
         node =>
             fragment.appendChild(createRElement(node))
     );
@@ -21,11 +22,7 @@ function createRElement(element) {
             createRTree(children)
         );
 
-
-        Object.keys(props).forEach((name) => {
-            const value = props[name];
-            node.setAttribute(name, value);
-        });
+        setProps(node, props);
 
         return node;
     } else if (element instanceof Elements) {
@@ -35,6 +32,21 @@ function createRElement(element) {
     return document.createTextNode(element);
 }
 
-export {
-    createRTree, createRElement
+function setProps(node, props) {
+    Object.keys(props).forEach((name) => {
+        if (props[name] !== undefined) {
+            node.setAttribute(name, props[name]);
+        } else {
+            node.removeAttribute(name);
+        }
+    });
 }
+
+function setStyle(node, styles) {
+    Object.assign(node.style, styles);
+}
+
+export {
+    createRTree, createRElement,
+    setProps, setStyle
+};
