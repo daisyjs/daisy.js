@@ -1,5 +1,5 @@
 import {Lexer} from './Lexer';
-import {END_TAG, COMMENT, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} from'./StateTypes';
+import {END_TAG, COMMENT, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from'./StateTypes';
 import {Program, If, For, Element, Comment, Attribute, Expression, Text, Types} from'./NodeTypes';
 import {Expression as expression, isIncludeExpr} from'./Expression';
 import {isSelfClose, error, isVoidTag} from'./helper';
@@ -72,6 +72,7 @@ function Parser(source) {
         case COMMENT:
             return comment();
         default:
+            debugger
             throw 'unknow token type!';
         }
     }
@@ -102,6 +103,8 @@ function Parser(source) {
         attrNodes = refs.attrs;
         directives = refs.directives;
         statements = refs.statements;
+
+        consume(CLOSE_TAG);
 
         if (!isSelfClose(token) && !isVoidTag(content)) {
             children = program();

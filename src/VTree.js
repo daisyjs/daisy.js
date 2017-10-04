@@ -2,18 +2,21 @@ import {
     Types
 } from './NodeTypes';
 import {EvalExpression, codeGen} from './EvalExpression';
-import Element from './Element';
+import {Element, Elements} from './Element';
 import {warn} from './helper';
+
 
 const {
     Program, If, For, Element: ElementType, Expression, Text, Attribute
 } = Types;
 
+const BLOCK = 'block';
+
 function diffVTree(lastVTree, nextVTree) {
     return []; // difference set
 }
 
-function patch(realTree, differences) {
+function patch(rTree, differences) {
     // walk the difference set and update
 }
 
@@ -26,8 +29,12 @@ function createVElement(node, viewContext) {
     case Attribute: {
         const {value} = node;
         if (value.type === Expression) {
+            const valueEvaluted = EvalExpression(value, viewContext);
+            if (valueEvaluted === false) {
+                return null;
+            }
             return Object.assign({}, node, {
-                value: createVElement(value, viewContext)
+                value: valueEvaluted
             });
         }
         return node;
@@ -38,13 +45,13 @@ function createVElement(node, viewContext) {
             attributes, directives, children, name
         } = node;
 
-        if (name.toLowerCase() === 'block') {
+        if (name.toLowerCase() === BLOCK) {
             return createVGroup(children, viewContext);
         }
 
         return Element.create(
             node.name,
-            attributes.map((attribute) => createVElement(attribute, viewContext)),
+            attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item),
             createVGroup(children, viewContext)
         );
     }
@@ -60,20 +67,25 @@ function createVElement(node, viewContext) {
     }
 
     case For: {
+        const elements = Elements.create();
         const list = EvalExpression(node.test, viewContext);
         const {item, index} = node.init;
         const itemName = codeGen(item);
         const indexName = codeGen(index);
 
-        const body = list.map((item, index) => createVElement(node.body, {
-            state: Object.assign({}, state, {
-                [itemName]: item,
-                [indexName]: index
-            }),
-            methods
-        }));
+        list.forEach(
+            (item, index) => {
+                elements.push(createVElement(node.body, {
+                    state: Object.assign({}, state, {
+                        [itemName]: item,
+                        [indexName]: index
+                    }),
+                    methods
+                }));
+            }
+        );
 
-        return body;
+        return elements;
     }
 
     case Expression: {
@@ -83,27 +95,19 @@ function createVElement(node, viewContext) {
         }
         return result;
     }
+
     default:
     }
 }
 
 function createVGroup(nodes, viewContext) {
-    let group = [];
-    nodes.forEach((node) => {
-        const result = createVElement(node, viewContext);
-        if (result === void 0) {
-            return;
-        }
+    const elements = Elements.create();
 
-        if (Array.isArray(result)) {
-            group = [
-                ...group, ...result
-            ];
-        } else {
-            group.push(result);
-        }
+    nodes.forEach((node) => {
+        elements.push(createVElement(node, viewContext));
     });
-    return group;
+
+    return elements;
 }
 
 function createVTree(ast, viewContext) {
@@ -112,7 +116,7 @@ function createVTree(ast, viewContext) {
     if (type === Program) {
         return createVGroup(body, viewContext);
     } else {
-        warn('Root node must be Program!');
+        warn('Root element must be Program!');
     }
 }
 

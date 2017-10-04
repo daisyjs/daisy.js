@@ -1,8 +1,8 @@
-import {COMMENT, END_TAG, TAGNAME, EXPR, TEXT, ATTR, VALUE, EOF} from './StateTypes';
+import {COMMENT, END_TAG, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from './StateTypes';
 import {isSlash, isSpace, isOpenTag, isExclamationMark, isDash, isCloseTag, isEqual, isQuote, isTagClosed} from './helper';
 import {isOpenExpr, isCloseExpr, getExpressionBounds} from './Expression';
 
-function createToken(tokenType, temp) {
+function createToken(tokenType, temp = []) {
     const content = temp.join('');
     return {
         type: tokenType,
@@ -161,6 +161,8 @@ function Lexer(source) {
                     if (isSelfClose) {
                         group[0] = setTokenSelfClose(group[0]);
                     }
+
+                    group.push(createToken(CLOSE_TAG));
 
                     return {
                         pos: posCloseTag,

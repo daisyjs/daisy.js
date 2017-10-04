@@ -1,8 +1,10 @@
-import Element from './Element';
+import {
+    Element, Elements
+} from './Element';
 
-function createRTree(nodes) {
+function createRTree(group) {
     const fragment = document.createDocumentFragment();
-    const viewItems = nodes.forEach(
+    const viewItems = group.getElements().forEach(
         node =>
             fragment.appendChild(createRElement(node))
     );
@@ -24,6 +26,8 @@ function createRElement(element) {
         });
 
         return node;
+    } else if (element instanceof Elements) {
+        return createRTree(element);
     }
 
     return document.createTextNode(element);
