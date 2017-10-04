@@ -153,10 +153,12 @@ function patch(rTree, patches) {
             const {type, changed} = currentPatch;
             switch (type) {
             case STYLE:
-                return setStyle(node.style, changed);
+                setStyle(node.style, changed);
+                break;
 
             case PROPS:
-                return setProps(node, changed);
+                setProps(node, changed);
+                break;
 
             case TEXT:
                 node[node.textContent ? 'textContent' : 'nodeValue'] = changed; // fuck ie
