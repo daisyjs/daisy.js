@@ -40,6 +40,12 @@
                 </ul>
             </block>
             <div style="text-align: center;">
+                <input 
+                    type="text" 
+                    placeholder="input your plan"
+                    @ref="input"
+                > 
+                <button @on-click={{this.onAdd()}}>add</button>
                 <button @on-click={{this.onReset()}}>reset</button>
             </div>
         </textarea>
@@ -92,6 +98,21 @@
                     todoList[index].status = !todoList[index].status
                     this.setState({
                         todoList: todoList
+                    });
+                }
+                onAdd() {
+                    const input = this.refs.input;
+                    const value = input.value;
+                    const todoList = this.getState().todoList;
+
+                    this.setState({
+                        todoList: [
+                            ...todoList,
+                            {
+                                name: value,
+                                status: false
+                            }
+                        ]
                     });
                 }
                 onReset() {

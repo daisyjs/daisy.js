@@ -259,12 +259,18 @@ function createVElement(node, viewContext) {
                         [pattern]: {
                             link: directiveGetter(pattern, viewContext.directives),
                             binding: {
+                                context: viewContext.context,
                                 name: pattern,
-                                expression: (state) => 
-                                    EvalExpression(directives[pattern], 
-                                        Object.assign({}, viewContext, {
-                                            state: Object.assign({}, viewContext.state, state) // merge state into 
-                                        }))
+                                value: (state) => {
+                                    const value = directives[pattern];
+                                    return (value.type === Expression) ?
+                                        EvalExpression(value, 
+                                            Object.assign({}, viewContext, {
+                                                state: Object.assign({}, viewContext.state, state) // merge state into 
+                                            }))
+                                        : value;
+                                }
+                                    
                             }
                         }
                     });

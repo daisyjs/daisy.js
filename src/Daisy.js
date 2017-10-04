@@ -49,6 +49,8 @@ class Daisy {
                 Object.assign(this[COMPONENTS], components);
             }
         }
+
+        this.refs = {};
     }
 
     getState() {
