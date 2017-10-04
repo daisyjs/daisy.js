@@ -19,7 +19,7 @@ function Parser(source) {
     try {
         tokens = Lexer(source);
     } catch (e) {
-        return error('Error in Lexer: \n' + e.stack);
+        return error('Error in Lexer: \n' + (e.stack || e));
     }
 
     let pos = 0;

@@ -14,14 +14,20 @@
             </header>
             <block :if = "{{todoList.length > 0}}">
                 <ul class="body">
-                    <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}
+                    <li 
+                        :for={{todoList}} 
+                        :for-item={{todo}} 
+                        :for-index={{todoIndex}}
                         @on-click={{this.onButtonClick(todo, todoIndex)}}
                     >
-                        <p> <input 
-                            type="checkbox" 
-                            checked={{isChecked(todo.status)}}> 
-                            {{index(todoIndex)}} {{todo.name}}
-                            <button @on-click={{this.onDelete(e, todoIndex)}}>delete</button>
+                        <p>
+                            <input 
+                                type="checkbox" 
+                                checked={{isChecked(todo.status)}}
+                            > {{index(todoIndex)}} {{todo.name}}
+                            <button 
+                                @on-click={{this.onDelete(e, todoIndex)}}
+                            >delete</button>
                         </p>
                     </li>
                 </ul>
