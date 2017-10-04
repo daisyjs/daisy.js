@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    padding: 30px;
+    background: #f2f2f2;
+    text-align: center;
+    font-family: fantasy
+
+}
+
+.header h1 {
+    color: #c13164;
+    font-size: 40px;
+}
+
+.header h2 {
+    color: #333;
+    font-size: 20px;
+}
+
+.body {
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.body, .body li{
+    list-style: none;
+    padding: 0
+}
+
+.body li p{
+    background-color: #f2f2f2;
+    margin: 5px 0;
+    padding: 10px 0;
+    text-indent: 10px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.body li p button{
+    float: right;
+    margin-right: 15px;
+}

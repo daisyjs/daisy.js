@@ -4,7 +4,7 @@ import {
 import {EvalExpression, codeGen} from './EvalExpression';
 import {Element, Elements} from './Element';
 import {createRElement, setProps, setStyle} from './RTree';
-import {warn, isEmpty} from './helper';
+import {warn, isEmpty, directiveGetter} from './helper';
 import diff from './diff';
 
 const {
@@ -151,7 +151,10 @@ function diffVTree(lastVTree, nextVTree) {
     walkVTree(lastVTree, nextVTree, (lastTreeLeaf, nextTreeLeaf) => {
         // copy some things
         if (Element.isInstance(nextTreeLeaf)) {
-            if (nextTreeLeaf.ondestroy === void 0) {
+            if (nextTreeLeaf.ondestroy === void 0
+                && lastTreeLeaf !== void 0
+                && lastTreeLeaf !== null
+            ) {
                 nextTreeLeaf.ondestroy = lastTreeLeaf.ondestroy;
             }
         }
@@ -243,9 +246,6 @@ function createVElement(node, viewContext) {
             attributes, directives, children, name
         } = node;
 
-        const {
-            directives: directivesViewContext
-        } = viewContext;
 
         if (name.toLowerCase() === BLOCK) {
             return createVGroup(children, viewContext);
@@ -254,13 +254,14 @@ function createVElement(node, viewContext) {
         let links = isEmpty(directives)
             ? {}
             : Object.keys(directives).reduce(
-                (prev, item) => {
+                (prev, pattern) => {
                     return Object.assign(prev, {
-                        [item]: {
-                            link: directivesViewContext[item],
+                        [pattern]: {
+                            link: directiveGetter(pattern, viewContext.directives),
                             binding: {
+                                name: pattern,
                                 expression: (state) => 
-                                    EvalExpression(directives[item], 
+                                    EvalExpression(directives[pattern], 
                                         Object.assign({}, viewContext, {
                                             state: Object.assign({}, viewContext.state, state) // merge state into 
                                         }))

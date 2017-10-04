@@ -1,13 +1,10 @@
 import {Lexer} from './Lexer';
 import {Parser} from './Parser';
-import {
-    createVTree,
-    diffVTree, patch
-} from './VTree';
+import {createVTree, diffVTree, patch} from './VTree';
 
-import {
-    createRTree
-} from './RTree';
+import {createRTree} from './RTree';
+
+import directives from './directives';
 
 const STATE = Symbol('state');
 const METHODS = Symbol('methods');
@@ -113,15 +110,15 @@ class Daisy {
     afterPatched() {}  // hook
 
     static directive(name, directive) {
-        this.ensureInheritCache(DIRECTIVES)[name] = directive;
+        this.ensureInheritCache(DIRECTIVES)(name, directive);
     }
 
     static component(name, Component) {
-        this.ensureInheritCache(COMPONENTS)[name] = Component;
+        this.ensureInheritCache(COMPONENTS)(name, Component);
     }
 
     static method(name, method) {
-        this.ensureInheritCache(METHODS)[name] = method;
+        this.ensureInheritCache(METHODS)(name, method);
     }
 
     static ensureInheritCache(cacheName) {
@@ -132,11 +129,20 @@ class Daisy {
         if (!instantce[cacheName]) {
             instantce[cacheName] = {};
         }
-        return instantce[cacheName];
+        const cache = instantce[cacheName];
+
+        return (name, value) => {
+            if (!value) {
+                return Object.assign(cache, name);
+            }
+            cache[name] = value;
+        };
     }
 }
 
 Daisy[ALL_INSTANCES] = new Map();
+
+Daisy.directive(directives);
 
 export default Daisy;
 

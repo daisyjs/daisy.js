@@ -53,7 +53,10 @@ const returnUnclosedTagError = ({
     `Unclosed TAG ${content} : \nline - ${line}, column - ${column}`;
 
 // a-zA-Z
-const isSpace = (letter = '') => letter.charCodeAt(0) === 32;
+const isSpace = (letter = '') => {
+    const code = letter.charCodeAt(0);
+    return code === 32 || code === 10;
+};
 // A-Z
 const isLowerCase = (letter = '') => {
     const code = letter.charCodeAt(0);
@@ -100,6 +103,23 @@ const isObject = o => o != null && typeof o === 'object';
 const properObject = o => isObject(o) && !o.hasOwnProperty ? Object.assign({}, o) : o;
 const isDate = d => d instanceof Date;
 
+
+const directiveGetter = (pattern, directives) => {
+    const isRegExpLike = (item) => item.startsWith('/') && item.endsWith('/');
+    const createRegExp = (item) => new RegExp(item.slice(1, item.length-1));
+
+    for (let name in directives) {
+        if (isRegExpLike(name)) {
+            if (createRegExp(name).test(pattern)) {
+                return directives[name];
+            }
+        } else if (name === pattern) {
+            return directives[name];
+        }
+    }
+
+    throw new Error(`cannt find the directive ${pattern}!`);
+};
 export{
     isSpace,
     isCloseTag,
@@ -123,5 +143,6 @@ export{
     isEmpty,
     isObject,
     isDate,
-    properObject
+    properObject,
+    directiveGetter
 };

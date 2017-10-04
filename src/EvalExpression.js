@@ -15,16 +15,16 @@ function EvalExpression(expression, {state, methods, context}) {
     }
 
     const codeFn = expressionMap.get(expression);
-    try {
-        return codeFn.call(context, Object.assign({}, methods, state));
-    } catch(e) {
-        if (e instanceof ReferenceError) {
+    // try {
+    return codeFn.call(context, Object.assign({}, methods, state));
+    // } catch(e) {
+    //     if (e instanceof ReferenceError) {
 
-            warn('Error in EvalExpression: expression ' + e.message);
-            return;
-        }
-        throw new Error('Error in EvalExpression: \n' + e.message);
-    }
+    //         warn('Error in EvalExpression: expression ' + e.message);
+    //         return;
+    //     }
+    //     throw e;
+    // }
 }
 
 function codeGen(expression) {
@@ -48,6 +48,12 @@ function codeGen(expression) {
         let property = codeGen(expression.property);
         property = (expression.computed) ? property: ('"'+property+'"');
         return `${object}[${property}]`;
+    }
+
+    case 'Compound': {
+        // eslint-disable-next-line
+        debugger
+        break;
     }
 
     case 'Literal':

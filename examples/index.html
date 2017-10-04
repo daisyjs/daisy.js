@@ -3,55 +3,40 @@
     <head>
         <meta charset="utf-8">
         <title>Daisy - TodoList</title>
-        <style media="screen">
-            body {
-                margin: 0;
-                padding: 0;
-            }
-
-            .header {
-                padding: 30px;
-                background: #f2f2f2;
-                text-align: center;
-                font-family: fantasy
-
-            }
-
-            .header h1 {
-                color: #c13164;
-                font-size: 40px;
-            }
-
-            .header h2 {
-                color: #333;
-                font-size: 20px;
-            }
-
-            .body {
-                max-width: 800px;
-                margin: 0 auto;
-                margin-top: 20px;
-            }
-
-            .body, .body li{
-                list-style: none;
-                padding: 0
-            }
-
-            .body li p{
-                background-color: #f2f2f2;
-                margin: 5px 0;
-                padding: 10px 0;
-                text-indent: 10px;
-                font-family: monospace;
-                font-size: 13px;
-            }
-
-        </style>
+        <link rel="stylesheet" href="/examples/style.css">
     </head>
     <body>
         <div id="node"></div>
-
+        <textarea id="code" hidden>
+            <header class="header">
+                <h1>Daisy</h1>
+                <h2>TodoList</h2>
+            </header>
+            <block :if = "{{todoList.length > 0}}">
+                <ul class="body">
+                    <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}
+                        @on-click={{this.onButtonClick(todo, todoIndex)}}
+                    >
+                        <p> <input 
+                            type="checkbox" 
+                            checked={{isChecked(todo.status)}}> 
+                            {{index(todoIndex)}} {{todo.name}}
+                            <button @on-click={{this.onDelete(e, todoIndex)}}>delete</button>
+                        </p>
+                    </li>
+                </ul>
+            </block>
+            <block :else>
+                <ul class = "body">
+                    <li>
+                        <p>No TodoList!</p>
+                    </li>
+                </ul>
+            </block>
+            <div style="text-align: center;">
+                <button @on-click={{this.onReset()}}>reset</button>
+            </div>
+        </textarea>
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
             Daisy = Daisy.default;
@@ -79,37 +64,7 @@
                     }
                 }
                 get template() {
-                    return `
-                        <header class="header">
-                            <h1>Daisy</h1>
-                            <h2>TodoList</h2>
-                        </header>
-                        <block :if = "{{todoList.length > 0}}">
-                            <ul class="body">
-                                <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}
-                                    @on-click={{this.onButtonClick(todo, todoIndex)}}
-                                >
-                                    <p> <input 
-                                        type="checkbox" 
-                                        checked={{todo.status === true}}> {{todo.name}}
-
-                                        <button @on-click={{this.onDelete(e, todoIndex)}}>delete</button>
-                                    </p>
-                                </li>
-                            </ul>
-                        </block>
-                        <block :else>
-                            <ul class = "body">
-                                <li>
-                                    <p>No TodoList!</p>
-                                </li>
-                            </ul>
-                        </block>
-
-                        <div style="text-align: center;">
-                            <button type="button" @on-click={{this.onReset()}}>重置</button>
-                        </div>
-                    `
+                    return document.querySelector('#code').value;
                 }
                 constructor(options) {
                     super(options);
@@ -150,25 +105,12 @@
                 }
             }
 
-            Daisy.method('DaisyMethod', (b) => {
-                return 'DaisyMethod';
+            Component.method('isChecked', (status) => {
+                return !!status;
             });
-
-            Component.method('ComponentMethod', (status) => {
-                return status === 0 ? '进行中' : '已完成';
-            });
-
-            Component.directive('on-click', (elem, binding, vnode) => {
-                const doSomthing = (e) => {
-                    binding.expression({
-                        e
-                    });
-                };
-
-                elem.addEventListener('click', doSomthing);
-                return () => {
-                    elem.addEventListener('click', doSomthing); 
-                }
+            
+            Component.method('index', (index) => {
+                return index + 1 + '.';
             });
 
             new Component({
