@@ -19,14 +19,21 @@ const ALL_INSTANCES = Symbol('allInstances');
 const RTREE = Symbol('rTree');
 
 class Daisy {
+    get template() {
+        return '';
+    }
+
+    get initialState() {
+        return {};
+    }
+
     constructor({
-        template = '',
         state = {}
     } = {}) {
-        this[STATE] = state;
+        this[STATE] = Object.assign(this.initialState, state);
 
         try {
-            this[AST] = Parser(template);
+            this[AST] = Parser(this.template);
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
@@ -55,11 +62,12 @@ class Daisy {
         const {
             [AST]: ast,
             [STATE]: state,
-            [METHODS]: methods
+            [METHODS]: methods,
+            [DIRECTIVES]: directives
         } = this;
 
         this[VTREE] = createVTree(ast, {
-            state, methods, context: this
+            directives, state, methods, context: this
         });
         this.beforeMounted();
         const rTree = createRTree(this[VTREE]);
@@ -79,11 +87,12 @@ class Daisy {
         const {
             [AST]: ast,
             [VTREE]: lastVTree,
-            [METHODS]: methods
+            [METHODS]: methods,
+            [DIRECTIVES]: directives
         } = this;
 
         this[VTREE] = createVTree(ast, {
-            state, methods, context: this
+            directives, state, methods, context: this
         });
 
         // diff virtualDOMs

@@ -51,13 +51,69 @@
     </head>
     <body>
         <div id="node"></div>
-        <div style="text-align: center;">
-            <button type="button" id="button">刷新</button>
-        </div>
+
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
             Daisy = Daisy.default;
             class Component extends Daisy {
+                get initialState() {
+                    return {
+                        todoList: [
+                            {
+                                name: 'ast -> virtual nodes 2017-10-3',
+                                status: true
+                            }, {
+                                name: 'virtual dom 2017-10-4',
+                                status: false
+                            }, {
+                                name: 'events 2017-10-5',
+                                status: false
+                            }, {
+                                name: 'directive 2017-10-6',
+                                status: false
+                            }, {
+                                name: 'component 2017-10-7',
+                                status: false
+                            }
+                        ]
+                    }
+                }
+                get template() {
+                    return `
+                        <header class="header">
+                            <h1>Daisy</h1>
+                            <h2>TodoList</h2>
+                        </header>
+                        <block :if = "{{todoList.length > 0}}">
+                            <ul class="body">
+                                <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}
+                                    @on-click={{this.onButtonClick(todo, todoIndex)}}
+                                >
+                                    <p> <input 
+                                        type="checkbox" 
+                                        checked={{todo.status === true}}> {{todo.name}}
+
+                                        <button @on-click={{this.onDelete(e, todoIndex)}}>delete</button>
+                                    </p>
+                                </li>
+                            </ul>
+                        </block>
+                        <block :else>
+                            <ul class = "body">
+                                <li>
+                                    <p>No TodoList!</p>
+                                </li>
+                            </ul>
+                        </block>
+
+                        <div style="text-align: center;">
+                            <button type="button" @on-click={{this.onReset()}}>重置</button>
+                        </div>
+                    `
+                }
+                constructor(options) {
+                    super(options);
+                }
                 beforeMounted() {
                     console.log('-- beforeMounted --');
                 }
@@ -70,6 +126,28 @@
                 afterPatched() {
                     console.log('-- afterPatched --');
                 }
+                onButtonClick(todo, index) {
+                    const todoList = this.getState().todoList;
+                    todoList[index].status = !todoList[index].status
+                    this.setState({
+                        todoList: todoList
+                    });
+                }
+                onReset() {
+                    this.setState({
+                        todoList: this.initialState.todoList
+                    });
+                }
+                onDelete(e, index) {
+                    const todoList = this.getState().todoList;
+                    this.setState({
+                        todoList: [
+                            ...todoList.slice(0, index),
+                            ...todoList.slice(index, todoList.length - 1)
+                        ]
+                    });
+                    e.stopPropagation();  
+                }
             }
 
             Daisy.method('DaisyMethod', (b) => {
@@ -80,69 +158,23 @@
                 return status === 0 ? '进行中' : '已完成';
             });
 
-            const component = new Component({
-                state: {
-                    todoList: [
-                        {
-                            name: 'ast -> virtual nodes 2017-10-3',
-                            status: true
-                        }, {
-                            name: 'virtual dom 2017-10-4',
-                            status: false
-                        }, {
-                            name: 'events 2017-10-5',
-                            status: false
-                        }, {
-                            name: 'directive 2017-10-6',
-                            status: false
-                        }, {
-                            name: 'component 2017-10-7',
-                            status: false
-                        }
-                    ],
-                    hello: {
-                        world: 1
-                    }
-                },
-                template: `
-                    <header class="header">
-                        <h1>Daisy</h1>
-                        <h2>TodoList</h2>
-                    </header>
-                    <block :if = "{{todoList.length > 0}}">
-                        <ul class="body">
-                            <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
-                                <p> <input type="checkbox" checked={{todo.status === true}}> {{todo.name}}</p>
-                            </li>
-                        </ul>
-                    </block>
-                    <block :else>
-                        <ul class = "body">
-                            <li>
-                                <p>No TodoList!</p>
-                            </li>
-                        </ul>
-                    </block>
-                `,
+            Component.directive('on-click', (elem, binding, vnode) => {
+                const doSomthing = (e) => {
+                    binding.expression({
+                        e
+                    });
+                };
+
+                elem.addEventListener('click', doSomthing);
+                return () => {
+                    elem.addEventListener('click', doSomthing); 
+                }
             });
 
-            component.mount(document.querySelector('#node'));
+            new Component({
+                state: {}
+            }).mount(document.querySelector('#node'));
 
-            const initalTodoList = component.getState().todoList;
-
-            button.addEventListener('click', () => {
-                const todoList = initalTodoList.map(
-                    (item, index) =>
-                        Object.assign({}, item, {
-                            status: !item.status,
-                            name: (index + 1 + '.') + item.name
-                        })
-                );
-                component.setState({
-                    todoList
-                });
-            })
-            console.log(component);
         </script>
     </body>
 </html>

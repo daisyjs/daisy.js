@@ -14,13 +14,24 @@ function createRTree(elements) {
 }
 
 function createRElement(element) {
-    if (element instanceof Element) {
-        const {props, tagName, children} = element;
-        const node = document.createElement(tagName);
+    if (Element.isInstance(element)) {
+        const {props, tag, children, links} = element;
+        const node = document.createElement(tag);
 
         node.appendChild(
             createRTree(children)
         );
+
+        const ondestroy = Object.keys(links).map(
+            (name) =>  {
+                const {link, binding} = links[name];
+                return link(node, binding, element);
+            }
+        );
+
+        element.ondestroy = () => {
+            ondestroy.forEach(item => item());
+        };
 
         setProps(node, props);
 

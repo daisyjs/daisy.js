@@ -42,10 +42,12 @@ function diffVElement(element1 = {}, element2 = {}) {
         }
     }
 
-    function diffTagName() {
-        if (element1.tagName !== element2.tagName) {
+    function diffTag() {
+        // condition other changes (such as events eg.)
+        if (element1.tag !== element2.tag) {
             return {
                 type: REPLACE,
+                source: element1,
                 changed: element2
             };
         }
@@ -54,7 +56,8 @@ function diffVElement(element1 = {}, element2 = {}) {
     if (typeof element1 !== typeof element2) {
         return [{
             type: REPLACE,
-            chaneged: element2
+            source: element1,
+            changed: element2
         }];
     }
 
@@ -72,7 +75,7 @@ function diffVElement(element1 = {}, element2 = {}) {
     }
 
     const changes = [];
-    return [diffStyle, diffProps, diffTagName].reduce((prev, item) => {
+    return [diffStyle, diffProps, diffTag].reduce((prev, item) => {
         const result = item();
         if (result) {
             prev.push(result);
@@ -83,7 +86,7 @@ function diffVElement(element1 = {}, element2 = {}) {
 
 function walkVTree(lastTree = [], nextTree = [], fn, index = -1) {
     function hasChild(element) {
-        return (element instanceof Element && element.children.length > 0);
+        return (Element.isInstance(element) && element.children.length > 0);
     }
 
     lastTree.forEach((lastTreeLeaf, leafIndex) => {
@@ -134,7 +137,8 @@ function diffVTree(lastVTree, nextVTree) {
 
         if (!nextTreeLeaf) {
             patches[index].push({
-                type: REMOVE
+                type: REMOVE,
+                source: lastTreeLeaf
             });
             return;
         }
@@ -144,13 +148,22 @@ function diffVTree(lastVTree, nextVTree) {
         );
     });
 
+    walkVTree(lastVTree, nextVTree, (lastTreeLeaf, nextTreeLeaf) => {
+        // copy some things
+        if (Element.isInstance(nextTreeLeaf)) {
+            if (nextTreeLeaf.ondestroy === void 0) {
+                nextTreeLeaf.ondestroy = lastTreeLeaf.ondestroy;
+            }
+        }
+    });
+
     return patches; // difference set
 }
 
 function patch(rTree, patches) {
     function patchElement(node, parent, nextElement) {
         return (currentPatch) => {
-            const {type, changed} = currentPatch;
+            const {type, changed, source} = currentPatch;
             switch (type) {
             case STYLE:
                 setStyle(node.style, changed);
@@ -169,10 +182,16 @@ function patch(rTree, patches) {
                 break;
 
             case REPLACE:
+                if (Element.isInstance(source)) {
+                    source.ondestroy();
+                }
                 parent.replaceChild(createRElement(changed), node);
                 break;
 
             case REMOVE:
+                if (Element.isInstance(source)) {
+                    source.ondestroy();
+                }
                 parent.removeChild(node);
                 break;
             default:
@@ -199,7 +218,7 @@ function patch(rTree, patches) {
 }
 
 function createVElement(node, viewContext) {
-    const {state, methods} = viewContext;
+    const {state} = viewContext;
     switch (node.type) {
     case Text:
         return node.value;
@@ -224,14 +243,39 @@ function createVElement(node, viewContext) {
             attributes, directives, children, name
         } = node;
 
+        const {
+            directives: directivesViewContext
+        } = viewContext;
+
         if (name.toLowerCase() === BLOCK) {
             return createVGroup(children, viewContext);
         }
 
+        let links = isEmpty(directives)
+            ? {}
+            : Object.keys(directives).reduce(
+                (prev, item) => {
+                    return Object.assign(prev, {
+                        [item]: {
+                            link: directivesViewContext[item],
+                            binding: {
+                                expression: (state) => 
+                                    EvalExpression(directives[item], 
+                                        Object.assign({}, viewContext, {
+                                            state: Object.assign({}, viewContext.state, state) // merge state into 
+                                        }))
+                            }
+                        }
+                    });
+                },
+                {}
+            );
+        
         return Element.create(
             node.name,
             attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item),
-            createVGroup(children, viewContext)
+            createVGroup(children, viewContext),
+            links
         );
     }
 
@@ -254,13 +298,14 @@ function createVElement(node, viewContext) {
 
         list.forEach(
             (item, index) => {
-                elements.push(createVElement(node.body, {
-                    state: Object.assign({}, state, {
-                        [itemName]: item,
-                        [indexName]: index
-                    }),
-                    methods
-                }));
+                elements.push(createVElement(node.body, Object.assign({},
+                    viewContext, {
+                        state: Object.assign({}, state, {
+                            [itemName]: item,
+                            [indexName]: index
+                        })
+                    }
+                )));
             }
         );
 

@@ -1,19 +1,24 @@
 class Element {
-    constructor(tagName, props, children, key) {
-        this.tagName = tagName;
+    constructor(tag = '', props = [], children = [], links = {}, key) {
+        this.tag = tag;
 
         this.props = props.reduce((prev, {name, value}) =>
             Object.assign(prev, {
                 [name]: value
             })
-            , {}) || [];
+            , {});
 
-        this.children = children || [];
+        this.children = children;
+        this.links = links;
         this.key = key;
     }
 
     static create(...args) {
         return new Element(...args);
+    }
+
+    static isInstance(something) {
+        return something instanceof Element;
     }
 }
 

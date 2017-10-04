@@ -193,8 +193,9 @@ function Parser(source) {
                     [name]: value
                 }));
             } else if (name.startsWith(DIRECTIVE_MARK)) {
+                const directive = name.slice(1);
                 Object.assign(directives, ({
-                    [name]: value
+                    [directive]: value
                 }));
             } else {
                 attrs.push(Object.assign({}, attr, {
