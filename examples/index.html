@@ -51,6 +51,9 @@
     </head>
     <body>
         <div id="node"></div>
+        <div style="text-align: center;">
+            <button type="button" id="button">刷新</button>
+        </div>
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script type="text/javascript">
             Daisy = Daisy.default;
@@ -107,7 +110,7 @@
                         <h2>TodoList</h2>
                     </header>
                     <block :if = "{{todoList.length > 0}}">
-                        <ul class="body {{todoList.length}}">
+                        <ul class="body">
                             <li :for={{todoList}} :for-item={{todo}} :for-index={{todoIndex}}>
                                 <p> <input type="checkbox" checked={{todo.status === 1}}> {{todo.name}}</p>
                             </li>
@@ -124,10 +127,16 @@
             });
 
             component.mount(document.querySelector('#node'));
-            // component.setState({
-            //     expression: 1,
-            //     expression2: 2
-            // });
+
+            button.addEventListener('click', () => {
+                const todoList = component.getState().todoList.map(item => Object.assign(item, {
+                    status: 1,
+                    name: item.name
+                }));
+                component.setState({
+                    todoList: [...todoList,...todoList]
+                });
+            })
             console.log(component);
         </script>
     </body>

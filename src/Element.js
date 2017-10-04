@@ -1,7 +1,13 @@
 class Element {
     constructor(tagName, props, children, key) {
         this.tagName = tagName;
-        this.props = props || [];
+
+        this.props = props.reduce((prev, {name, value}) =>
+            Object.assign(prev, {
+                [name]: value
+            })
+        , {}) || [];
+
         this.children = children || [];
         this.key = key;
     }
@@ -11,9 +17,9 @@ class Element {
     }
 }
 
-class Elements {
-    constructor(elment) {
-        this.elements = [];
+class Elements extends Array {
+    constructor() {
+        super();
     }
 
     static create() {
@@ -24,17 +30,13 @@ class Elements {
         if (
             element instanceof Element || typeof element === 'string'
         ) {
-            this.elements.push(element)
+            super.push(element)
         } else if (element instanceof Elements) {
-            this.elements = [
-                ...this.elements, ...element.elements
-            ]
+            element.forEach(
+                item => super.push(item)
+            );
         }
         return this;
-    }
-
-    getElements() {
-        return this.elements;
     }
 }
 

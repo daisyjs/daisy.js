@@ -4,7 +4,7 @@ import {
 
 function createRTree(group) {
     const fragment = document.createDocumentFragment();
-    const viewItems = group.getElements().forEach(
+    const viewItems = group.forEach(
         node =>
             fragment.appendChild(createRElement(node))
     );
@@ -21,7 +21,9 @@ function createRElement(element) {
             createRTree(children)
         );
 
-        props.forEach(({name, value}) => {
+
+        Object.keys(props).forEach((name) => {
+            const value = props[name];
             node.setAttribute(name, value);
         });
 
@@ -34,5 +36,5 @@ function createRElement(element) {
 }
 
 export {
-    createRTree
+    createRTree, createRElement
 }

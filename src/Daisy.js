@@ -62,8 +62,9 @@ class Daisy {
             state, methods, context: this
         });
         this.beforeMounted();
-        this[RTREE] = createRTree(this[VTREE]);
-        node.appendChild(this[RTREE]);
+        const rTree = createRTree(this[VTREE]);
+        node.appendChild(rTree);
+        this[RTREE] = node.childNodes;
         this.afterMounted();
     }
 
@@ -86,7 +87,7 @@ class Daisy {
         });
 
         // diff virtualDOMs
-        const difference = diffVTree(this[VTREE], lastVTree);
+        const difference = diffVTree(lastVTree, this[VTREE]);
 
         // patch to dom
         this.beforePatched();

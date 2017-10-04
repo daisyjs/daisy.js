@@ -159,6 +159,13 @@ function error(message) {
     console.warn(message);
 }
 
+function diffObject(objectA, objectB) {
+    if (objectA === objectB) {
+        return false;
+    }
+    return JSON.stringify(objectA) !== JSON.stringify(objectB);
+}
+
 export{
     isSpace,
     isCloseTag,
@@ -180,5 +187,6 @@ export{
     returnUnLegalEndError,
     returnUnclosedExprError,
     error,
-    warn
+    warn,
+    diffObject
 };
