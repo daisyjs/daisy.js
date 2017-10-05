@@ -4,7 +4,7 @@ import {
 import {EvalExpression, codeGen} from './EvalExpression';
 import {Element, Elements} from './Element';
 import {createRElement, setProps, setStyle} from './RTree';
-import {warn, isEmpty, directiveGetter} from './helper';
+import {warn, isEmpty, getDirective} from './helper';
 import diff from './diff';
 
 const {
@@ -258,7 +258,7 @@ function createVElement(node, viewContext) {
                 (prev, pattern) => {
                     return Object.assign(prev, {
                         [pattern]: {
-                            link: directiveGetter(pattern, viewContext.directives),
+                            link: getDirective(pattern, viewContext.directives),
                             binding: {
                                 context: viewContext.context,
                                 name: pattern,

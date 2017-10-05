@@ -104,22 +104,36 @@ const properObject = o => isObject(o) && !o.hasOwnProperty ? Object.assign({}, o
 const isDate = d => d instanceof Date;
 
 
-const directiveGetter = (pattern, directives) => {
+const getDirective = (pattern, directives) => {
+    const filtered = directives.filter(({test}) => {
+        return test(pattern);
+    });
+
+    if (filtered.length === 0) {
+        throw new Error(`cannt find the directive ${pattern}!`);
+    } else {
+        return filtered[0].handler;
+    }
+};
+
+const createDirective = ({property, value: handler}) => {
     const isRegExpLike = (item) => item.startsWith('/') && item.endsWith('/');
     const createRegExp = (item) => new RegExp(item.slice(1, item.length-1));
-
-    for (let name in directives) {
-        if (isRegExpLike(name)) {
-            if (createRegExp(name).test(pattern)) {
-                return directives[name];
-            }
-        } else if (name === pattern) {
-            return directives[name];
-        }
-    }
-
-    throw new Error(`cannt find the directive ${pattern}!`);
+    return {
+        test: isRegExpLike(property) ? 
+            (pattern) => createRegExp(property).test(pattern)
+            : (pattern) => {
+                return property === pattern;
+            },
+        handler
+    };
 };
+
+const createEvent = ({property, value: handler}) => ({
+    name: property,
+    handler
+});
+
 export{
     isSpace,
     isCloseTag,
@@ -144,5 +158,7 @@ export{
     isObject,
     isDate,
     properObject,
-    directiveGetter
+    getDirective,
+    createDirective,
+    createEvent
 };

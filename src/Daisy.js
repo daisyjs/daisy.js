@@ -1,10 +1,9 @@
 import {Lexer} from './Lexer';
 import {Parser} from './Parser';
 import {createVTree, diffVTree, patch} from './VTree';
-
 import {createRTree} from './RTree';
-
 import directives from './directives';
+import {createDirective, createEvent} from './helper';
 import Events from 'events';
 
 const STATE = Symbol('state');
@@ -35,28 +34,28 @@ class Daisy {
         this[EVENT] = new Events();
 
         this[METHODS] = {};
-        this[DIRECTIVES] = {};
+        this[DIRECTIVES] = [];
         this[COMPONENTS] = {};
         let eventsList = [];
         this.refs = {};
-        
+
         for (let [Componet, {
-            [METHODS]: methods = {},
-            [DIRECTIVES]: directives = {},
-            [COMPONENTS]: components = {},
-            [EVENTS]: events = {}
+            [METHODS]: methods = [],
+            [DIRECTIVES]: directives = [],
+            [COMPONENTS]: components = [],
+            [EVENTS]: events = []
         }] of Daisy[ALL_INSTANCES]) {
             if (this instanceof Componet) {
-                Object.assign(this[METHODS], methods);
-                Object.assign(this[DIRECTIVES], directives);
-                Object.assign(this[COMPONENTS], components);
-
+                
+                this[METHODS] = extendsInheritCache(this[METHODS], methods);
+                this[COMPONENTS] = extendsInheritCache(this[COMPONENTS], components);
+                this[DIRECTIVES] = [
+                    ...this[DIRECTIVES], ...directives.map((item) => createDirective(item))
+                ];
+                
                 eventsList = [
                     ...eventsList, 
-                    ...(Object.keys(events).map(name => ({
-                        name,
-                        handler: events[name]
-                    })))
+                    ...(events.map(item => createEvent(item)))
                 ];
             }
         }
@@ -151,43 +150,60 @@ class Daisy {
     afterPatched() {}  // hook
 
     static directive(...args) {
-        this.ensureInheritCache(DIRECTIVES)(...args);
+        ensureInheritCache(this,DIRECTIVES)(...args);
     }
 
     static component(...args) {
-        this.ensureInheritCache(COMPONENTS)(...args);
+        ensureInheritCache(this, COMPONENTS)(...args);
     }
 
     static method(...args) {
-        this.ensureInheritCache(METHODS)(...args);
+        ensureInheritCache(this, METHODS)(...args);
     }
 
     static event(...args) {
-        this.ensureInheritCache(EVENTS)(...args);
-    }
-
-    static ensureInheritCache(cacheName) {
-        if (!Daisy[ALL_INSTANCES].get(this)) {
-            Daisy[ALL_INSTANCES].set(this, {});
-        }
-        const instantce = Daisy[ALL_INSTANCES].get(this);
-        if (!instantce[cacheName]) {
-            instantce[cacheName] = {};
-        }
-        const cache = instantce[cacheName];
-
-        return (name, value) => {
-            if (!value) {
-                return Object.assign(cache, name);
-            }
-            cache[name] = value;
-        };
+        ensureInheritCache(this, EVENTS)(...args);
     }
 }
 
 Daisy[ALL_INSTANCES] = new Map();
 
 Daisy.directive(directives);
+
+function extendsInheritCache (object, list) {
+    return list.reduce((prev, {property, value}) => {
+        return Object.assign(prev, {
+            [property]: value
+        });
+    }, object);
+}
+
+function ensureInheritCache(context, cacheName) {
+    if (!Daisy[ALL_INSTANCES].get(context)) {
+        Daisy[ALL_INSTANCES].set(context, {});
+    }
+    const instantce = Daisy[ALL_INSTANCES].get(context);
+    if (!instantce[cacheName]) {
+        instantce[cacheName] = [];
+    }
+    const cache = instantce[cacheName];
+
+    return (property, value) => {
+        if (!value) {
+            Object.keys(property).forEach((item) => {
+                cache.push({
+                    property: item,
+                    value: property[item] 
+                });
+            });
+            return;
+        }
+
+        cache.push({
+            property, value
+        });
+    };
+}
 
 export default Daisy;
 

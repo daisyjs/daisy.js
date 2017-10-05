@@ -8,11 +8,13 @@ module.exports = {
     watch: {
         include: 'src/**'
     },
-    output: {
-        file: 'dist/daisy.js',
-        format: ['umd'],
-        sourceMap: 'inline'
-    },
+    output: [
+        {
+            file: 'dist/daisy.js',
+            format: ['umd'],
+            sourceMap: 'inline'
+        }
+    ],
     plugins: [
         builtins(),
         nodeResolve({
