@@ -5,15 +5,19 @@ import {createVTree, diffVTree, patch} from './VTree';
 import {createRTree} from './RTree';
 
 import directives from './directives';
+import Events from 'events';
 
 const STATE = Symbol('state');
 const METHODS = Symbol('methods');
 const DIRECTIVES = Symbol('directives');
 const COMPONENTS = Symbol('components');
+const EVENTS = Symbol('events');
+
 const AST = Symbol('ast');
 const VTREE = Symbol('vTree');
 const ALL_INSTANCES = Symbol('allInstances');
 const RTREE = Symbol('rTree');
+const EVENT = Symbol('event');
 
 class Daisy {
     get template() {
@@ -27,30 +31,80 @@ class Daisy {
     constructor({
         state = {}
     } = {}) {
-        this[STATE] = Object.assign(this.initialState, state);
+        this[STATE] = Object.assign({}, this.initialState, state);
+        this[EVENT] = new Events();
 
+        this[METHODS] = {};
+        this[DIRECTIVES] = {};
+        this[COMPONENTS] = {};
+        let eventsList = [];
+        this.refs = {};
+        
+        for (let [Componet, {
+            [METHODS]: methods = {},
+            [DIRECTIVES]: directives = {},
+            [COMPONENTS]: components = {},
+            [EVENTS]: events = {}
+        }] of Daisy[ALL_INSTANCES]) {
+            if (this instanceof Componet) {
+                Object.assign(this[METHODS], methods);
+                Object.assign(this[DIRECTIVES], directives);
+                Object.assign(this[COMPONENTS], components);
+
+                eventsList = [
+                    ...eventsList, 
+                    ...(Object.keys(events).map(name => ({
+                        name,
+                        handler: events[name]
+                    })))
+                ];
+            }
+        }
+        
         try {
             this[AST] = Parser(this.template);
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
 
-        this[METHODS] = {};
-        this[DIRECTIVES] = {};
-        this[COMPONENTS] = {};
-        for (let [Componet, {
-            [METHODS]: methods,
-            [DIRECTIVES]: directives,
-            [COMPONENTS]: components,
-        }] of Daisy[ALL_INSTANCES]) {
-            if (this instanceof Componet) {
-                Object.assign(this[METHODS], methods);
-                Object.assign(this[DIRECTIVES], directives);
-                Object.assign(this[COMPONENTS], components);
-            }
-        }
+        this.afterParsed(this[AST]);
 
-        this.refs = {};
+        eventsList.forEach(({name, handler}) => {
+            this.on(name, handler.bind(this));
+        });
+
+        const {
+            [AST]: ast,
+            [METHODS]: methods,
+            [STATE]: initialState,
+            [DIRECTIVES]: directives
+        } = this;
+        
+        this[VTREE] = createVTree(ast, {
+            directives, state: initialState, methods, context: this
+        });
+
+        this.afterInited(this[VTREE]);
+    }
+
+    on(...args) {
+        return this[EVENT].on(...args);
+    }
+
+    once(...args) {
+        return this[EVENT].once(...args);
+    }
+
+    emit(...args) {
+        return this[EVENT].emit(...args);
+    }
+
+    removeListener(...args) {
+        return this[EVENT].removeListener(...args);
+    }
+
+    removeAllListeners(...args) {
+        return this[EVENT].removeAllListeners(...args);
     }
 
     getState() {
@@ -58,21 +112,10 @@ class Daisy {
     }
 
     mount(node) {
-        const {
-            [AST]: ast,
-            [STATE]: state,
-            [METHODS]: methods,
-            [DIRECTIVES]: directives
-        } = this;
-
-        this[VTREE] = createVTree(ast, {
-            directives, state, methods, context: this
-        });
-        this.beforeMounted();
         const rTree = createRTree(this[VTREE]);
         node.appendChild(rTree);
         this[RTREE] = node.childNodes;
-        this.afterMounted();
+        this.afterMounted(this[RTREE]);  // vDom, realDom
     }
 
     setState(state) {
@@ -97,30 +140,30 @@ class Daisy {
         // diff virtualDOMs
         const difference = diffVTree(lastVTree, this[VTREE]);
 
-        // patch to dom
-        this.beforePatched();
         patch(this[RTREE], difference);
-        this.afterPatched();
+
+        this.afterPatched(this[RTREE], difference);
     }
 
-    beforeMounted() {} // hook
-
+    afterParsed() {}   // hook
+    afterInited() {}   // hook
     afterMounted() {}  // hook
-
-    beforePatched() {} // hook
-
     afterPatched() {}  // hook
 
-    static directive(name, directive) {
-        this.ensureInheritCache(DIRECTIVES)(name, directive);
+    static directive(...args) {
+        this.ensureInheritCache(DIRECTIVES)(...args);
     }
 
-    static component(name, Component) {
-        this.ensureInheritCache(COMPONENTS)(name, Component);
+    static component(...args) {
+        this.ensureInheritCache(COMPONENTS)(...args);
     }
 
-    static method(name, method) {
-        this.ensureInheritCache(METHODS)(name, method);
+    static method(...args) {
+        this.ensureInheritCache(METHODS)(...args);
+    }
+
+    static event(...args) {
+        this.ensureInheritCache(EVENTS)(...args);
     }
 
     static ensureInheritCache(cacheName) {

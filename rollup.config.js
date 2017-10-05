@@ -1,5 +1,6 @@
 const commonjs = require('rollup-plugin-commonjs');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const builtins = require('rollup-plugin-node-builtins');
 
 module.exports = {
     name: 'Daisy',
@@ -9,18 +10,28 @@ module.exports = {
     },
     output: {
         file: 'dist/daisy.js',
-        format: ['umd']
+        format: ['umd'],
+        sourceMap: 'inline'
     },
     plugins: [
+        builtins(),
         nodeResolve({
+            module: true,
             jsnext: true,
-            main: true
+            main: true,
+            browser: true,  // Default: false
+            preferBuiltins: false,  // Default: true ,
+            customResolveOptions: {
+                moduleDirectory: 'node_modules'
+            }
         }),
         commonjs({
             // non-CommonJS modules will be ignored, but you can also
             // specifically include/exclude files
-            include: './lib/**', // Default: undefined
-            exclude: ['node_modules/foo/**', 'node_modules/bar/**'], // Default: undefined
+            include: [
+                './lib/**',
+            ], // Default: undefined
+            exclude: [], // Default: undefined
             // these values can also be regular expressions
             // include: /node_modules/
 
@@ -32,7 +43,7 @@ module.exports = {
             ignoreGlobal: false, // Default: false
 
             // if false then skip sourceMap generation for CommonJS modules
-            sourceMap: false, // Default: true
+            sourceMap: true, // Default: true
 
             // explicitly specify unresolvable named exports
             // (see below for more details)

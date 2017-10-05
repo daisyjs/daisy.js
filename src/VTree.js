@@ -102,7 +102,7 @@ function walkVTree(lastTree = [], nextTree = [], fn, index = -1) {
     if (nextTree.length > lastTree.length) {
         nextTree.slice(lastTree.length).forEach(
             (nextTreeLeaf) =>
-                fn(null, nextTreeLeaf, index)
+                fn(void 0, nextTreeLeaf, index)
         );
     }
 
@@ -127,7 +127,7 @@ function diffVTree(lastVTree, nextVTree) {
             patches[index] = [];
         }
 
-        if (!lastTreeLeaf) {
+        if (lastTreeLeaf === void 0) {
             patches[index].push({
                 type: NEW,
                 changed: nextTreeLeaf
@@ -135,7 +135,7 @@ function diffVTree(lastVTree, nextVTree) {
             return;
         }
 
-        if (!nextTreeLeaf) {
+        if (nextTreeLeaf === void 0) {
             patches[index].push({
                 type: REMOVE,
                 source: lastTreeLeaf
@@ -167,6 +167,7 @@ function patch(rTree, patches) {
     function patchElement(node, parent, nextElement) {
         return (currentPatch) => {
             const {type, changed, source} = currentPatch;
+
             switch (type) {
             case STYLE:
                 setStyle(node.style, changed);
@@ -261,14 +262,15 @@ function createVElement(node, viewContext) {
                             binding: {
                                 context: viewContext.context,
                                 name: pattern,
-                                value: (state) => {
+                                value: (state = {}) => {
                                     const value = directives[pattern];
-                                    return (value.type === Expression) ?
-                                        EvalExpression(value, 
+                                    if (value.type === Expression) {
+                                        return EvalExpression(value, 
                                             Object.assign({}, viewContext, {
                                                 state: Object.assign({}, viewContext.state, state) // merge state into 
-                                            }))
-                                        : value;
+                                            }));
+                                    }
+                                    return value;
                                 }
                                     
                             }

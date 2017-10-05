@@ -54,44 +54,51 @@
             Daisy = Daisy.default;
             class Component extends Daisy {
                 get initialState() {
-                    return {
-                        todoList: [
-                            {
-                                name: 'ast -> virtual nodes 2017-10-3',
-                                status: true
-                            }, {
-                                name: 'virtual dom 2017-10-4',
-                                status: false
-                            }, {
-                                name: 'events 2017-10-5',
-                                status: false
-                            }, {
-                                name: 'directive 2017-10-6',
-                                status: false
-                            }, {
-                                name: 'component 2017-10-7',
-                                status: false
-                            }
-                        ]
-                    }
+                    return Object.assign(
+                        super.initialState, {
+                            todoList: [
+                                {
+                                    name: 'ast -> virtual nodes 2017-10-3',
+                                    status: true
+                                }, {
+                                    name: 'virtual dom 2017-10-4',
+                                    status: false
+                                }, {
+                                    name: 'events 2017-10-5',
+                                    status: false
+                                }, {
+                                    name: 'directive 2017-10-6',
+                                    status: false
+                                }, {
+                                    name: 'component 2017-10-7',
+                                    status: false
+                                }
+                            ]
+                        }
+                    );
                 }
                 get template() {
                     return document.querySelector('#code').value;
                 }
                 constructor(options) {
                     super(options);
+                    this.on('deleted', function(msg) {
+                        alert(JSON.stringify(msg, null, 4));
+                    });
                 }
-                beforeMounted() {
-                    console.log('-- beforeMounted --');
+                afterParsed() {
+                    console.log('-- afterParsed --');
                 }
-                afterMounted() {
+                afterInited() {
+                    console.log('-- afterInited --');
+                }
+                afterMounted(dom) {
                     console.log('-- afterMounted --');
+                    console.log(dom);
                 }
-                beforePatched() {
-                    console.log('-- beforePatched --');
-                }
-                afterPatched() {
+                afterPatched(dom) {
                     console.log('-- afterPatched --');
+                    console.log(dom);
                 }
                 onButtonClick(todo, index) {
                     const todoList = this.getState().todoList;
@@ -122,13 +129,15 @@
                 }
                 onDelete(e, index) {
                     const todoList = this.getState().todoList;
+                    const todo = todoList[index];
                     this.setState({
                         todoList: [
                             ...todoList.slice(0, index),
                             ...todoList.slice(index, todoList.length - 1)
                         ]
                     });
-                    e.stopPropagation();  
+                    e.stopPropagation();
+                    this.emit('deleted', todo);
                 }
             }
 

@@ -8,6 +8,7 @@
     "eslint": "^4.7.2",
     "rollup": "^0.50.0",
     "rollup-plugin-commonjs": "^8.2.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "scripts": {
@@ -26,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/ImHype/Daisy/issues"
   },
-  "homepage": "https://github.com/ImHype/Daisy#readme"
+  "homepage": "https://github.com/ImHype/Daisy#readme",
+  "dependencies": {
+    "events": "^1.1.1"
+  }
 }
