@@ -8,10 +8,10 @@
     <body>
         <div id="node"></div>
         <textarea id="code" hidden>
-            <header class="header">
-                <h1>Daisy</h1>
-                <h2>TodoList</h2>
-            </header>
+            <Header
+                length={{todoList.length}}
+            ></Header>
+            
             <block :if = "{{todoList.length > 0}}">
                 <ul class="body">
                     <li 
@@ -148,6 +148,22 @@
             Component.method('index', (index) => {
                 return index + 1 + '.';
             });
+
+            class Header extends Daisy {
+                get template(){
+                    return `<header class="header" @on-click={{this.onClick()}}>
+                        {{length}}
+                        <h1>Daisy</h1>
+                        <h2>共 {{length}} 条 TodoList！</h2>
+                    </header>`;
+                }
+
+                onClick() {
+                    alert('共' + this.getState().length + '条');
+                }
+            }
+
+            Component.component('Header', Header);
 
             new Component({
                 state: {}

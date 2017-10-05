@@ -116,28 +116,28 @@ export const getDirective = (pattern, directives) => {
     }
 };
 
-export const createDirective = ({property, value: handler}) => {
+export const createDirective = ({name, value: handler}) => {
     const isRegExpLike = (item) => item.startsWith('/') && item.endsWith('/');
     const createRegExp = (item) => new RegExp(item.slice(1, item.length-1));
     return {
-        test: isRegExpLike(property) ? 
-            (pattern) => createRegExp(property).test(pattern)
+        test: isRegExpLike(name) ? 
+            (pattern) => createRegExp(name).test(pattern)
             : (pattern) => {
-                return property === pattern;
+                return name === pattern;
             },
         handler
     };
 };
 
-export const createEvent = ({property, value: handler}) => ({
-    name: property,
+export const createEvent = ({name, value: handler}) => ({
+    name: name,
     handler
 });
 
 export function getProppertyObject (list) {
-    return list.reduce((prev, {property, value}) => {
+    return list.reduce((prev, {name, value}) => {
         return Object.assign(prev, {
-            [property]: value
+            [name]: value
         });
     }, {});
 }

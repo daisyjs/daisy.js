@@ -16,19 +16,19 @@ export function extendsInstanceInheritCache(context, cacheName) {
     }
     const cache = instantce[cacheName];
 
-    return (property, value) => {
+    return (name, value) => {
         if (!value) {
-            Object.keys(property).forEach((item) => {
+            Object.keys(name).forEach((item) => {
                 cache.push({
-                    property: item,
-                    value: property[item] 
+                    name: item,
+                    value: name[item] 
                 });
             });
             return;
         }
 
         cache.push({
-            property, value
+            name, value
         });
     };
 }

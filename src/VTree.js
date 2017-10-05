@@ -4,8 +4,11 @@ import {
 import {EvalExpression, codeGen} from './EvalExpression';
 import {Element, Elements} from './Element';
 import {createRElement, setProps, setStyle} from './RTree';
-import {warn, isEmpty, getDirective} from './helper';
+// eslint-disable-next-line
+import {warn, isEmpty, getDirective, getProppertyObject} from './helper';
 import diff from './diff';
+// eslint-disable-next-line
+import {VTREE} from './constant';
 
 const {
     Program, If, For, Element: ElementType, Expression, Text, Attribute
@@ -246,11 +249,24 @@ function createVElement(node, viewContext) {
             // eslint-disable-next-line
             attributes, directives, children, name
         } = node;
-
+        const {
+        // eslint-disable-next-line
+            components, directives: thisDirectives
+        } = viewContext;
 
         if (name.toLowerCase() === BLOCK) {
             return createVGroup(children, viewContext);
         }
+
+        const attributeList = attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item);
+
+        // if (Object.keys(components).includes(name)) {
+        //     const Component = components[name];
+        //     const component = new Component({
+        //         state: getProppertyObject(attributeList)
+        //     });
+        //     return component[VTREE];
+        // }
 
         let links = isEmpty(directives)
             ? {}
@@ -258,7 +274,7 @@ function createVElement(node, viewContext) {
                 (prev, pattern) => {
                     return Object.assign(prev, {
                         [pattern]: {
-                            link: getDirective(pattern, viewContext.directives),
+                            link: getDirective(pattern, thisDirectives),
                             binding: {
                                 context: viewContext.context,
                                 name: pattern,
@@ -266,7 +282,7 @@ function createVElement(node, viewContext) {
                                     const value = directives[pattern];
                                     if (value.type === Expression) {
                                         return EvalExpression(value, 
-                                            Object.assign({}, viewContext, {
+                                            Object.assign(viewContext, {
                                                 state: Object.assign({}, viewContext.state, state) // merge state into 
                                             }));
                                     }
@@ -282,7 +298,7 @@ function createVElement(node, viewContext) {
         
         return Element.create(
             node.name,
-            attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item),
+            attributeList,
             createVGroup(children, viewContext),
             links
         );

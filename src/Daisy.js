@@ -6,17 +6,9 @@ import directives from './directives';
 import {createDirective, createEvent, getProppertyObject} from './helper';
 import {getAllInstances, initInstances, extendsInstanceInheritCache} from './InstanceManager';
 import Events from 'events';
-
-const STATE = Symbol('state');
-const METHODS = Symbol('methods');
-const DIRECTIVES = Symbol('directives');
-const COMPONENTS = Symbol('components');
-const EVENTS = Symbol('events');
-
-const AST = Symbol('ast');
-const VTREE = Symbol('vTree');
-const RTREE = Symbol('rTree');
-const EVENT = Symbol('event');
+import {
+    STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VTREE, RTREE, EVENT
+} from './constant';
 
 class Daisy {
     get template() {
@@ -76,12 +68,12 @@ class Daisy {
             [AST]: ast,
             [METHODS]: methods,
             [STATE]: initialState,
-            [DIRECTIVES]: directives
+            [DIRECTIVES]: directives,
+            [COMPONENTS]: components,
         } = this;
-        debugger
-        
+
         this[VTREE] = createVTree(ast, {
-            directives, state: initialState, methods, context: this
+            components, directives, state: initialState, methods, context: this
         });
 
         this.afterInited(this[VTREE]);
@@ -130,11 +122,12 @@ class Daisy {
             [AST]: ast,
             [VTREE]: lastVTree,
             [METHODS]: methods,
-            [DIRECTIVES]: directives
+            [DIRECTIVES]: directives,
+            [COMPONENTS]: components
         } = this;
 
         this[VTREE] = createVTree(ast, {
-            directives, state, methods, context: this
+            components, directives, state, methods, context: this
         });
 
         // diff virtualDOMs

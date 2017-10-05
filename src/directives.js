@@ -2,10 +2,12 @@ export default {
     // eslint-disable-next-line
     '/on-.*/': (elem, binding, vnode) => {
         const {name, value} = binding;
-        const doSomthing = (e) => 
-            value({
+        const doSomthing = (e) => {
+            return value({
                 e
             });
+        };
+            
         const event = name.slice(3);
 
         elem.addEventListener(event, doSomthing);
