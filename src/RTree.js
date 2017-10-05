@@ -15,23 +15,14 @@ export function createRTree(elements) {
 
 export function createRElement(element) {
     if (Element.isInstance(element)) {
-        const {props, tag, children, links} = element;
+        const {props, tag, children} = element;
         const node = document.createElement(tag);
 
         node.appendChild(
             createRTree(children)
         );
 
-        const ondestroy = Object.keys(links).map(
-            (name) =>  {
-                const {link, binding} = links[name];
-                return link(node, binding, element);
-            }
-        );
-
-        element.ondestroy = () => {
-            ondestroy.forEach(item => item());
-        };
+        link(node, element);
 
         setProps(node, props);
 
@@ -55,4 +46,18 @@ export function setProps(node, props) {
 
 export function setStyle(node, styles) {
     Object.assign(node.style, styles);
+}
+
+export function link(node, element) {
+    const {links} = element;
+    const ondestroy = Object.keys(links).map(
+        (name) =>  {
+            const {link, binding} = links[name];
+            return link(node, binding, element);
+        }
+    );
+
+    element.ondestroy = () => {
+        ondestroy.forEach(item => item());
+    };
 }

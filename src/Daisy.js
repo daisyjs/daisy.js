@@ -20,15 +20,53 @@ class Daisy {
     }
 
     constructor({
-        state = {}
+        state, isPure = false
     } = {}) {
+        this.compose({state});
+
+        try {
+            this[AST] = Parser(this.template);
+        } catch (e) {
+            throw new Error('Error in Parser: \n\t' + e.stack);
+        }
+        
+        // eslint-disable-next-line
+        if (!isPure || true) {
+            this.afterParsed(this[AST]);
+        }
+
+        const {
+            [AST]: ast,
+            [METHODS]: methods,
+            [STATE]: initialState,
+            [DIRECTIVES]: directives,
+            [COMPONENTS]: components,
+        } = this;
+
+        this[VTREE] = createVTree(ast, {
+            components, directives, state: initialState, methods, context: this
+        });
+
+        // eslint-disable-next-line
+        if (!isPure || true) {
+            this.afterInited(this[VTREE]);
+
+            this[EVENTS].forEach(({name, handler}) => {
+                this.on(name, handler.bind(this));
+            });
+        }
+    }
+
+    compose({
+        state = {}
+    }) {
         this[STATE] = Object.assign({}, this.initialState, state);
         this[EVENT] = new Events();
 
         this[METHODS] = {};
         this[DIRECTIVES] = [];
         this[COMPONENTS] = {};
-        let eventsList = [];
+        this[EVENTS] = [];
         this.refs = {};
 
         for (let [Componet, {
@@ -45,38 +83,16 @@ class Daisy {
                     ...this[DIRECTIVES], ...directives.map((item) => createDirective(item))
                 ];
 
-                eventsList = [
-                    ...eventsList, 
+                this[EVENTS] = [
+                    ...this[EVENTS], 
                     ...(events.map(item => createEvent(item)))
                 ];
             }
         }
-
-        try {
-            this[AST] = Parser(this.template);
-        } catch (e) {
-            throw new Error('Error in Parser: \n\t' + e.stack);
-        }
-
-        this.afterParsed(this[AST]);
-
-        eventsList.forEach(({name, handler}) => {
-            this.on(name, handler.bind(this));
-        });
-
-        const {
-            [AST]: ast,
-            [METHODS]: methods,
-            [STATE]: initialState,
-            [DIRECTIVES]: directives,
-            [COMPONENTS]: components,
-        } = this;
-
-        this[VTREE] = createVTree(ast, {
-            components, directives, state: initialState, methods, context: this
-        });
-
-        this.afterInited(this[VTREE]);
+    }
+    
+    beforeDestroy() {
+        this.removeAllListeners();
     }
 
     on(...args) {

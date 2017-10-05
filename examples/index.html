@@ -83,7 +83,7 @@
                 constructor(options) {
                     super(options);
                     this.on('deleted', function(msg) {
-                        alert(JSON.stringify(msg, null, 4));
+                        console.log('deleted: ' + msg.name);
                     });
                 }
                 afterParsed() {
@@ -159,7 +159,7 @@
                 }
 
                 onClick() {
-                    alert('共' + this.getState().length + '条');
+                    console.log('共' + this.getState().length + '条');
                 }
             }
 

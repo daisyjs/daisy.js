@@ -3,9 +3,9 @@ import {
 } from './NodeTypes';
 import {EvalExpression, codeGen} from './EvalExpression';
 import {Element, Elements} from './Element';
-import {createRElement, setProps, setStyle} from './RTree';
+import {createRElement, setProps, setStyle, link} from './RTree';
 // eslint-disable-next-line
-import {warn, isEmpty, getDirective, getProppertyObject} from './helper';
+import {debug, warn, isEmpty, getDirective, getProppertyObject} from './helper';
 import diff from './diff';
 // eslint-disable-next-line
 import {VTREE} from './constant';
@@ -21,6 +21,7 @@ const REPLACE = 'replace';
 const REMOVE = 'remove';
 const NEW = 'new';
 const BLOCK = 'block';
+const RELINK = 'relink';
 
 function diffVElement(element1 = {}, element2 = {}) {
     function diffStyle() {
@@ -56,6 +57,42 @@ function diffVElement(element1 = {}, element2 = {}) {
         }
     }
 
+    function diffLinks() {
+        const hasLinks = (element) => element.links && Object.keys(element.links).length > 0;
+        const eachLinks = (links, fn) => {
+            let returnValue;
+            Object.keys(links).some((name, i) => {
+                const link = links[name];
+                returnValue = fn(name, link, i);
+                return returnValue;
+            });
+            return returnValue;
+        };
+        
+        if (hasLinks(element1) && hasLinks(element2)) {
+            return eachLinks(element1.links, (name, link1) => {
+                const link2 = element2.links[name];
+                if (link1.binding.context === link2.binding.context) {
+                    debug('context 匹配，不需要重新链接');
+                } else {
+                    debug('context 不匹配，需要重新链接');
+                    return {
+                        type: RELINK,
+                        source: element1,
+                        changed: element2
+                    };
+                }
+            });
+        } else if (hasLinks(element1) || hasLinks(element2)) {
+            debug('link 函数被删除或添加，需要重新链接');
+            return {
+                type: RELINK,
+                source: element1,
+                changed: element2
+            };
+        }
+    }
+
     if (typeof element1 !== typeof element2) {
         return [{
             type: REPLACE,
@@ -78,7 +115,7 @@ function diffVElement(element1 = {}, element2 = {}) {
     }
 
     const changes = [];
-    return [diffStyle, diffProps, diffTag].reduce((prev, item) => {
+    return [diffStyle, diffProps, diffTag, diffLinks].reduce((prev, item) => {
         const result = item();
         if (result) {
             prev.push(result);
@@ -172,6 +209,11 @@ export function patch(rTree, patches) {
             const {type, changed, source} = currentPatch;
 
             switch (type) {
+            case RELINK:
+                changed.ondestroy();
+                link(node, changed);
+                break;
+
             case STYLE:
                 setStyle(node.style, changed);
                 break;
@@ -251,7 +293,7 @@ function createVElement(node, viewContext) {
         } = node;
         const {
         // eslint-disable-next-line
-            components, directives: thisDirectives
+            components, directives: thisDirectives, context
         } = viewContext;
 
         if (name.toLowerCase() === BLOCK) {
@@ -260,13 +302,15 @@ function createVElement(node, viewContext) {
 
         const attributeList = attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item);
 
-        // if (Object.keys(components).includes(name)) {
-        //     const Component = components[name];
-        //     const component = new Component({
-        //         state: getProppertyObject(attributeList)
-        //     });
-        //     return component[VTREE];
-        // }
+        if (Object.keys(components).includes(name)) {
+            const C = components[name];
+            const component = new C({
+                state: getProppertyObject(attributeList),
+                isPure: true
+            });
+            debug('重新生成组件 virtualdom - ' + name);
+            return component[VTREE];
+        }
 
         let links = isEmpty(directives)
             ? {}
@@ -276,7 +320,7 @@ function createVElement(node, viewContext) {
                         [pattern]: {
                             link: getDirective(pattern, thisDirectives),
                             binding: {
-                                context: viewContext.context,
+                                context,
                                 name: pattern,
                                 value: (state = {}) => {
                                     const value = directives[pattern];
