@@ -2,7 +2,7 @@ import {
     Element, Elements
 } from './Element';
 
-function createRTree(elements) {
+export function createRTree(elements) {
     const fragment = document.createDocumentFragment();
     
     elements.forEach(
@@ -13,7 +13,7 @@ function createRTree(elements) {
     return fragment;
 }
 
-function createRElement(element) {
+export function createRElement(element) {
     if (Element.isInstance(element)) {
         const {props, tag, children, links} = element;
         const node = document.createElement(tag);
@@ -43,7 +43,7 @@ function createRElement(element) {
     return document.createTextNode(element);
 }
 
-function setProps(node, props) {
+export function setProps(node, props) {
     Object.keys(props).forEach((name) => {
         if (props[name] !== undefined) {
             node.setAttribute(name, props[name]);
@@ -53,11 +53,6 @@ function setProps(node, props) {
     });
 }
 
-function setStyle(node, styles) {
+export function setStyle(node, styles) {
     Object.assign(node.style, styles);
 }
-
-export {
-    createRTree, createRElement,
-    setProps, setStyle
-};

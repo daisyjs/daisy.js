@@ -1,6 +1,6 @@
 import {TAGNAME, END_TAG} from './StateTypes';
 
-function isTagClosed(tokens) {
+export function isTagClosed(tokens) {
     let stack = [];
     let i = 0;
     while( i < tokens.length) {
@@ -42,69 +42,69 @@ function isTagClosed(tokens) {
     return {closed: true};
 }
 
-const voidTagTypes = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr', 'r-content'];
-const isVoidTag = (tag) => voidTagTypes.includes(tag);
+export const voidTagTypes = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr', 'r-content'];
+export const isVoidTag = (tag) => voidTagTypes.includes(tag);
 
-const isSelfClose = ({type, isSelfClose}) => type === TAGNAME && isSelfClose;
+export const isSelfClose = ({type, isSelfClose}) => type === TAGNAME && isSelfClose;
 
-const returnUnclosedTagError = ({
+export const returnUnclosedTagError = ({
     content, line, column
 }) =>
     `Unclosed TAG ${content} : \nline - ${line}, column - ${column}`;
 
 // a-zA-Z
-const isSpace = (letter = '') => {
+export const isSpace = (letter = '') => {
     const code = letter.charCodeAt(0);
     return code === 32 || code === 10;
 };
 // A-Z
-const isLowerCase = (letter = '') => {
+export const isLowerCase = (letter = '') => {
     const code = letter.charCodeAt(0);
     return code >= 97 && code <= 122;
 };
 // A-Z
-const isUpperCase = (letter = '') => {
+export const isUpperCase = (letter = '') => {
     const code = letter.charCodeAt(0);
     return code >= 65 && code <= 90;
 };
 // a-zA-Z
-const isWord = (letter = '') => isLowerCase(letter) || isUpperCase(letter);
+export const isWord = (letter = '') => isLowerCase(letter) || isUpperCase(letter);
 //  0-9
-const isNumber = (letter = '') => {
+export const isNumber = (letter = '') => {
     const code = letter.charCodeAt(0);
     return code >= 48 && code <= 57;
 };
 // _
-const isUnderscore = (letter = '') => 95 === letter.charCodeAt(0);
+export const isUnderscore = (letter = '') => 95 === letter.charCodeAt(0);
 // $
-const isDollar = (letter = '') => 36 === letter.charCodeAt(0);
+export const isDollar = (letter = '') => 36 === letter.charCodeAt(0);
 // !
-const isExclamationMark = (letter = '') => 33 === letter.charCodeAt(0);
+export const isExclamationMark = (letter = '') => 33 === letter.charCodeAt(0);
 // <
-const isOpenTag = (letter = '') => 60 === letter.charCodeAt(0);
+export const isOpenTag = (letter = '') => 60 === letter.charCodeAt(0);
 // !
-const isDash = (letter = '') => 45 === letter.charCodeAt(0);
+export const isDash = (letter = '') => 45 === letter.charCodeAt(0);
 // '||"
-const isQuote = (letter = '') => [34, 39].includes(letter.charCodeAt(0));
+export const isQuote = (letter = '') => [34, 39].includes(letter.charCodeAt(0));
 // =
-const isEqual = (letter = '') => 61 === letter.charCodeAt(0);
+export const isEqual = (letter = '') => 61 === letter.charCodeAt(0);
 // /
-const isSlash = (letter = '') => 47 === letter.charCodeAt(0);
+export const isSlash = (letter = '') => 47 === letter.charCodeAt(0);
 // >
-const isCloseTag = (letter = '') => 62 === letter.charCodeAt(0);
+export const isCloseTag = (letter = '') => 62 === letter.charCodeAt(0);
 
 // eslint-disable-next-line
-const warn = (message) => console.warn(message);
+export const warn = (message) => console.warn(message);
 // eslint-disable-next-line
-const error = (message) => console.error(message);
+export const error = (message) => console.error(message);
 
-const isEmpty = o => Object.keys(o).length === 0;
-const isObject = o => o != null && typeof o === 'object';
-const properObject = o => isObject(o) && !o.hasOwnProperty ? Object.assign({}, o) : o;
-const isDate = d => d instanceof Date;
+export const isEmpty = o => Object.keys(o).length === 0;
+export const isObject = o => o != null && typeof o === 'object';
+export const properObject = o => isObject(o) && !o.hasOwnProperty ? Object.assign({}, o) : o;
+export const isDate = d => d instanceof Date;
 
 
-const getDirective = (pattern, directives) => {
+export const getDirective = (pattern, directives) => {
     const filtered = directives.filter(({test}) => {
         return test(pattern);
     });
@@ -116,7 +116,7 @@ const getDirective = (pattern, directives) => {
     }
 };
 
-const createDirective = ({property, value: handler}) => {
+export const createDirective = ({property, value: handler}) => {
     const isRegExpLike = (item) => item.startsWith('/') && item.endsWith('/');
     const createRegExp = (item) => new RegExp(item.slice(1, item.length-1));
     return {
@@ -129,36 +129,15 @@ const createDirective = ({property, value: handler}) => {
     };
 };
 
-const createEvent = ({property, value: handler}) => ({
+export const createEvent = ({property, value: handler}) => ({
     name: property,
     handler
 });
 
-export{
-    isSpace,
-    isCloseTag,
-    isDash,
-    isDollar,
-    isEqual,
-    isExclamationMark,
-    isLowerCase,
-    isNumber,
-    isOpenTag,
-    isQuote,
-    isSlash,
-    isUnderscore,
-    isUpperCase,
-    isWord,
-    isTagClosed,
-    isVoidTag,
-    isSelfClose,
-    error,
-    warn,
-    isEmpty,
-    isObject,
-    isDate,
-    properObject,
-    getDirective,
-    createDirective,
-    createEvent
-};
+export function getProppertyObject (list) {
+    return list.reduce((prev, {property, value}) => {
+        return Object.assign(prev, {
+            [property]: value
+        });
+    }, {});
+}

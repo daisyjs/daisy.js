@@ -119,7 +119,7 @@ function walkRTree(tree, fn, index = -1) {
     return index;
 }
 
-function diffVTree(lastVTree, nextVTree) {
+export function diffVTree(lastVTree, nextVTree) {
     const patches = {};
 
     walkVTree(lastVTree, nextVTree, (lastTreeLeaf, nextTreeLeaf, index) => {
@@ -163,7 +163,7 @@ function diffVTree(lastVTree, nextVTree) {
     return patches; // difference set
 }
 
-function patch(rTree, patches) {
+export function patch(rTree, patches) {
     function patchElement(node, parent, nextElement) {
         return (currentPatch) => {
             const {type, changed, source} = currentPatch;
@@ -343,7 +343,7 @@ function createVGroup(nodes, viewContext) {
     return elements;
 }
 
-function createVTree(ast, viewContext) {
+export function createVTree(ast, viewContext) {
     // create virtual dom
     const {type, body} = ast;
     if (type === Program) {
@@ -352,9 +352,3 @@ function createVTree(ast, viewContext) {
         warn('Root element must be Program!');
     }
 }
-
-export {
-    createVTree,
-    diffVTree,
-    patch
-};

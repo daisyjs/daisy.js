@@ -2,7 +2,7 @@ import {warn} from './helper';
 
 const expressionMap = new Map();
 
-function EvalExpression(expression, {state, methods, context}) {
+export function EvalExpression(expression, {state, methods, context}) {
     // cache expression
     if (!expressionMap.get(expression)) {
         const expr = codeGen(expression);
@@ -27,7 +27,7 @@ function EvalExpression(expression, {state, methods, context}) {
     // }
 }
 
-function codeGen(expression) {
+export function codeGen(expression) {
     const {type} = expression;
     switch (type) {
     case 'Expression':
@@ -89,7 +89,3 @@ function codeGen(expression) {
         warn(JSON.stringify(expression));
     }
 }
-
-export {
-    EvalExpression, codeGen
-};

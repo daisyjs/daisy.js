@@ -1,18 +1,14 @@
-const INIT = 'INIT';
-const OPEN_TAG = 'OPEN_TAG';
-const OPEN_COMMENT = 'OPEN_COMMENT';
-const COMMENT = 'COMMENT';
-const CLOSE_TAG = 'CLOSE_TAG';
-const END_TAG = 'END_TAG';
-const TAGNAME = 'TAGNAME';
-const TAG = 'TAG';
-const EXPR = 'EXPR';
-const TEXT = 'TEXT';
-const ATTR = 'ATTR';
-const EQUAL = 'EQUAL';
-const VALUE = 'VALUE';
-const EOF = 'EOF';
-
-export {
-    INIT, OPEN_TAG, OPEN_COMMENT, COMMENT, CLOSE_TAG, END_TAG, TAGNAME, TAG, EXPR, TEXT, ATTR, EQUAL, VALUE, EOF
-};
+export const INIT = 'INIT';
+export const OPEN_TAG = 'OPEN_TAG';
+export const OPEN_COMMENT = 'OPEN_COMMENT';
+export const COMMENT = 'COMMENT';
+export const CLOSE_TAG = 'CLOSE_TAG';
+export const END_TAG = 'END_TAG';
+export const TAGNAME = 'TAGNAME';
+export const TAG = 'TAG';
+export const EXPR = 'EXPR';
+export const TEXT = 'TEXT';
+export const ATTR = 'ATTR';
+export const EQUAL = 'EQUAL';
+export const VALUE = 'VALUE';
+export const EOF = 'EOF';

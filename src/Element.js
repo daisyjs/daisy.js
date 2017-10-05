@@ -1,4 +1,4 @@
-class Element {
+export class Element {
     constructor(tag = '', props = [], children = [], links = {}, key) {
         this.tag = tag;
 
@@ -22,7 +22,7 @@ class Element {
     }
 }
 
-class Elements extends Array {
+export class Elements extends Array {
     constructor() {
         super();
     }
@@ -44,7 +44,3 @@ class Elements extends Array {
         return this;
     }
 }
-
-export {
-    Element, Elements
-};

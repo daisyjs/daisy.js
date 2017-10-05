@@ -1,4 +1,4 @@
-const Types = {
+export const Types = {
     Program: 'Program',
     If: 'If',
     For: 'For',
@@ -9,14 +9,14 @@ const Types = {
     Comment: 'Comment'
 };
 
-function Program(body) {
+export function Program(body) {
     return {
         type: Types.Program,
         body
     };
 }
 
-function If(test, consequent, alternate) {
+export function If(test, consequent, alternate) {
     return {
         type: Types.If,
         test,
@@ -25,7 +25,7 @@ function If(test, consequent, alternate) {
     };
 }
 
-function For(test, init, body) {
+export function For(test, init, body) {
     return {
         type: Types.For,
         test,
@@ -34,7 +34,7 @@ function For(test, init, body) {
     };
 }
 
-function Element(name, attributes = [], directives = [], children = []) {
+export function Element(name, attributes = [], directives = [], children = []) {
     return {
         type: Types.Element,
         name,
@@ -44,7 +44,7 @@ function Element(name, attributes = [], directives = [], children = []) {
     };
 }
 
-function Attribute(name, value) {
+export function Attribute(name, value) {
     return {
         type: Types.Attribute,
         name,
@@ -52,30 +52,23 @@ function Attribute(name, value) {
     };
 }
 
-function Expression(value) {
+export function Expression(value) {
     return {
         type: Types.Expression,
         value
     };
 }
 
-function Text (text) {
+export function Text (text) {
     return {
         type: Types.Text,
         value: text
     };
 }
 
-function Comment(comment) {
+export function Comment(comment) {
     return {
         type: Types.Comment,
         value: comment
     };
 }
-
-
-
-export {
-    Program, If, For, Element, Attribute, Expression, Text, Comment,
-    Types
-};

@@ -13,7 +13,7 @@ const FOR_DIRECTIVE = `${STATEMENT_MARK}for`;
 const FOR_ITEM_DIRECTIVE = `${STATEMENT_MARK}for-item`;
 const FOR_ITEM_INDEX_DIRECTIVE = `${STATEMENT_MARK}for-index`;
 
-function Parser(source) {
+export function Parser(source) {
     let tokens;
 
     try {
@@ -245,6 +245,3 @@ function Parser(source) {
         return matched;
     }
 }
-
-
-export {Parser};

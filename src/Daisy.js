@@ -3,7 +3,8 @@ import {Parser} from './Parser';
 import {createVTree, diffVTree, patch} from './VTree';
 import {createRTree} from './RTree';
 import directives from './directives';
-import {createDirective, createEvent} from './helper';
+import {createDirective, createEvent, getProppertyObject} from './helper';
+import {getAllInstances, initInstances, extendsInstanceInheritCache} from './InstanceManager';
 import Events from 'events';
 
 const STATE = Symbol('state');
@@ -14,7 +15,6 @@ const EVENTS = Symbol('events');
 
 const AST = Symbol('ast');
 const VTREE = Symbol('vTree');
-const ALL_INSTANCES = Symbol('allInstances');
 const RTREE = Symbol('rTree');
 const EVENT = Symbol('event');
 
@@ -44,22 +44,22 @@ class Daisy {
             [DIRECTIVES]: directives = [],
             [COMPONENTS]: components = [],
             [EVENTS]: events = []
-        }] of Daisy[ALL_INSTANCES]) {
+        }] of getAllInstances(this.constructor)) {
             if (this instanceof Componet) {
-                
-                this[METHODS] = extendsInheritCache(this[METHODS], methods);
-                this[COMPONENTS] = extendsInheritCache(this[COMPONENTS], components);
+                Object.assign(this[METHODS], getProppertyObject(methods));
+                Object.assign(this[METHODS], getProppertyObject(components));
+
                 this[DIRECTIVES] = [
                     ...this[DIRECTIVES], ...directives.map((item) => createDirective(item))
                 ];
-                
+
                 eventsList = [
                     ...eventsList, 
                     ...(events.map(item => createEvent(item)))
                 ];
             }
         }
-        
+
         try {
             this[AST] = Parser(this.template);
         } catch (e) {
@@ -78,7 +78,7 @@ class Daisy {
             [STATE]: initialState,
             [DIRECTIVES]: directives
         } = this;
-        
+
         this[VTREE] = createVTree(ast, {
             directives, state: initialState, methods, context: this
         });
@@ -150,60 +150,26 @@ class Daisy {
     afterPatched() {}  // hook
 
     static directive(...args) {
-        ensureInheritCache(this,DIRECTIVES)(...args);
+        extendsInstanceInheritCache(this,DIRECTIVES)(...args);
     }
 
     static component(...args) {
-        ensureInheritCache(this, COMPONENTS)(...args);
+        extendsInstanceInheritCache(this, COMPONENTS)(...args);
     }
 
     static method(...args) {
-        ensureInheritCache(this, METHODS)(...args);
+        extendsInstanceInheritCache(this, METHODS)(...args);
     }
 
     static event(...args) {
-        ensureInheritCache(this, EVENTS)(...args);
+        extendsInstanceInheritCache(this, EVENTS)(...args);
     }
 }
 
-Daisy[ALL_INSTANCES] = new Map();
-
+initInstances(Daisy);
 Daisy.directive(directives);
 
-function extendsInheritCache (object, list) {
-    return list.reduce((prev, {property, value}) => {
-        return Object.assign(prev, {
-            [property]: value
-        });
-    }, object);
-}
 
-function ensureInheritCache(context, cacheName) {
-    if (!Daisy[ALL_INSTANCES].get(context)) {
-        Daisy[ALL_INSTANCES].set(context, {});
-    }
-    const instantce = Daisy[ALL_INSTANCES].get(context);
-    if (!instantce[cacheName]) {
-        instantce[cacheName] = [];
-    }
-    const cache = instantce[cacheName];
-
-    return (property, value) => {
-        if (!value) {
-            Object.keys(property).forEach((item) => {
-                cache.push({
-                    property: item,
-                    value: property[item] 
-                });
-            });
-            return;
-        }
-
-        cache.push({
-            property, value
-        });
-    };
-}
 
 export default Daisy;
 

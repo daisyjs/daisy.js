@@ -34,28 +34,28 @@ function splitStringContent(source, startsPos) {
 }
 
 // {
-function isOpenExpr(letter = '', nextLetter = '') {
+export function isOpenExpr(letter = '', nextLetter = '') {
     return [letter, nextLetter].join('').indexOf(EXPR_OPEN_BOUNDS) === 0;
 }
 
 // }
-function isCloseExpr(letter = '', nextLetter = '') {
+export function isCloseExpr(letter = '', nextLetter = '') {
     return [letter, nextLetter].join('').indexOf(EXPR_CLOSE_BOUNDS) === 0;
 }
 
 // includes {{ }}
-function isIncludeExpr(words = '') {
+export function isIncludeExpr(words = '') {
     return words.includes(EXPR_OPEN_BOUNDS) && words.includes(EXPR_CLOSE_BOUNDS);
 }
 
-function getExpressionBounds() {
+export function getExpressionBounds() {
     return {
         open: EXPR_OPEN_BOUNDS,
         close: EXPR_CLOSE_BOUNDS
     };
 }
 
-function setExpressionBounds({
+export function setExpressionBounds({
     open,
     close
 }) {
@@ -64,7 +64,7 @@ function setExpressionBounds({
 }
 
 
-function Expression(source = '') {
+export function Expression(source = '') {
     if (isIncludeExpr(source)) {
         let stack = [];
         let i = 0;
@@ -82,12 +82,3 @@ function Expression(source = '') {
         return ParseExpression(source);
     }
 }
-
-export {
-    isCloseExpr,
-    isOpenExpr,
-    isIncludeExpr,
-    Expression,
-    getExpressionBounds,
-    setExpressionBounds
-};
