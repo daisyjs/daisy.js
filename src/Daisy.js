@@ -47,7 +47,7 @@ class Daisy {
         }] of getAllInstances(this.constructor)) {
             if (this instanceof Componet) {
                 Object.assign(this[METHODS], getProppertyObject(methods));
-                Object.assign(this[METHODS], getProppertyObject(components));
+                Object.assign(this[COMPONENTS], getProppertyObject(components));
 
                 this[DIRECTIVES] = [
                     ...this[DIRECTIVES], ...directives.map((item) => createDirective(item))
@@ -78,7 +78,8 @@ class Daisy {
             [STATE]: initialState,
             [DIRECTIVES]: directives
         } = this;
-
+        debugger
+        
         this[VTREE] = createVTree(ast, {
             directives, state: initialState, methods, context: this
         });
