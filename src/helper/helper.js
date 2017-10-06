@@ -94,7 +94,7 @@ export const isSlash = (letter = '') => 47 === letter.charCodeAt(0);
 export const isCloseTag = (letter = '') => 62 === letter.charCodeAt(0);
 
 // eslint-disable-next-line
-export const debug = (message) => console.log('debug:', message);
+export const debug = (message) => {} //console.log('debug:', message);
 
 // eslint-disable-next-line
 export const warn = (message) => console.warn(message);

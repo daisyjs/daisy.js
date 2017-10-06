@@ -17,14 +17,14 @@ class Daisy {
         return '';
     }
 
-    get initialState() {
+    get state() {
         return {};
     }
 
     constructor({
         state
     } = {}) {
-        this.composeStaticState({state});
+        this.compose({state});
 
         const template = this.render();
 
@@ -34,7 +34,7 @@ class Daisy {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
 
-        this.afterParsed(this[AST]);
+        this.parsed(this[AST]);
 
         this.render = () => {
             const {
@@ -51,18 +51,18 @@ class Daisy {
         
         this[VDOM] = this.render();
 
-        this.afterInited(this[VDOM]);
 
         this[EVENTS].forEach(({name, handler}) => {
             this.on(name, handler.bind(this));
         });
-        
+
+        this.ready(this[VDOM]);
     }
 
-    composeStaticState({
+    compose({
         state = {}
     }) {
-        this[STATE] = Object.assign({}, this.initialState, state);
+        this[STATE] = Object.assign({}, this.state, state);
         this[EVENT] = new Events();
 
         this[METHODS] = {};
@@ -128,7 +128,7 @@ class Daisy {
         this.mountNode = node;
         createElements(this[VDOM], node, this);
         this[RDOM] = node.childNodes;
-        this.afterMounted(this[RDOM]);  // vDOM, realDOM
+        this.mounted(this[RDOM]);  // vDOM, realDOM
     }
 
     setState(state) {
@@ -140,7 +140,7 @@ class Daisy {
 
         const dif = getRootElement(this).diffPatch();
 
-        this.afterPatched(dif);
+        this.patched(dif);
     }
 
     diffPatch() {
@@ -157,10 +157,10 @@ class Daisy {
         return dif;
     }
 
-    afterParsed() {}   // hook
-    afterInited() {}   // hook
-    afterMounted() {}  // hook
-    afterPatched() {}  // hook
+    parsed() {}   // hook
+    ready() {}   // hook
+    mounted() {}  // hook
+    patched() {}  // hook
 
     static directive(...args) {
         setCache(this,DIRECTIVES)(...args);
@@ -182,6 +182,8 @@ class Daisy {
 initInstances(Daisy);
 
 Daisy.directive(directives);
+
+Daisy.verison = '1.0.0';
 
 export default Daisy;
 

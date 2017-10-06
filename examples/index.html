@@ -42,7 +42,7 @@
             }
 
             class Header extends Daisy {
-                get initialState() {
+                get state() {
                     return {
                         title: 'Daisy'
                     };
@@ -126,9 +126,9 @@
         </script>
         <script type="text/javascript">
             class Component extends Daisy {
-                get initialState() {
+                get state() {
                     return Object.assign(
-                        super.initialState, {
+                        super.state, {
                             history: [],
                             todoList: [
                                 {
@@ -160,17 +160,17 @@
                         console.log('deleted: ' + msg.name);
                     });
                 }
-                afterParsed() {
+                parsed() {
                     console.log('-- afterParsed --');
                 }
-                afterInited() {
+                ready() {
                     console.log('-- afterInited --');
                 }
-                afterMounted(dom) {
+                mounted(dom) {
                     console.log('-- afterMounted --');
                     console.log(dom);
                 }
-                afterPatched(dom) {
+                patched(dom) {
                     console.log('-- afterPatched --');
                     console.log(dom);
                 }
@@ -194,7 +194,7 @@
                 }
                 onReset() {
                     this.setState({
-                        todoList: this.initialState.todoList
+                        todoList: this.state.todoList
                     });
                 }
         
