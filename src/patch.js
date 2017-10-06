@@ -3,11 +3,11 @@ import {debug} from './helper';
 import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from './constant';
 
 
-function walkRTree(tree, fn, index = -1) {
+function walkDom(tree, fn, index = -1) {
     tree.forEach(item => {
         fn(item, ++index);
         if (item.childNodes.length > 0) {
-            index = walkRTree(item.childNodes, fn, index);
+            index = walkDom(item.childNodes, fn, index);
         }
     });
     return index;
@@ -66,7 +66,7 @@ export function patch(rTree, patches) {
 
     const list = [];
 
-    walkRTree(rTree, (node, index) => {
+    walkDom(rTree, (node, index) => {
         list[index] = node;
     });
 

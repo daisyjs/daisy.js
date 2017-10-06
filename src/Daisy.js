@@ -1,15 +1,15 @@
 import {Lexer} from './Lexer';
 import {Parser} from './Parser';
-import {diffVTree} from './diffVTree';
-import {patch} from './patchVTree';
-import {createVTree} from './createVElement';
-import {createRTree} from './createRElement';
+import {diffVDom} from './diffVDom';
+import {patch} from './patch';
+import {createVDom} from './createVDom';
+import {createDom} from './createRElement';
 import directives from './directives';
-import {createDirective, createEvent, getProppertyObject} from './helper';
+import {createDirective, createEvent, getProppertyObject, getRootElement} from './helper';
 import {getAllInstances, initInstances, extendsInstanceInheritCache} from './InstanceManager';
 import Events from 'events';
 import {
-    STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VTREE, RTREE, EVENT
+    STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDom, RDOM, EVENT
 } from './constant';
 
 class Daisy {
@@ -24,29 +24,34 @@ class Daisy {
     constructor({
         state
     } = {}) {
-        this.compose({state});
+        this.composeStaticState({state});
+
+        const template = this.render();
 
         try {
-            this[AST] = Parser(this.render());
+            this[AST] = Parser(template);
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
 
         this.afterParsed(this[AST]);
+
+        this.render = () => {
+            const {
+                [METHODS]: methods,
+                [STATE]: state,
+                [DIRECTIVES]: directives,
+                [COMPONENTS]: components,
+            } = this;
+
+            return createVDom(this[AST], {
+                components, directives, state, methods, context: this
+            });
+        };
         
-        const {
-            [AST]: ast,
-            [METHODS]: methods,
-            [STATE]: initialState,
-            [DIRECTIVES]: directives,
-            [COMPONENTS]: components,
-        } = this;
+        this[VDom] = this.render();
 
-        this[VTREE] = createVTree(ast, {
-            components, directives, state: initialState, methods, context: this
-        });
-
-        this.afterInited(this[VTREE]);
+        this.afterInited(this[VDom]);
 
         this[EVENTS].forEach(({name, handler}) => {
             this.on(name, handler.bind(this));
@@ -54,7 +59,7 @@ class Daisy {
         
     }
 
-    compose({
+    composeStaticState({
         state = {}
     }) {
         this[STATE] = Object.assign({}, this.initialState, state);
@@ -117,14 +122,14 @@ class Daisy {
     }
 
     destroy() {
-        this.mountNode.innerHTML = '';
+        this.render = () => [];
     }
 
     mount(node) {
         this.mountNode = node;
-        createRTree(this[VTREE], node, this);
-        this[RTREE] = node.childNodes;
-        this.afterMounted(this[RTREE]);  // vDom, realDom
+        createDom(this[VDom], node, this);
+        this[RDOM] = node.childNodes;
+        this.afterMounted(this[RDOM]);  // vDom, realDom
     }
 
     setState(state) {
@@ -134,34 +139,23 @@ class Daisy {
         // setState
         Object.assign(this[STATE], state);
 
-        let rootComponent = this;
+        const dif = getRootElement(this).diffPatch();
 
-        while (rootComponent.parent) {
-            rootComponent = rootComponent.parent;
-        }
-
-        rootComponent.diffPatch();
-
-        this.afterPatched();
+        this.afterPatched(dif);
     }
 
     diffPatch() {
         // create virtualDOM
-        const {
-            [AST]: ast,
-            [STATE]: state,
-            [VTREE]: lastVTree,
-            [METHODS]: methods,
-            [DIRECTIVES]: directives,
-            [COMPONENTS]: components
-        } = this;
+        const {[VDom]: lastVDom} = this;
 
-        this[VTREE] = createVTree(ast, {
-            components, directives, state, methods, context: this
-        });
+        this[VDom] = this.render();
+
         // diff virtualDOMs
-        const difference = diffVTree(lastVTree, this[VTREE]);
-        patch(this[RTREE], difference);
+        const dif = diffVDom(lastVDom, this[VDom]);
+
+        patch(this[RDOM], dif);
+
+        return dif;
     }
 
     afterParsed() {}   // hook
@@ -187,9 +181,8 @@ class Daisy {
 }
 
 initInstances(Daisy);
+
 Daisy.directive(directives);
-
-
 
 export default Daisy;
 

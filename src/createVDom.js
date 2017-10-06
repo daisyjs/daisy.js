@@ -1,5 +1,5 @@
 import {EvalExpression, codeGen} from './EvalExpression';
-import {warn, debug, isEmpty, getDirective} from './helper';
+import {warn, isEmpty, getDirective} from './helper';
 import {Types} from './NodeTypes';
 import {Elements} from './Elements';
 import {Element} from './Element';
@@ -32,11 +32,9 @@ export function createVElement(node, viewContext) {
 
     case ElementType: {
         const {
-            // eslint-disable-next-line
             attributes, directives, children, name
         } = node;
         const {
-        // eslint-disable-next-line
             components, directives: thisDirectives, context
         } = viewContext;
 
@@ -76,7 +74,6 @@ export function createVElement(node, viewContext) {
             );
 
         if (Object.keys(components).includes(name)) {
-            debug('重新生成组件 virtualdom - ' + name);
             return new VComponent(
                 name,
                 attributeList,
@@ -148,7 +145,7 @@ function createVGroup(nodes, viewContext) {
     return elements;
 }
 
-export function createVTree(ast, viewContext) {
+export function createVDom(ast, viewContext) {
     // create virtual dom
     const {type, body} = ast;
     if (type === Program) {

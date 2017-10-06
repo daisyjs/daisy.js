@@ -5,8 +5,8 @@ export const COMPONENTS = Symbol('components');
 export const EVENTS = Symbol('events');
 
 export const AST = Symbol('ast');
-export const VTREE = Symbol('vTree');
-export const RTREE = Symbol('rTree');
+export const VDom = Symbol('vDom');
+export const RDOM = Symbol('rDom');
 export const EVENT = Symbol('event');
 
 export const BLOCK = 'block';

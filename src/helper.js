@@ -144,3 +144,10 @@ export function getProppertyObject (list) {
         });
     }, {});
 }
+
+export const getRootElement = (element) => {
+    while (element.parent) {
+        element = element.parent;
+    }
+    return element;
+};
