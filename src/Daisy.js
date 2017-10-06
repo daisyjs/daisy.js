@@ -118,12 +118,9 @@ class Daisy {
     }
 
     destroy() {
-        this.render = () => [];
+        this.render = () => []; // render can create vDOM
         this.destroyed = true;
-        this[STATE] = 
-        this[RDOM] = 
-        this[VDOM] = 
-        this.state = {};
+        this[STATE] = {};
         this.removeAllListeners();
     }
 
