@@ -3,7 +3,7 @@ import {Parser} from './Parser';
 import {diffVDom} from './helper/diffVDom';
 import {patch} from './helper/patch';
 import {createVDom} from './helper/createVDom';
-import {createDom} from './helper/createRElement';
+import {createElements} from './helper/createElement';
 import directives from './extension/directives';
 import {createDirective, createEvent, getProppertyObject, getRootElement} from './helper/helper';
 import {getAllInstances, initInstances, setCache} from './Types/InstanceManager';
@@ -92,10 +92,6 @@ class Daisy {
             }
         }
     }
-    
-    beforeDestroy() {
-        this.removeAllListeners();
-    }
 
     on(...args) {
         return this[EVENT].on(...args);
@@ -123,11 +119,13 @@ class Daisy {
 
     destroy() {
         this.render = () => [];
+        this.destroyed = true;
+        this.removeAllListeners();
     }
 
     mount(node) {
         this.mountNode = node;
-        createDom(this[VDom], node, this);
+        createElements(this[VDom], node, this);
         this[RDOM] = node.childNodes;
         this.afterMounted(this[RDOM]);  // vDom, realDom
     }

@@ -1,6 +1,6 @@
 import {Element} from '../Types/Element';
 import {VComponent} from '../Types/VComponent';
-import {link, createComponent} from './createRElement';
+import {link, createComponent} from './createElement';
 import {debug, isEmpty} from './helper';
 import diff from './diff';
 import {VDom, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE} from '../constant';
@@ -39,6 +39,10 @@ function copyVElementState (from, to) {
         ) {
             to.ondestroy = from.ondestroy;
         }
+    }
+
+    if (VComponent.isInstance(from) && VComponent.isInstance(to)) {
+        to.ref = from.ref;
     }
 }
 
@@ -195,7 +199,6 @@ export function updateComponent({
     switch (type) {
     case PROPS:
         Object.assign(component[STATE], target.props);
-        target.ref = component;
         break;
 
     case RELINK:
@@ -203,7 +206,6 @@ export function updateComponent({
             source.ondestroy();
         }
         link(component, changed);
-        target.ref = component;
         break;
 
     case REPLACE:
@@ -219,6 +221,5 @@ export function updateComponent({
         break;
     default:
         target.ref = component;
-        // eslint-disable-next-line
     }
 }

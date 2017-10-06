@@ -1,4 +1,4 @@
-import {createRElement, setProps, setStyle, link} from './createRElement';
+import {createElement, setProps, setStyle, link} from './createElement';
 import {debug} from './helper';
 import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from '../constant';
 
@@ -43,14 +43,14 @@ export function patch(rTree, patches) {
                 break;
 
             case NEW:
-                parent.insertBefore(createRElement(changed), nextElement);
+                parent.insertBefore(createElement(changed), nextElement);
                 break;
 
             case REPLACE:
                 if (source.ondestroy) {
                     source.ondestroy();
                 }
-                parent.replaceChild(createRElement(changed), node);
+                parent.replaceChild(createElement(changed), node);
                 break;
 
             case REMOVE:

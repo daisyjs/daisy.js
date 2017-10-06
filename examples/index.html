@@ -78,7 +78,7 @@
 
                 onButtonClick(todo, index) {
                     const todoList = this.getState().todoList;
-                    todoList[index].status = !todoList[index].status
+                    todoList[index].status = !todoList[index].status;
                     this.setState({
                         todoList: todoList
                     });

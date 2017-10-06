@@ -2,7 +2,7 @@ import {Element} from '../Types/Element';
 import {Elements} from '../Types/Elements';
 import {VComponent} from '../Types/VComponent';
 
-export function createDom(elements, parent, context) {
+export function createElements(elements, parent, context) {
     elements.forEach(
         element => appendElement(element, parent, context)
     );
@@ -11,9 +11,9 @@ export function createDom(elements, parent, context) {
 
 export function appendElement(element, parent, context) {
     if (VComponent.isInstance(element)) {
-        createComponent(element, parent, context).mount(parent);
+        createComponent(element, context).mount(parent);
     } else {
-        parent.appendChild(createRElement(element, parent));
+        parent.appendChild(createElement(element, parent));
     }
 }
 
@@ -31,19 +31,19 @@ export function createComponent(vComponent, context) {
     return component;
 }
 
-export function createRElement(element) {
+export function createElement(element) {
     const {props, tag, children} = element;
     let node;
 
     if (Element.isInstance(element)) {
         node = document.createElement(tag);
 
-        createDom(children, node); // children
+        createElements(children, node); // children
         link(node, element);         // links
         setProps(node, props);       // props
     } else if (element instanceof Elements) {
         const node = document.createDocumentFragment(); // package
-        createDom(element, node);
+        createElements(element, node);
     } else {
         node = document.createTextNode(element);
     }
