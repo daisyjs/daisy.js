@@ -1,6 +1,6 @@
-import {Element} from './Element';
-import {Elements} from './Elements';
-import {VComponent} from './VComponent';
+import {Element} from '../Types/Element';
+import {Elements} from '../Types/Elements';
+import {VComponent} from '../Types/VComponent';
 
 export function createDom(elements, parent, context) {
     elements.forEach(

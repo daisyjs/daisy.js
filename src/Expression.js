@@ -2,7 +2,7 @@ let EXPR_OPEN_BOUNDS = '{{';
 let EXPR_CLOSE_BOUNDS = '}}';
 import {
     ParseExpression
-} from './ParseExpression';
+} from './helper/parseExpression';
 
 function isStartsWithExprOpenBounds(source, pos) {
     return source.startsWith(EXPR_OPEN_BOUNDS, pos);

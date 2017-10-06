@@ -1,12 +1,12 @@
 import {Lexer} from './Lexer';
 import {Parser} from './Parser';
-import {diffVDom} from './diffVDom';
-import {patch} from './patch';
-import {createVDom} from './createVDom';
-import {createDom} from './createRElement';
-import directives from './directives';
-import {createDirective, createEvent, getProppertyObject, getRootElement} from './helper';
-import {getAllInstances, initInstances, extendsInstanceInheritCache} from './InstanceManager';
+import {diffVDom} from './helper/diffVDom';
+import {patch} from './helper/patch';
+import {createVDom} from './helper/createVDom';
+import {createDom} from './helper/createRElement';
+import directives from './extension/directives';
+import {createDirective, createEvent, getProppertyObject, getRootElement} from './helper/helper';
+import {getAllInstances, initInstances, setCache} from './Types/InstanceManager';
 import Events from 'events';
 import {
     STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDom, RDOM, EVENT
@@ -164,19 +164,19 @@ class Daisy {
     afterPatched() {}  // hook
 
     static directive(...args) {
-        extendsInstanceInheritCache(this,DIRECTIVES)(...args);
+        setCache(this,DIRECTIVES)(...args);
     }
 
     static component(...args) {
-        extendsInstanceInheritCache(this, COMPONENTS)(...args);
+        setCache(this, COMPONENTS)(...args);
     }
 
     static method(...args) {
-        extendsInstanceInheritCache(this, METHODS)(...args);
+        setCache(this, METHODS)(...args);
     }
 
     static event(...args) {
-        extendsInstanceInheritCache(this, EVENTS)(...args);
+        setCache(this, EVENTS)(...args);
     }
 }
 

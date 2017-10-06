@@ -1,9 +1,9 @@
-import {Element} from './Element';
-import {VComponent} from './VComponent';
+import {Element} from '../Types/Element';
+import {VComponent} from '../Types/VComponent';
 import {link, createComponent} from './createRElement';
 import {debug, isEmpty} from './helper';
 import diff from './diff';
-import {VDom, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE} from './constant';
+import {VDom, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE} from '../constant';
 
 function walkVDom(lastTree = [], nextTree = [], fn, index = -1) {
     function hasChild(element) {

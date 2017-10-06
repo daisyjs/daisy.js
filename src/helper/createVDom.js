@@ -1,12 +1,12 @@
-import {EvalExpression, codeGen} from './EvalExpression';
+import {EvalExpression, codeGen} from './evalExpression';
 import {warn, isEmpty, getDirective} from './helper';
-import {Types} from './NodeTypes';
-import {Elements} from './Elements';
-import {Element} from './Element';
-import {VComponent} from './VComponent';
+import {Types} from '../Types/NodeTypes';
+import {Elements} from '../Types/Elements';
+import {Element} from '../Types/Element';
+import {VComponent} from '../Types/VComponent';
 import {
     BLOCK
-} from './constant';
+} from '../constant';
 const {Program, If, For, Element: ElementType, Expression, Text, Attribute} = Types;
 
 

@@ -1,4 +1,4 @@
-import {getProppertyObject} from './helper';
+import {getProppertyObject} from '../helper/helper';
 
 export class Element {
     constructor(tag = '', props = [], children = [], links = {}, key) {

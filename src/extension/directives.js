@@ -1,5 +1,5 @@
-import {VComponent} from './VComponent';
-import {debug} from './helper';
+import {VComponent} from '../Types/VComponent';
+import {debug} from '../helper/helper';
 
 export default {
     // eslint-disable-next-line

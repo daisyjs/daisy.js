@@ -1,6 +1,6 @@
 import {createRElement, setProps, setStyle, link} from './createRElement';
 import {debug} from './helper';
-import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from './constant';
+import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from '../constant';
 
 
 function walkDom(tree, fn, index = -1) {

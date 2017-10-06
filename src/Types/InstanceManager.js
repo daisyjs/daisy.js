@@ -6,7 +6,7 @@ export const initInstances = (Daisy) => {
     Daisy[ALL_INSTANCES] = new Map();
 };
 
-export function extendsInstanceInheritCache(context, cacheName) {
+export function setCache(context, cacheName) {
     if (!context[ALL_INSTANCES].get(context)) {
         context[ALL_INSTANCES].set(context, {});
     }
