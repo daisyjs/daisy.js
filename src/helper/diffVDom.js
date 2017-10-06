@@ -5,25 +5,25 @@ import {debug, isEmpty} from './helper';
 import diff from './diff';
 import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE} from '../constant';
 
-function walkVDOM(lastTree = [], nextTree = [], fn, index = -1) {
+function walkVDOM(lastT = [], nextT = [], fn, index = -1) {
     function hasChild(element) {
         return (Element.isInstance(element) && element.children.length > 0);
     }
 
-    lastTree.forEach((lastTreeLeaf, leafIndex) => {
-        const nextTreeLeaf = nextTree[leafIndex];
-        fn(lastTreeLeaf, nextTreeLeaf, ++index);
+    lastT.forEach((last, i) => {
+        const next = nextT[i];
+        fn(last, next, ++index);
 
-        if (hasChild(lastTreeLeaf)) {
-            const nextTreeLeafChildren = hasChild(nextTreeLeaf) ? nextTreeLeaf.children : [];
-            index = walkVDOM(lastTreeLeaf.children, nextTreeLeafChildren, fn, index);
+        if (hasChild(last)) {
+            const nextChildren = hasChild(next) ? next.children : [];
+            index = walkVDOM(last.children, nextChildren, fn, index);
         }
     });
 
-    if (nextTree.length > lastTree.length) {
-        nextTree.slice(lastTree.length).forEach(
-            (nextTreeLeaf) =>
-                fn(void 0, nextTreeLeaf, index)
+    if (nextT.length > lastT.length) {
+        nextT.slice(lastT.length).forEach(
+            (next) =>
+                fn(void 0, next, index)
         );
     }
 
@@ -46,8 +46,8 @@ function copyVElementState (from, to) {
     }
 }
 
-function diffVElement(left, right) {
-    if (left === void 0) {
+function diffVElement(last, right) {
+    if (last === void 0) {
         return [{
             type: NEW,
             changed: right
@@ -57,13 +57,13 @@ function diffVElement(left, right) {
     if (right === void 0) {
         return [{
             type: REMOVE,
-            source: left
+            source: last
         }];
     }
 
-    if (typeof left === typeof right) {
-        if (typeof left === 'string') {
-            if (left !== right) {
+    if (typeof last === typeof right) {
+        if (typeof last === 'string') {
+            if (last !== right) {
                 return [{
                     type: TEXT,
                     changed: right
@@ -74,7 +74,7 @@ function diffVElement(left, right) {
     } else {
         return [{
             type: REPLACE,
-            source: left,
+            source: last,
             changed: right
         }];
     }
@@ -82,27 +82,27 @@ function diffVElement(left, right) {
     const dif = [];
 
     // condition other changes (such as events eg.)
-    if (left.tag !== right.tag) {
+    if (last.tag !== right.tag) {
         return [{
             type: REPLACE,
-            source: left,
+            source: last,
             changed: right
         }];
     }
 
-    const styleDif = diff(left.props.style, right.props.style);
-    if (!isEmpty(styleDif)) {
+    const style = diff(last.props.style, right.props.style);
+    if (!isEmpty(style)) {
         dif.push({
             type: STYLE,
-            changed: styleDif
+            changed: style
         });
     }
 
-    const propsDif = diff(left.props, right.props);
-    if (!isEmpty(propsDif)) {
+    const props = diff(last.props, right.props);
+    if (!isEmpty(props)) {
         dif.push({
             type: PROPS,
-            changed: propsDif
+            changed: props
         });
     }
 
@@ -116,83 +116,90 @@ function diffVElement(left, right) {
         return returnValue;
     };
     
-    if (hasLinks(left) && hasLinks(right)) {
-        const linksDif = someLinks(left.links, (name, leftLink) => {
+    if (hasLinks(last) && hasLinks(right)) {
+        const links = someLinks(last.links, (name, lastLink) => {
             const rightLink = right.links[name];
-            if (leftLink.binding.context !== rightLink.binding.context) {
+            if (lastLink.binding.context !== rightLink.binding.context) {
                 debug('context 不匹配，需要重新链接');
                 return {
                     type: RELINK,
-                    source: left,
+                    source: last,
                     changed: right
                 };
             }
         });
 
-        if (linksDif) {
-            dif.push(linksDif);
+        if (links) {
+            dif.push(links);
         }
-    } else if (hasLinks(left) || hasLinks(right)) {
+    } else if (hasLinks(last) || hasLinks(right)) {
         debug('link 函数被删除或添加，需要重新链接');
         dif.push({
             type: RELINK,
-            source: left,
+            source: last,
             changed: right
         });
     }
     return dif;
 }
 
-export function diffVDOM(lastVDOM, nextVDOM, startIndex = 0) {
+export function diffVDOM(lastT, nextT, start = 0) {
     const patches = {};
-    let childrenCount = 0;
+    let childSize = 0;
+    let componentSize = 0;
     // patch Elemnts
-    walkVDOM(lastVDOM, nextVDOM, (lastTreeLeaf, nextTreeLeaf, index) => {
-        index += childrenCount;
+    walkVDOM(lastT, nextT, (last, next, i) => {
+        i = i + childSize - componentSize;
+        const index = start + i;
+        
         // intial
-        patches[startIndex + index] = patches[startIndex + index] || [];
-
-        copyVElementState(lastTreeLeaf, nextTreeLeaf);
-        const result = diffVElement(lastTreeLeaf, nextTreeLeaf);
+        if (!patches[index]) {
+            patches[index] = [];
+        }
+        
+        copyVElementState(last, next);
+        const result = diffVElement(last, next);
         
         if (
-            VComponent.isInstance(lastTreeLeaf)
+            VComponent.isInstance(last)
         ) {
             result.forEach(
                 item => 
-                    updateComponent(Object.assign({}, item, {
-                        source: lastTreeLeaf,
-                        target: nextTreeLeaf
+                    patchComponent(Object.assign({}, item, {
+                        source: last,
+                        target: next
                     }))
             );
 
-            const lastTreeLeafChildrenVDOM = lastTreeLeaf.ref[VDOM];
-            let nextTreeLeafChildrenVDOM;
+            const vDOM = {
+                last: last.ref[VDOM],
+                next: null
+            };
 
-            if (nextTreeLeaf.ref) {
-                nextTreeLeafChildrenVDOM = nextTreeLeaf.ref.render(nextTreeLeaf.props);
-                nextTreeLeaf.ref[VDOM] = nextTreeLeafChildrenVDOM;
+            if (next.ref) {
+                next.ref[VDOM] = vDOM.next = next.ref.render(next.props);
             } else {
-                nextTreeLeafChildrenVDOM = nextTreeLeaf;
+                vDOM.next = next;
             }
 
-            const childrenPatches = diffVDOM(lastTreeLeafChildrenVDOM, nextTreeLeafChildrenVDOM, index);
+            const childrenPatches = diffVDOM(vDOM.last, vDOM.next, index);
             
             Object.assign(patches, childrenPatches);
 
-            childrenCount += Object.keys(childrenPatches).length - 1;
-            patches[startIndex + index].length = 0;
-        } else {
-            const currentPatches = patches[startIndex + index];
-            patches[startIndex + index] = [
-                ...currentPatches,
-                ...result];
+            childSize += Object.keys(childrenPatches).length;
+            componentSize++;
+            return;
         }
+
+        patches[index] = [
+            ...patches[index],
+            ...result
+        ];
     });
     return patches; // difference set
 }
 
-export function updateComponent({
+export function patchComponent({
     type, source, changed, target
 }) {
     const component = source.ref;

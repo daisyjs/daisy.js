@@ -13,9 +13,9 @@ function walkDOM(tree, fn, index = -1) {
     return index;
 }
 
-export function patch(rTree, patches) {
-    debug('rTree:');
-    debug(rTree);
+export function patch(dom, patches) {
+    debug('dom:');
+    debug(dom);
     debug('patches:');
     debug(patches);
     function patchElement(node, parent, nextElement) {
@@ -66,7 +66,7 @@ export function patch(rTree, patches) {
 
     const list = [];
 
-    walkDOM(rTree, (node, index) => {
+    walkDOM(dom, (node, index) => {
         list[index] = node;
     });
 

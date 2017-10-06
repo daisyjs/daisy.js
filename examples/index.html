@@ -34,19 +34,35 @@
         <script type="text/javascript" src="/dist/daisy.js"></script>
         <script>
             Daisy = Daisy.default;
+
+            class Title extends Daisy {
+                render() {
+                    return '<h1>{{title}}</h1>'
+                }
+            }
+
             class Header extends Daisy {
-                render(){
+                get initialState() {
+                    return {
+                        title: 'Daisy'
+                    };
+                }
+                render() {
                     return `<header class="header" @on-click={{this.onClick()}}>
-                        <h1>Daisy</h1>
+                        <Title title={{title}}></Title>
                         <h2>共 {{length}} 条 TodoList！</h2>
-                        <Header2></Header2>
                     </header>`;
                 }
 
                 onClick() {
                     console.log('共' + this.getState().length + '条');
+                    this.setState({
+                        title: this.getState().title === 'Daisy' ? 'Hello, Guy' : 'Daisy'
+                    });
                 }
             }
+
+            Header.component('Title', Title);
             
         </script>
         <script>
