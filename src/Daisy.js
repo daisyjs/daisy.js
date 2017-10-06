@@ -1,7 +1,9 @@
 import {Lexer} from './Lexer';
 import {Parser} from './Parser';
-import {createVTree, diffVTree, patch} from './VTree';
-import {createRTree} from './RTree';
+import {diffVTree} from './diffVTree';
+import {patch} from './patchVTree';
+import {createVTree} from './createVElement';
+import {createRTree} from './createRElement';
 import directives from './directives';
 import {createDirective, createEvent, getProppertyObject} from './helper';
 import {getAllInstances, initInstances, extendsInstanceInheritCache} from './InstanceManager';
@@ -11,7 +13,7 @@ import {
 } from './constant';
 
 class Daisy {
-    get template() {
+    render() {
         return '';
     }
 
@@ -20,21 +22,18 @@ class Daisy {
     }
 
     constructor({
-        state, isPure = false
+        state
     } = {}) {
         this.compose({state});
 
         try {
-            this[AST] = Parser(this.template);
+            this[AST] = Parser(this.render());
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
-        
-        // eslint-disable-next-line
-        if (!isPure || true) {
-            this.afterParsed(this[AST]);
-        }
 
+        this.afterParsed(this[AST]);
+        
         const {
             [AST]: ast,
             [METHODS]: methods,
@@ -47,14 +46,12 @@ class Daisy {
             components, directives, state: initialState, methods, context: this
         });
 
-        // eslint-disable-next-line
-        if (!isPure || true) {
-            this.afterInited(this[VTREE]);
+        this.afterInited(this[VTREE]);
 
-            this[EVENTS].forEach(({name, handler}) => {
-                this.on(name, handler.bind(this));
-            });
-        }
+        this[EVENTS].forEach(({name, handler}) => {
+            this.on(name, handler.bind(this));
+        });
+        
     }
 
     compose({
@@ -119,9 +116,13 @@ class Daisy {
         return this[STATE];
     }
 
+    destroy() {
+        this.mountNode.innerHTML = '';
+    }
+
     mount(node) {
-        const rTree = createRTree(this[VTREE]);
-        node.appendChild(rTree);
+        this.mountNode = node;
+        createRTree(this[VTREE], node, this);
         this[RTREE] = node.childNodes;
         this.afterMounted(this[RTREE]);  // vDom, realDom
     }
@@ -131,11 +132,24 @@ class Daisy {
             return false;
         }
         // setState
-        state = Object.assign(this[STATE], state);
+        Object.assign(this[STATE], state);
 
+        let rootComponent = this;
+
+        while (rootComponent.parent) {
+            rootComponent = rootComponent.parent;
+        }
+
+        rootComponent.diffPatch();
+
+        this.afterPatched();
+    }
+
+    diffPatch() {
         // create virtualDOM
         const {
             [AST]: ast,
+            [STATE]: state,
             [VTREE]: lastVTree,
             [METHODS]: methods,
             [DIRECTIVES]: directives,
@@ -145,13 +159,9 @@ class Daisy {
         this[VTREE] = createVTree(ast, {
             components, directives, state, methods, context: this
         });
-
         // diff virtualDOMs
         const difference = diffVTree(lastVTree, this[VTREE]);
-
         patch(this[RTREE], difference);
-
-        this.afterPatched(this[RTREE], difference);
     }
 
     afterParsed() {}   // hook

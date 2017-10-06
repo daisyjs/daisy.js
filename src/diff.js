@@ -1,7 +1,4 @@
-import {
-    isEmpty, isObject, isDate, properObject
-} from './helper';
-
+import {isEmpty, isObject, isDate, properObject} from './helper';
 
 function diff(lhs, rhs) {
     if (lhs === rhs) return {}; // equal return no diff

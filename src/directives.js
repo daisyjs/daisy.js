@@ -1,7 +1,13 @@
+import {VComponent} from './VComponent';
+import {debug} from './helper';
+
 export default {
     // eslint-disable-next-line
     '/on-.*/': (elem, binding, vnode) => {
         const {name, value} = binding;
+        debug('name:');
+        debug(name);
+
         const doSomthing = (e) => {
             return value({
                 e
@@ -9,11 +15,18 @@ export default {
         };
             
         const event = name.slice(3);
-
-        elem.addEventListener(event, doSomthing);
-        return () => {
-            elem.removeEventListener(event, doSomthing); 
-        };
+        
+        if (VComponent.isInstance(vnode)) {
+            elem.on(event, doSomthing);
+            return () => {
+                elem.removeListener(event, doSomthing);
+            };
+        } else {
+            elem.addEventListener(event, doSomthing);
+            return () => {
+                elem.removeEventListener(event, doSomthing); 
+            };
+        }
     },
     // eslint-disable-next-line
     ref(elem, binding, vnode) {

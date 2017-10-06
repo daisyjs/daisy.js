@@ -1,12 +1,10 @@
+import {getProppertyObject} from './helper';
+
 export class Element {
     constructor(tag = '', props = [], children = [], links = {}, key) {
         this.tag = tag;
 
-        this.props = props.reduce((prev, {name, value}) =>
-            Object.assign(prev, {
-                [name]: value
-            })
-            , {});
+        this.props = getProppertyObject(props);
 
         this.children = children;
         this.links = links;
@@ -19,28 +17,5 @@ export class Element {
 
     static isInstance(something) {
         return something instanceof Element;
-    }
-}
-
-export class Elements extends Array {
-    constructor() {
-        super();
-    }
-
-    static create() {
-        return new Elements();
-    }
-
-    push(element) {
-        if (
-            element instanceof Element || typeof element === 'string'
-        ) {
-            super.push(element);
-        } else if (element instanceof Elements) {
-            element.forEach(
-                item => super.push(item)
-            );
-        }
-        return this;
     }
 }

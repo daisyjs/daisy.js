@@ -13,31 +13,13 @@
             ></Header>
             
             <block :if = "{{todoList.length > 0}}">
-                <ul class="body">
-                    <li 
-                        :for={{todoList}} 
-                        :for-item={{todo}} 
-                        :for-index={{todoIndex}}
-                        @on-click={{this.onButtonClick(todo, todoIndex)}}
-                    >
-                        <p>
-                            <input 
-                                type="checkbox" 
-                                checked={{isChecked(todo.status)}}
-                            > {{index(todoIndex)}} {{todo.name}}
-                            <button 
-                                @on-click={{this.onDelete(e, todoIndex)}}
-                            >delete</button>
-                        </p>
-                    </li>
-                </ul>
+                <TodoList
+                    todoList={{todoList}}
+                    @on-delete={{this.onDelete(e)}}
+                ></TodoList>
             </block>
             <block :else>
-                <ul class = "body">
-                    <li>
-                        <p>No TodoList!</p>
-                    </li>
-                </ul>
+                <NoTodoList></NoTodoList>
             </block>
             <div style="text-align: center; margin-top: 20px;">
                 <input 
@@ -50,12 +32,88 @@
             </div>
         </textarea>
         <script type="text/javascript" src="/dist/daisy.js"></script>
-        <script type="text/javascript">
+        <script>
             Daisy = Daisy.default;
+            class Header extends Daisy {
+                render(){
+                    return `<header class="header" @on-click={{this.onClick()}}>
+                        <h1>Daisy</h1>
+                        <h2>共 {{length}} 条 TodoList！</h2>
+                        <Header2></Header2>
+                    </header>`;
+                }
+
+                onClick() {
+                    console.log('共' + this.getState().length + '条');
+                }
+            }
+            
+        </script>
+        <script>
+            class TodoList extends Daisy {
+                render(){
+                    return `<ul class="body">
+                        <li 
+                            :for={{todoList}} 
+                            :for-item={{todo}} 
+                            :for-index={{todoIndex}}
+                            @on-click={{this.onButtonClick(todo, todoIndex)}}
+                        >
+                            <p>
+                                <input 
+                                    type="checkbox" 
+                                    checked={{isChecked(todo.status)}}
+                                > {{index(todoIndex)}} {{todo.name}}
+                                <button 
+                                    @on-click={{this.onDelete(e, todoIndex)}}
+                                >delete</button>
+                            </p>
+                        </li>
+                    </ul>`;
+                }
+
+                onClick() {
+                    console.log('共' + this.getState().length + '条');
+                }
+
+                onButtonClick(todo, index) {
+                    const todoList = this.getState().todoList;
+                    todoList[index].status = !todoList[index].status
+                    this.setState({
+                        todoList: todoList
+                    });
+                }
+
+                onDelete(e, index) {
+                    this.emit('delete', index);
+                    e.stopPropagation();
+                }
+            }
+            TodoList.method('isChecked', (status) => {
+                return !!status;
+            });
+            
+            TodoList.method('index', (index) => {
+                return index + 1 + '.';
+            });
+        </script>
+        <script>
+            class NoTodoList extends Daisy {
+                render() {
+                    return `<ul class = "body">
+                        <li>
+                            <p>No TodoList!</p>
+                        </li>
+                    </ul>`;
+                }
+            }
+        </script>
+        <script type="text/javascript">
             class Component extends Daisy {
                 get initialState() {
                     return Object.assign(
                         super.initialState, {
+                            history: [],
                             todoList: [
                                 {
                                     name: 'ast -> virtual nodes 2017-10-3',
@@ -77,7 +135,7 @@
                         }
                     );
                 }
-                get template() {
+                render() {
                     return document.querySelector('#code').value;
                 }
                 constructor(options) {
@@ -100,12 +158,8 @@
                     console.log('-- afterPatched --');
                     console.log(dom);
                 }
-                onButtonClick(todo, index) {
-                    const todoList = this.getState().todoList;
-                    todoList[index].status = !todoList[index].status
-                    this.setState({
-                        todoList: todoList
-                    });
+                onHeaderClick() {
+                    console.log('-- onHeaderClick --');
                 }
                 onAdd() {
                     const input = this.refs.input;
@@ -127,44 +181,24 @@
                         todoList: this.initialState.todoList
                     });
                 }
-                onDelete(e, index) {
+        
+                onDelete(index) {
                     const todoList = this.getState().todoList;
                     const todo = todoList[index];
+                    
                     this.setState({
                         todoList: [
                             ...todoList.slice(0, index),
-                            ...todoList.slice(index, todoList.length - 1)
+                            ...todoList.slice(index + 1, todoList.length)
                         ]
                     });
-                    e.stopPropagation();
-                    this.emit('deleted', todo);
-                }
-            }
-
-            Component.method('isChecked', (status) => {
-                return !!status;
-            });
-            
-            Component.method('index', (index) => {
-                return index + 1 + '.';
-            });
-
-            class Header extends Daisy {
-                get template(){
-                    return `<header class="header" @on-click={{this.onClick()}}>
-                        {{length}}
-                        <h1>Daisy</h1>
-                        <h2>共 {{length}} 条 TodoList！</h2>
-                    </header>`;
-                }
-
-                onClick() {
-                    console.log('共' + this.getState().length + '条');
                 }
             }
 
             Component.component('Header', Header);
-
+            Component.component('TodoList', TodoList);
+            Component.component('NoTodoList', NoTodoList);
+            
             new Component({
                 state: {}
             }).mount(document.querySelector('#node'));
