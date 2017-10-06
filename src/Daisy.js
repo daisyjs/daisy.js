@@ -1,15 +1,15 @@
 import {Lexer} from './Lexer';
 import {Parser} from './Parser';
-import {diffVDom} from './helper/diffVDom';
+import {diffVDOM} from './helper/diffVDOM';
 import {patch} from './helper/patch';
-import {createVDom} from './helper/createVDom';
+import {createVDOM} from './helper/createVElement';
 import {createElements} from './helper/createElement';
 import directives from './extension/directives';
 import {createDirective, createEvent, getProppertyObject, getRootElement} from './helper/helper';
 import {getAllInstances, initInstances, setCache} from './Types/InstanceManager';
 import Events from 'events';
 import {
-    STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDom, RDOM, EVENT
+    STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT
 } from './constant';
 
 class Daisy {
@@ -44,14 +44,14 @@ class Daisy {
                 [COMPONENTS]: components,
             } = this;
 
-            return createVDom(this[AST], {
+            return createVDOM(this[AST], {
                 components, directives, state, methods, context: this
             });
         };
         
-        this[VDom] = this.render();
+        this[VDOM] = this.render();
 
-        this.afterInited(this[VDom]);
+        this.afterInited(this[VDOM]);
 
         this[EVENTS].forEach(({name, handler}) => {
             this.on(name, handler.bind(this));
@@ -120,14 +120,18 @@ class Daisy {
     destroy() {
         this.render = () => [];
         this.destroyed = true;
+        this[STATE] = 
+        this[RDOM] = 
+        this[VDOM] = 
+        this.state = {};
         this.removeAllListeners();
     }
 
     mount(node) {
         this.mountNode = node;
-        createElements(this[VDom], node, this);
+        createElements(this[VDOM], node, this);
         this[RDOM] = node.childNodes;
-        this.afterMounted(this[RDOM]);  // vDom, realDom
+        this.afterMounted(this[RDOM]);  // vDOM, realDOM
     }
 
     setState(state) {
@@ -144,12 +148,12 @@ class Daisy {
 
     diffPatch() {
         // create virtualDOM
-        const {[VDom]: lastVDom} = this;
+        const {[VDOM]: lastVDOM} = this;
 
-        this[VDom] = this.render();
+        this[VDOM] = this.render();
 
         // diff virtualDOMs
-        const dif = diffVDom(lastVDom, this[VDom]);
+        const dif = diffVDOM(lastVDOM, this[VDOM]);
 
         patch(this[RDOM], dif);
 

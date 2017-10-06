@@ -145,7 +145,7 @@ function createVGroup(nodes, viewContext) {
     return elements;
 }
 
-export function createVDom(ast, viewContext) {
+export function createVDOM(ast, viewContext) {
     // create virtual dom
     const {type, body} = ast;
     if (type === Program) {

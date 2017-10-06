@@ -3,9 +3,9 @@ import {VComponent} from '../Types/VComponent';
 import {link, createComponent} from './createElement';
 import {debug, isEmpty} from './helper';
 import diff from './diff';
-import {VDom, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE} from '../constant';
+import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE} from '../constant';
 
-function walkVDom(lastTree = [], nextTree = [], fn, index = -1) {
+function walkVDOM(lastTree = [], nextTree = [], fn, index = -1) {
     function hasChild(element) {
         return (Element.isInstance(element) && element.children.length > 0);
     }
@@ -16,7 +16,7 @@ function walkVDom(lastTree = [], nextTree = [], fn, index = -1) {
 
         if (hasChild(lastTreeLeaf)) {
             const nextTreeLeafChildren = hasChild(nextTreeLeaf) ? nextTreeLeaf.children : [];
-            index = walkVDom(lastTreeLeaf.children, nextTreeLeafChildren, fn, index);
+            index = walkVDOM(lastTreeLeaf.children, nextTreeLeafChildren, fn, index);
         }
     });
 
@@ -143,11 +143,11 @@ function diffVElement(left, right) {
     return dif;
 }
 
-export function diffVDom(lastVDom, nextVDom, startIndex = 0) {
+export function diffVDOM(lastVDOM, nextVDOM, startIndex = 0) {
     const patches = {};
     let childrenCount = 0;
     // patch Elemnts
-    walkVDom(lastVDom, nextVDom, (lastTreeLeaf, nextTreeLeaf, index) => {
+    walkVDOM(lastVDOM, nextVDOM, (lastTreeLeaf, nextTreeLeaf, index) => {
         index += childrenCount;
         // intial
         patches[startIndex + index] = patches[startIndex + index] || [];
@@ -166,17 +166,17 @@ export function diffVDom(lastVDom, nextVDom, startIndex = 0) {
                     }))
             );
 
-            const lastTreeLeafChildrenVDom = lastTreeLeaf.ref[VDom];
-            let nextTreeLeafChildrenVDom;
+            const lastTreeLeafChildrenVDOM = lastTreeLeaf.ref[VDOM];
+            let nextTreeLeafChildrenVDOM;
 
             if (nextTreeLeaf.ref) {
-                nextTreeLeafChildrenVDom = nextTreeLeaf.ref.render(nextTreeLeaf.props);
-                nextTreeLeaf.ref[VDom] = nextTreeLeafChildrenVDom;
+                nextTreeLeafChildrenVDOM = nextTreeLeaf.ref.render(nextTreeLeaf.props);
+                nextTreeLeaf.ref[VDOM] = nextTreeLeafChildrenVDOM;
             } else {
-                nextTreeLeafChildrenVDom = nextTreeLeaf;
+                nextTreeLeafChildrenVDOM = nextTreeLeaf;
             }
 
-            const childrenPatches = diffVDom(lastTreeLeafChildrenVDom, nextTreeLeafChildrenVDom, index);
+            const childrenPatches = diffVDOM(lastTreeLeafChildrenVDOM, nextTreeLeafChildrenVDOM, index);
             
             Object.assign(patches, childrenPatches);
 
