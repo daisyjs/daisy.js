@@ -2,7 +2,7 @@ import {warn} from './helper';
 
 const expressionMap = new Map();
 
-export function EvalExpression(expression, {state, methods, context}) {
+export function evalExpression(expression, {state, methods, context}) {
     // cache expression
     if (!expressionMap.get(expression)) {
         const expr = codeGen(expression);
@@ -20,7 +20,7 @@ export function EvalExpression(expression, {state, methods, context}) {
     // } catch(e) {
     //     if (e instanceof ReferenceError) {
 
-    //         warn('Error in EvalExpression: expression ' + e.message);
+    //         warn('Error in evalExpression: expression ' + e.message);
     //         return;
     //     }
     //     throw e;

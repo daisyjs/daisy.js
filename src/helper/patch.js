@@ -13,7 +13,7 @@ function walkDOM(tree, fn, index = -1) {
     return index;
 }
 
-export function patch(dom, patches) {
+export default function patch(dom, patches) {
     debug('dom:');
     debug(dom);
     debug('patches:');

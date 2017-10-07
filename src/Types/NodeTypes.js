@@ -6,7 +6,8 @@ export const Types = {
     Attribute: 'Attribute',
     Expression: 'Expression',
     Text: 'Text',
-    Comment: 'Comment'
+    Comment: 'Comment',
+    Include: 'Include'
 };
 
 export function Program(body) {
@@ -41,6 +42,13 @@ export function Element(name, attributes = [], directives = [], children = []) {
         attributes,
         directives,
         children
+    };
+}
+
+export function Include(expression) {
+    return {
+        type: Types.Include,
+        expression
     };
 }
 

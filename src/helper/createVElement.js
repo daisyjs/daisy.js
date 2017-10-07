@@ -1,4 +1,4 @@
-import {EvalExpression, codeGen} from './evalExpression';
+import {evalExpression, codeGen} from './evalExpression';
 import {warn, isEmpty, getDirective} from './helper';
 import {Types} from '../Types/NodeTypes';
 import {Elements} from '../Types/Elements';
@@ -7,7 +7,7 @@ import {VComponent} from '../Types/VComponent';
 import {
     BLOCK
 } from '../constant';
-const {Program, If, For, Element: ElementType, Expression, Text, Attribute} = Types;
+const {Program, If, For, Element: ElementType, Expression, Text, Attribute, Include} = Types;
 
 
 export function createVElement(node, viewContext) {
@@ -19,7 +19,7 @@ export function createVElement(node, viewContext) {
     case Attribute: {
         const {value} = node;
         if (value.type === Expression) {
-            const valueEvaluted = EvalExpression(value, viewContext);
+            const valueEvaluted = evalExpression(value, viewContext);
             if (valueEvaluted === false) {
                 return null;
             }
@@ -58,7 +58,7 @@ export function createVElement(node, viewContext) {
                                 value: (state = {}) => {
                                     const value = directives[pattern];
                                     if (value.type === Expression) {
-                                        return EvalExpression(value, 
+                                        return evalExpression(value, 
                                             Object.assign(viewContext, {
                                                 state: Object.assign({}, viewContext.state, state) // merge state into 
                                             }));
@@ -92,7 +92,7 @@ export function createVElement(node, viewContext) {
 
     case If: {
         let result;
-        if (EvalExpression(node.test, viewContext)) {
+        if (evalExpression(node.test, viewContext)) {
             result = createVElement(node.consequent, viewContext);
         } else if (node.alternate) {
             result = createVElement(node.alternate, viewContext);
@@ -102,7 +102,7 @@ export function createVElement(node, viewContext) {
 
     case For: {
         const elements = Elements.create();
-        const list = EvalExpression(node.test, viewContext);
+        const list = evalExpression(node.test, viewContext);
         const {item, index} = node.init;
         const itemName = codeGen(item);
         const indexName = codeGen(index);
@@ -124,10 +124,15 @@ export function createVElement(node, viewContext) {
     }
 
     case Expression: {
-        const result = EvalExpression(node, viewContext);
+        const result = evalExpression(node, viewContext);
         if (typeof result !== 'string') {
             return JSON.stringify(result, null, 4);
         }
+        return result;
+    }
+
+    case Include: {
+        const result = evalExpression(node.expression, viewContext);
         return result;
     }
 

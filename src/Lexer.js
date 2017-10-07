@@ -10,7 +10,7 @@ function createToken(tokenType, temp = []) {
     };
 }
 
-export function Lexer(source) {
+export default function Lexer(source) {
     let pos = 0;
     let tokens = [];
     let length = source.length;

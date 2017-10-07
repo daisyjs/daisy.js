@@ -1,16 +1,16 @@
-const ALL_INSTANCES = Symbol('allInstances');
+const inherit = Symbol('inherit');
 // eslint-disable-next-line
-export const getAllInstances = (Daisy) => Daisy[ALL_INSTANCES];
+export const allInherits = (Daisy) => Daisy[inherit];
 
-export const initInstances = (Daisy) => {
-    Daisy[ALL_INSTANCES] = new Map();
+export const inheritable = (Daisy) => {
+    Daisy[inherit] = new Map();
 };
 
-export function setCache(context, cacheName) {
-    if (!context[ALL_INSTANCES].get(context)) {
-        context[ALL_INSTANCES].set(context, {});
+export function setInheritCache(context, cacheName) {
+    if (!context[inherit].get(context)) {
+        context[inherit].set(context, {});
     }
-    const instantce = context[ALL_INSTANCES].get(context);
+    const instantce = context[inherit].get(context);
     if (!instantce[cacheName]) {
         instantce[cacheName] = [];
     }

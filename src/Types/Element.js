@@ -15,6 +15,11 @@ export class Element {
         return new Element(...args);
     }
 
+    static clone(element) {
+        const newElement = new Element();
+        return Object.assign(newElement, element);
+    }
+
     static isInstance(something) {
         return something instanceof Element;
     }
