@@ -1,7 +1,7 @@
 import {Element} from '../shared/Element';
 import {VComponent} from '../shared/VComponent';
 import {link, createComponent} from './createElement';
-import {debug, isEmpty} from './helper';
+import {debug, isEmpty, assignPrimitive} from './helper';
 import diff from './diff';
 import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE, MODIFY_BODY} from '../shared/constant';
 
@@ -235,6 +235,8 @@ export function diffVDOM(lastT, nextT) { // 讲 virtual dom 的组件全部替�
 }
 
 
+
+
 export function updateComponent({
     type, source, changed, target
 }) {
@@ -246,7 +248,8 @@ export function updateComponent({
         break;
 
     case PROPS:
-        component[STATE] = Object.assign(component.state, target.props);
+        // component[STATE] = Object.assign(component.state, target.props);
+        assignPrimitive(component[STATE], changed);
         break;
 
     case RELINK:

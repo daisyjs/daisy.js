@@ -151,3 +151,25 @@ export const getRootElement = (element) => {
     }
     return element;
 };
+
+
+export function isPrimitive(value) {
+    return value === null || (typeof value !== 'function' && typeof value !== 'object');
+}
+
+
+const isNull =  (target) => target[name] === void 0 || target[name] === null;
+
+export function assignPrimitive(target, changed) {
+    for (let name in changed) {
+        if (changed.hasOwnProperty(name)) {
+            const changedValue = changed[name];
+
+            if (isPrimitive(changedValue) || isNull(target[name])) {
+                target[name] = changedValue;
+            } else {
+                assignPrimitive(target[name], changedValue);
+            }
+        }
+    }
+}
