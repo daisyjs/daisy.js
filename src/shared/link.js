@@ -1,3 +1,4 @@
+// link element or Component as vElement
 export default function link(node, element) {
     const {links} = element;
     const ondestroy = Object.keys(links).map(

@@ -211,7 +211,7 @@ function updateComponents(lastT, nextT) {
     });
 }
 
-export function diffVDOM(lastT, nextT) { // 讲 virtual dom 的组件全部替换为 节点之后，再 diff
+export default function diffVDOM(lastT, nextT) { // 讲 virtual dom 的组件全部替换为 节点之后，再 diff
     const patches = {};
     const vLastT = getVTree(lastT);
     

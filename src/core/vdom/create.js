@@ -8,7 +8,7 @@ import {BLOCK} from '../../shared/constant';
 const {Program, If, For, Element: ElementType, Expression, Text, Attribute, Include} = Types;
 
 
-export function createVElement(node, viewContext) {
+function createVElement(node, viewContext) {
     const {state} = viewContext;
     switch (node.type) {
     case Text:
@@ -150,7 +150,7 @@ function createVGroup(nodes, viewContext) {
     return elements;
 }
 
-export function createVDOM(ast, viewContext) {
+export default function createVDOM(ast, viewContext) {
     // create virtual dom
     const {type, body} = ast;
     if (type === Program) {

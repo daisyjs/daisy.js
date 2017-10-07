@@ -15,16 +15,7 @@ export function evalExpression(expression, {state, methods, context}) {
     }
 
     const codeFn = expressionMap.get(expression);
-    // try {
     return codeFn.call(context, Object.assign({}, methods, state));
-    // } catch(e) {
-    //     if (e instanceof ReferenceError) {
-
-    //         warn('Error in evalExpression: expression ' + e.message);
-    //         return;
-    //     }
-    //     throw e;
-    // }
 }
 
 export function codeGen(expression) {

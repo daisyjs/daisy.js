@@ -3,8 +3,8 @@ import Parser from './core/parser/Parser';
 import patch from './browser/renderers/patch';
 import directives from './extensions/directives';
 
-import {diffVDOM} from './core/vdom/diff';
-import {createVDOM} from './core/vdom/create';
+import diffVDOM from './core/vdom/diff';
+import createVDOM from './core/vdom/create';
 import {createElements} from './browser/renderers/createElement';
 import {createDirective, createEvent, getProppertyObject, getRootElement} from './shared/helper';
 import {allInherits, inheritable, setInheritCache} from './core/inherit';

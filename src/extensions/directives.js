@@ -9,9 +9,7 @@ export default {
         debug(name);
 
         const doSomthing = (e) => {
-            return value({
-                e
-            });
+            return value({e});
         };
             
         const event = name.slice(3);
