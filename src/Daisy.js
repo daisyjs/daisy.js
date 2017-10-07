@@ -1,7 +1,7 @@
 import Lexer from './core/parser/Lexer';
 import Parser from './core/parser/Parser';
 import patch from './browser/renderers/patch';
-import directives from './extension/directives';
+import directives from './extensions/directives';
 
 import {diffVDOM} from './browser/renderers/diffVDOM';
 import {createVDOM} from './core/vdom/createVElement';
