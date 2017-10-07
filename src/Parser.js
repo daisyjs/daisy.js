@@ -1,6 +1,6 @@
 import Lexer from './Lexer';
-import {END_TAG, COMMENT, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from'./Types/StateTypes';
-import {Program, Include, If, For, Element, Comment, Attribute, Expression, Text, Types} from'./Types/NodeTypes';
+import {END_TAG, COMMENT, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from'./shared/StateTypes';
+import {Program, Include, If, For, Element, Comment, Attribute, Expression, Text, Types} from'./shared/NodeTypes';
 import {Expression as expression, isIncludeExpr} from'./Expression';
 import {isSelfClose, error, isVoidTag} from'./helper/helper';
 

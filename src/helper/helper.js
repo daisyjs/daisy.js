@@ -1,4 +1,4 @@
-import {TAGNAME, END_TAG} from '../Types/StateTypes';
+import {TAGNAME, END_TAG} from '../shared/StateTypes';
 
 export function isTagClosed(tokens) {
     let stack = [];
@@ -146,8 +146,8 @@ export function getProppertyObject (list) {
 }
 
 export const getRootElement = (element) => {
-    while (element.parent) {
-        element = element.parent;
+    while (element.context) {
+        element = element.context;
     }
     return element;
 };

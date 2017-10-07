@@ -1,12 +1,10 @@
 import {evalExpression, codeGen} from './evalExpression';
 import {warn, isEmpty, getDirective} from './helper';
-import {Types} from '../Types/NodeTypes';
-import {Elements} from '../Types/Elements';
-import {Element} from '../Types/Element';
-import {VComponent} from '../Types/VComponent';
-import {
-    BLOCK
-} from '../constant';
+import {Types} from '../shared/NodeTypes';
+import {Elements} from '../shared/Elements';
+import {Element} from '../shared/Element';
+import {VComponent} from '../shared/VComponent';
+import {BLOCK} from '../shared/constant';
 const {Program, If, For, Element: ElementType, Expression, Text, Attribute, Include} = Types;
 
 
@@ -77,6 +75,7 @@ export function createVElement(node, viewContext) {
             return new VComponent(
                 name,
                 attributeList,
+                viewContext.context,
                 createVGroup(children, viewContext),
                 links
             ).setConstructor(components[name]);
@@ -85,6 +84,7 @@ export function createVElement(node, viewContext) {
         return Element.create(
             name,
             attributeList,
+            viewContext.context,
             createVGroup(children, viewContext),
             links
         );

@@ -1,9 +1,9 @@
-import {Element} from '../Types/Element';
-import {VComponent} from '../Types/VComponent';
+import {Element} from '../shared/Element';
+import {VComponent} from '../shared/VComponent';
 import {link, createComponent} from './createElement';
 import {debug, isEmpty} from './helper';
 import diff from './diff';
-import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE, MODIFY_BODY} from '../constant';
+import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE, MODIFY_BODY} from '../shared/constant';
 
 function walkVDOM(lastT = [], nextT = [], fn, index = -1) {
     function hasChild(element) {
@@ -178,46 +178,47 @@ function getVTree(vTree) {
     return temp;
 }
 
-function patchComponents(lastT, nextT) {
+function updateComponents(lastT, nextT) {
     walkVDOM(lastT, nextT, (last, next) => {
         copyVElementState(last, next);
         const result = diffVElement(last, next);
-        if (
-            VComponent.isInstance(last) || VComponent.isInstance(next)
-        ) {
+        const isPatchedComponent = VComponent.isInstance(last) || VComponent.isInstance(next);
+        if (isPatchedComponent) {
             result.forEach(
                 item => 
-                    patchComponent(Object.assign({}, item, {
+                    updateComponent(Object.assign({}, item, {
                         source: last,
                         target: next
                     }))
             );
 
+            const emptyarray = [];
             const vDOM = {
-                last: last.ref[VDOM],
-                next: null
+                last: emptyarray,
+                next: emptyarray
             };
 
-            if (next) {
-                if (next.ref) {
-                    next.ref[VDOM] = vDOM.next = next.ref.render(next.props);
-                } else {
-                    vDOM.next = next;
-                }
-                patchComponents(vDOM.last, vDOM.next);
+            if (last && last.ref) {
+                vDOM.last = last.ref[VDOM];
             }
+
+            if (next && next.ref) {
+                next.ref[VDOM] = vDOM.next = next.ref.render(next.props);
+            }
+
+            updateComponents(vDOM.last, vDOM.next);
         }
     });
 }
+
 export function diffVDOM(lastT, nextT) { // 讲 virtual dom 的组件全部替换为 节点之后，再 diff
     const patches = {};
-    const vTree1 = getVTree(lastT);
+    const vLastT = getVTree(lastT);
     
-    
-    patchComponents(lastT, nextT);
-    const vTree2 = getVTree(nextT);
+    updateComponents(lastT, nextT);
+    const vNextT = getVTree(nextT);
 
-    walkVDOM(vTree1, vTree2, (last, next, i) => {
+    walkVDOM(vLastT, vNextT, (last, next, i) => {
         const result = diffVElement(last, next);
 
         if (!patches[i]) {
@@ -233,38 +234,19 @@ export function diffVDOM(lastT, nextT) { // 讲 virtual dom 的组件全部替�
     return patches; // difference set
 }
 
-function createComponentBeyound(target, context) {
-    if (VComponent.isInstance(target)) {
-        const component = createComponent(target, context);
-        target.setRef(component);
 
-        const tree = getVTree(component[VDOM]);
-
-        tree.forEach((item) => {
-            if (VComponent.isInstance(item)) {
-                item.setRef(createComponentBeyound(item, component));
-            } else if (Element.isInstance(item)) {
-                item.children.forEach(child => {
-                    if (VComponent.isInstance(child)) {
-                        child.setRef(createComponentBeyound(child, component));
-                    }
-                });
-            }
-        });
-    }
-}
-
-export function patchComponent({
+export function updateComponent({
     type, source, changed, target
 }) {
     const component = source.ref;
+    const patch = [];
     switch (type) {
     case MODIFY_BODY:
         target.ref.body = changed;
         break;
 
     case PROPS:
-        Object.assign(component[STATE], target.props);
+        component[STATE] = Object.assign(component.state, target.props);
         break;
 
     case RELINK:
@@ -275,9 +257,14 @@ export function patchComponent({
         break;
 
     case REPLACE:
-        createComponentBeyound(target, component.parent);
-
-        component.destroy();
+        if (VComponent.isInstance(source) && VComponent.isInstance(target)) {
+            component.destroy();
+            target.setRef(createComponent(target));
+        } else if (VComponent.isInstance(source) && !VComponent.isInstance(target)) {
+            component.destroy();
+        } else {
+            target.setRef(createComponent(target));
+        }
         break;
         
     case REMOVE:
@@ -286,4 +273,6 @@ export function patchComponent({
     default:
         target.ref = component;
     }
+
+    return patch;
 }

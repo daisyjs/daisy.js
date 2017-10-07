@@ -1,4 +1,4 @@
-import {COMMENT, END_TAG, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from './Types/StateTypes';
+import {COMMENT, END_TAG, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from './shared/StateTypes';
 import {isSlash, isSpace, isOpenTag, isExclamationMark, isDash, isCloseTag, isEqual, isQuote, isTagClosed} from './helper/helper';
 import {isOpenExpr, isCloseExpr, getExpressionBounds} from './Expression';
 

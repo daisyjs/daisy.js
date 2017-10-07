@@ -1,11 +1,10 @@
 import {getProppertyObject} from '../helper/helper';
 
 export class Element {
-    constructor(tag = '', props = [], children = [], links = {}, key) {
+    constructor(tag = '', props = [], context = {}, children = [], links = {}, key) {
         this.tag = tag;
-
-        this.props = getProppertyObject(props);
-
+        this.props = Array.isArray(props) ? getProppertyObject(props): props;
+        this.context = context;
         this.children = children;
         this.links = links;
         this.key = key;

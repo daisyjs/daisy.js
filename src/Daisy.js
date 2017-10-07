@@ -11,7 +11,7 @@ import {allInherits, inheritable, setInheritCache} from './helper/inherit';
 import Events from 'events';
 import {
     STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT
-} from './constant';
+} from './shared/constant';
 
 class Daisy {
     render() {
@@ -24,9 +24,10 @@ class Daisy {
 
     constructor({
         state,
-        body
+        body,
+        context
     } = {}) {
-        this.compose({state, body});
+        this.compose({state, body, context});
 
         const template = this.render();
 
@@ -64,10 +65,12 @@ class Daisy {
 
     compose({
         state = {},
-        body = []
+        body = [],
+        context
     }) {
         this[STATE] = Object.assign({}, this.state, state);
         this.body = body;
+        this.context = context;
         this[EVENT] = new Events();
 
         this[METHODS] = {};

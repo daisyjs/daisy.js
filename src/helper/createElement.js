@@ -1,33 +1,33 @@
-import {Element} from '../Types/Element';
-import {Elements} from '../Types/Elements';
-import {VComponent} from '../Types/VComponent';
+import {Element} from '../shared/Element';
+import {Elements} from '../shared/Elements';
+import {VComponent} from '../shared/VComponent';
 
-export function createElements(elements, parent, context) {
+export function createElements(elements, parent) {
     elements.forEach(
-        element => appendElement(element, parent, context)
+        element => appendElement(element, parent)
     );
     return parent;
 }
 
-export function appendElement(element, parent, context) {
+export function appendElement(element, parent) {
     if (VComponent.isInstance(element)) {
-        createComponent(element, context).mount(parent);
+        createComponent(element).mount(parent);
     } else {
         parent.appendChild(createElement(element, parent));
     }
 }
 
-export function createComponent(vComponent, context) {
+export function createComponent(vComponent) {
     const {constructor: Constructor, props, children} = vComponent; 
 
     const component = new Constructor({
         state: props,
-        body: children
+        body: children,
+        context: vComponent.context
     });
     link(component, vComponent);
 
     vComponent.setRef(component);
-    component.parent = context;
 
     return component;
 }
