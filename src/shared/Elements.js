@@ -1,6 +1,6 @@
-import {Element} from './Element';
+import Element from './Element';
 
-export class Elements extends Array {
+export default class Elements extends Array {
     constructor() {
         super();
     }

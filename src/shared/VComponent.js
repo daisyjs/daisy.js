@@ -1,6 +1,7 @@
-import {Element} from './Element';
+import Element from './Element';
+import link from './link';
 
-export class VComponent extends Element {
+export default class VComponent extends Element {
     constructor(...args) {
         super(...args); 
     }
@@ -10,9 +11,20 @@ export class VComponent extends Element {
         return this;
     }
 
-    setRef(ref) {
-        this.ref = ref;
-        return this;
+    create() {
+        const {constructor: Constructor, props, children, context} = this; 
+    
+        const component = new Constructor({
+            state: props,
+            body: children,
+            context
+        });
+
+        link(component, this);
+    
+        this.ref = component;
+
+        return component;
     }
 
     static create(...args) {

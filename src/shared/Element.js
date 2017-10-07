@@ -1,6 +1,6 @@
 import {getProppertyObject} from './helper';
 
-export class Element {
+export default class Element {
     constructor(tag = '', props = [], context = {}, children = [], links = {}, key) {
         this.tag = tag;
         this.props = Array.isArray(props) ? getProppertyObject(props): props;

@@ -1,7 +1,6 @@
-import {Element} from '../../shared/Element';
-import {Elements} from '../../shared/Elements';
-import {VComponent} from '../../shared/VComponent';
-import createComponent from '../../shared/createComponent';
+import Element from '../../shared/Element';
+import Elements from '../../shared/Elements';
+import VComponent from '../../shared/VComponent';
 import link from '../../shared/link';
 
 export function createElements(elements, parent) {
@@ -13,7 +12,7 @@ export function createElements(elements, parent) {
 
 export function appendElement(element, parent) {
     if (VComponent.isInstance(element)) {
-        createComponent(element).mount(parent);
+        element.create().mount(parent);
     } else {
         parent.appendChild(createElement(element, parent));
     }

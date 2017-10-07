@@ -1,4 +1,4 @@
-import {VComponent} from '../shared/VComponent';
+import VComponent from '../shared/VComponent';
 import {debug} from '../shared/helper';
 
 export default {
