@@ -1,12 +1,13 @@
-import {Lexer} from './Lexer';
-import {Parser} from './Parser';
+import Lexer from './Lexer';
+import Parser from './Parser';
+import patch from './helper/patch';
+import directives from './extension/directives';
+
 import {diffVDOM} from './helper/diffVDOM';
-import {patch} from './helper/patch';
 import {createVDOM} from './helper/createVElement';
 import {createElements} from './helper/createElement';
-import directives from './extension/directives';
 import {createDirective, createEvent, getProppertyObject, getRootElement} from './helper/helper';
-import {getAllInstances, initInstances, setCache} from './Types/InstanceManager';
+import {allInherits, inheritable, setInheritCache} from './helper/inherit';
 import Events from 'events';
 import {
     STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT
@@ -22,9 +23,10 @@ class Daisy {
     }
 
     constructor({
-        state
+        state,
+        body
     } = {}) {
-        this.compose({state});
+        this.compose({state, body});
 
         const template = this.render();
 
@@ -42,10 +44,11 @@ class Daisy {
                 [STATE]: state,
                 [DIRECTIVES]: directives,
                 [COMPONENTS]: components,
+                body
             } = this;
 
             return createVDOM(this[AST], {
-                components, directives, state, methods, context: this
+                components, directives, state, methods, context: this, body
             });
         };
         
@@ -60,9 +63,11 @@ class Daisy {
     }
 
     compose({
-        state = {}
+        state = {},
+        body = []
     }) {
         this[STATE] = Object.assign({}, this.state, state);
+        this.body = body;
         this[EVENT] = new Events();
 
         this[METHODS] = {};
@@ -76,7 +81,7 @@ class Daisy {
             [DIRECTIVES]: directives = [],
             [COMPONENTS]: components = [],
             [EVENTS]: events = []
-        }] of getAllInstances(this.constructor)) {
+        }] of allInherits(this.constructor)) {
             if (this instanceof Componet) {
                 Object.assign(this[METHODS], getProppertyObject(methods));
                 Object.assign(this[COMPONENTS], getProppertyObject(components));
@@ -163,23 +168,23 @@ class Daisy {
     patched() {}  // hook
 
     static directive(...args) {
-        setCache(this,DIRECTIVES)(...args);
+        setInheritCache(this,DIRECTIVES)(...args);
     }
 
     static component(...args) {
-        setCache(this, COMPONENTS)(...args);
+        setInheritCache(this, COMPONENTS)(...args);
     }
 
     static method(...args) {
-        setCache(this, METHODS)(...args);
+        setInheritCache(this, METHODS)(...args);
     }
 
     static event(...args) {
-        setCache(this, EVENTS)(...args);
+        setInheritCache(this, EVENTS)(...args);
     }
 }
 
-initInstances(Daisy);
+inheritable(Daisy);
 
 Daisy.directive(directives);
 

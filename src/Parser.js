@@ -1,19 +1,20 @@
-import {Lexer} from './Lexer';
+import Lexer from './Lexer';
 import {END_TAG, COMMENT, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from'./Types/StateTypes';
-import {Program, If, For, Element, Comment, Attribute, Expression, Text, Types} from'./Types/NodeTypes';
+import {Program, Include, If, For, Element, Comment, Attribute, Expression, Text, Types} from'./Types/NodeTypes';
 import {Expression as expression, isIncludeExpr} from'./Expression';
 import {isSelfClose, error, isVoidTag} from'./helper/helper';
 
 const STATEMENT_MARK = ':';
 const DIRECTIVE_MARK = '@';
-const IF_DIRECTIVE = `${STATEMENT_MARK}if`;
-const ELSE_DIRECTIVE = `${STATEMENT_MARK}else`;
-const ELSE_IF_DIRECTIVE = `${STATEMENT_MARK}elif`;
-const FOR_DIRECTIVE = `${STATEMENT_MARK}for`;
-const FOR_ITEM_DIRECTIVE = `${STATEMENT_MARK}for-item`;
-const FOR_ITEM_INDEX_DIRECTIVE = `${STATEMENT_MARK}for-index`;
+const IF_STATEMENT = `${STATEMENT_MARK}if`;
+const INCLUDE_STATEMENT = `${STATEMENT_MARK}include`;
+const ELSE_STATEMENT = `${STATEMENT_MARK}else`;
+const ELSE_IF_STATEMENT = `${STATEMENT_MARK}elif`;
+const FOR_STATEMENT = `${STATEMENT_MARK}for`;
+const FOR_ITEM_STATEMENT = `${STATEMENT_MARK}for-item`;
+const FOR_ITEM_INDEX_STATEMENT = `${STATEMENT_MARK}for-index`;
 
-export function Parser(source) {
+export default function Parser(source) {
     let tokens;
 
     try {
@@ -130,13 +131,23 @@ export function Parser(source) {
             nodes.splice(nodes.indexOf(lastIfNode) + 1);
         }
 
+        element = wrapIncludeStatement(element, statements);
+
         consume(END_TAG);
 
         return element;
     }
 
+    function wrapIncludeStatement(element, statements) {
+        const inludesValue = statements[INCLUDE_STATEMENT];
+        if (inludesValue) {
+            return Include(inludesValue);
+        }
+        return element;
+    }
+
     function wrapElseStatement (element, statements, lastIfNode) {
-        let elseIfValue = statements[ELSE_IF_DIRECTIVE];
+        let elseIfValue = statements[ELSE_IF_STATEMENT];
 
         const keys = Object.keys(statements);
 
@@ -146,7 +157,7 @@ export function Parser(source) {
                 lastIfNode = lastIfNode.alternate;
             }
 
-            if (keys.includes(ELSE_DIRECTIVE)) {
+            if (keys.includes(ELSE_STATEMENT)) {
                 lastIfNode.alternate = element;
                 return null;
             } else if (elseIfValue) {
@@ -159,7 +170,7 @@ export function Parser(source) {
     }
 
     function wrapIfStatement(element, statements) {
-        let value = statements[IF_DIRECTIVE];
+        let value = statements[IF_STATEMENT];
         if (value) {
             return If(value, element);
         }
@@ -167,11 +178,11 @@ export function Parser(source) {
     }
 
     function wrapForStatement(element, statements) {
-        let value = statements[FOR_DIRECTIVE];
+        let value = statements[FOR_STATEMENT];
         if (value) {
             return For(value, {
-                item: statements[FOR_ITEM_DIRECTIVE],
-                index: statements[FOR_ITEM_INDEX_DIRECTIVE],
+                item: statements[FOR_ITEM_STATEMENT],
+                index: statements[FOR_ITEM_INDEX_STATEMENT],
             }, element);
         }
         return element;

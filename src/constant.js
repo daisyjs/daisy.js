@@ -18,3 +18,5 @@ export const REPLACE = 'replace';
 export const REMOVE = 'remove';
 export const NEW = 'new';
 export const RELINK = 'relink';
+
+export const MODIFY_BODY = 'modifyBody';

@@ -18,14 +18,15 @@ export function appendElement(element, parent, context) {
 }
 
 export function createComponent(vComponent, context) {
-    const {constructor: Constructor, props} = vComponent; 
+    const {constructor: Constructor, props, children} = vComponent; 
+
     const component = new Constructor({
-        state: props
+        state: props,
+        body: children
     });
     link(component, vComponent);
 
     vComponent.setRef(component);
-
     component.parent = context;
 
     return component;
