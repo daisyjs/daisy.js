@@ -1,4 +1,4 @@
-import {warn} from './helper';
+import {warn} from '../../shared/helper';
 
 const expressionMap = new Map();
 

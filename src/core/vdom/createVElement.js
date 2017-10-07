@@ -1,10 +1,10 @@
-import {evalExpression, codeGen} from './evalExpression';
-import {warn, isEmpty, getDirective} from './helper';
-import {Types} from '../shared/NodeTypes';
-import {Elements} from '../shared/Elements';
-import {Element} from '../shared/Element';
-import {VComponent} from '../shared/VComponent';
-import {BLOCK} from '../shared/constant';
+import {evalExpression, codeGen} from '../compiler/evalExpression';
+import {warn, isEmpty, getDirective} from '../../shared/helper';
+import {Types} from '../../shared/NodeTypes';
+import {Elements} from '../../shared/Elements';
+import {Element} from '../../shared/Element';
+import {VComponent} from '../../shared/VComponent';
+import {BLOCK} from '../../shared/constant';
 const {Program, If, For, Element: ElementType, Expression, Text, Attribute, Include} = Types;
 
 
