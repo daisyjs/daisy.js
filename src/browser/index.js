@@ -1,17 +1,17 @@
-import Lexer from './core/parser/Lexer';
-import Parser from './core/parser/Parser';
-import patch from './browser/renderers/patch';
-import directives from './extensions/directives';
+import Lexer from '../core/parser/Lexer';
+import Parser from '../core/parser/Parser';
+import patch from './renderers/patch';
+import directives from '../extensions/directives';
 
-import diffVDOM from './core/vdom/diff';
-import createVDOM from './core/vdom/create';
-import {createElements} from './browser/renderers/createElement';
-import {createDirective, createEvent, getProppertyObject, getRootElement} from './shared/helper';
-import {allInherits, inheritable, setInheritCache} from './core/inherit';
+import diffVDOM from '../core/vdom/diff';
+import createVDOM from '../core/vdom/create';
+import {createElements} from './renderers/createElement';
+import {createDirective, createEvent, getProppertyObject, getRootElement} from '../shared/helper';
+import {allInherits, inheritable, setInheritCache} from '../core/inherit';
 import Events from 'events';
 import {
     STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT
-} from './shared/constant';
+} from '../shared/constant';
 
 class Daisy {
     render() {

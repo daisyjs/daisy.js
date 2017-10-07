@@ -4,7 +4,7 @@ const builtins = require('rollup-plugin-node-builtins');
 
 module.exports = {
     name: 'Daisy',
-    input: 'src/index.js',
+    input: 'src/browser/index.js',
     watch: {
         include: 'src/**'
     },
