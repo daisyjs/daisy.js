@@ -1,13 +1,13 @@
-import Lexer from './Lexer';
-import Parser from './Parser';
-import patch from './helper/patch';
+import Lexer from './core/parser/Lexer';
+import Parser from './core/parser/Parser';
+import patch from './browser/renderers/patch';
 import directives from './extension/directives';
 
-import {diffVDOM} from './helper/diffVDOM';
-import {createVDOM} from './helper/createVElement';
-import {createElements} from './helper/createElement';
-import {createDirective, createEvent, getProppertyObject, getRootElement} from './helper/helper';
-import {allInherits, inheritable, setInheritCache} from './helper/inherit';
+import {diffVDOM} from './browser/renderers/diffVDOM';
+import {createVDOM} from './core/vdom/createVElement';
+import {createElements} from './browser/renderers/createElement';
+import {createDirective, createEvent, getProppertyObject, getRootElement} from './shared/helper';
+import {allInherits, inheritable, setInheritCache} from './core/inherit';
 import Events from 'events';
 import {
     STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT

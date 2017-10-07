@@ -1,9 +1,9 @@
-import {Element} from '../shared/Element';
-import {VComponent} from '../shared/VComponent';
+import {Element} from '../../shared/Element';
+import {VComponent} from '../../shared/VComponent';
 import {link, createComponent} from './createElement';
-import {debug, isEmpty, assignPrimitive} from './helper';
-import diff from './diff';
-import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE, MODIFY_BODY} from '../shared/constant';
+import {debug, isEmpty, assignPrimitive} from '../../shared/helper';
+import diff from '../../shared/diff';
+import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE, MODIFY_BODY} from '../../shared/constant';
 
 function walkVDOM(lastT = [], nextT = [], fn, index = -1) {
     function hasChild(element) {

@@ -1,4 +1,4 @@
-import {TAGNAME, END_TAG} from '../shared/StateTypes';
+import {TAGNAME, END_TAG} from './StateTypes';
 
 export function isTagClosed(tokens) {
     let stack = [];

@@ -1,6 +1,6 @@
-import {Element} from '../shared/Element';
-import {Elements} from '../shared/Elements';
-import {VComponent} from '../shared/VComponent';
+import {Element} from '../../shared/Element';
+import {Elements} from '../../shared/Elements';
+import {VComponent} from '../../shared/VComponent';
 
 export function createElements(elements, parent) {
     elements.forEach(

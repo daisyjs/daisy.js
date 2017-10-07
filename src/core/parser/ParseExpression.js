@@ -1,8 +1,11 @@
+import parse from '../../../lib/jsep';
+
 let EXPR_OPEN_BOUNDS = '{{';
 let EXPR_CLOSE_BOUNDS = '}}';
-import {
-    ParseExpression
-} from './helper/parseExpression';
+
+function ParseExpression(source) {
+    return parse(source);
+}
 
 function isStartsWithExprOpenBounds(source, pos) {
     return source.startsWith(EXPR_OPEN_BOUNDS, pos);
