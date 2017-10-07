@@ -1,6 +1,7 @@
 import {Element} from '../../shared/Element';
 import {VComponent} from '../../shared/VComponent';
-import {link, createComponent} from './createElement';
+import link from '../../shared/link';
+import createComponent from '../../shared/createComponent';
 import {debug, isEmpty, assignPrimitive} from '../../shared/helper';
 import diff from '../../shared/diff';
 import {VDOM, TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW, STATE, MODIFY_BODY} from '../../shared/constant';

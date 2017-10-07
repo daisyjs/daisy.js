@@ -1,7 +1,7 @@
-import {createElement, setProps, setStyle, link} from './createElement';
+import {createElement, setProps, setStyle} from './createElement';
 import {debug} from '../../shared/helper';
 import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from '../../shared/constant';
-
+import link from '../../shared/link';
 
 function walkDOM(tree, fn, index = -1) {
     tree.forEach(item => {

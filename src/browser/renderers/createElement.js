@@ -1,6 +1,8 @@
 import {Element} from '../../shared/Element';
 import {Elements} from '../../shared/Elements';
 import {VComponent} from '../../shared/VComponent';
+import createComponent from '../../shared/createComponent';
+import link from '../../shared/link';
 
 export function createElements(elements, parent) {
     elements.forEach(
@@ -15,21 +17,6 @@ export function appendElement(element, parent) {
     } else {
         parent.appendChild(createElement(element, parent));
     }
-}
-
-export function createComponent(vComponent) {
-    const {constructor: Constructor, props, children} = vComponent; 
-
-    const component = new Constructor({
-        state: props,
-        body: children,
-        context: vComponent.context
-    });
-    link(component, vComponent);
-
-    vComponent.setRef(component);
-
-    return component;
 }
 
 export function createElement(element) {
@@ -66,16 +53,3 @@ export function setStyle(node, styles) {
     Object.assign(node.style, styles);
 }
 
-export function link(node, element) {
-    const {links} = element;
-    const ondestroy = Object.keys(links).map(
-        (name) =>  {
-            const {link, binding} = links[name];
-            return link(node, binding, element);
-        }
-    );
-
-    element.ondestroy = () => {
-        ondestroy.forEach(item => item());
-    };
-}
