@@ -11,15 +11,13 @@ function copyVElementState (from, to) {
     if (
         Element.isInstance(to)
         && Element.isInstance(from)
-        && !from.copyed
+        && !to.ondestroy
     ) {
         to.ondestroy = from.ondestroy;
         
         if (VComponent.isInstance(from) && VComponent.isInstance(to)) {
             to.ref = from.ref;
         }
-
-        from.copyed = true;
     }
 }
 

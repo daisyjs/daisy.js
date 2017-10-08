@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "../node_modules/rollup/bin/rollup --config ./rollup.config.js",
+    "build": "rollup --config ./rollup.config.js",
     "dev": "npm run build -- -w"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^0.50.0"
+  }
 }
