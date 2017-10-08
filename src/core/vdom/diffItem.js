@@ -3,27 +3,27 @@ import diff from '../../shared/diff';
 import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW,  MODIFY_BODY} from '../../shared/constant';
 import VComponent from '../../shared/VComponent';
 
-export default function diffItem(last, right) {
+export default function diffItem(last, next) {
     if (last === void 0) {
         return [{
             type: NEW,
-            changed: right
+            changed: next
         }];
     } 
     
-    if (right === void 0) {
+    if (next === void 0) {
         return [{
             type: REMOVE,
             source: last
         }];
     }
 
-    if (typeof last === typeof right) {
+    if (typeof last === typeof next) {
         if (typeof last === 'string') {
-            if (last !== right) {
+            if (last !== next) {
                 return [{
                     type: TEXT,
-                    changed: right
+                    changed: next
                 }];
             }
             return [];
@@ -32,22 +32,22 @@ export default function diffItem(last, right) {
         return [{
             type: REPLACE,
             source: last,
-            changed: right
+            changed: next
         }];
     }
 
     const dif = [];
 
     // condition other changes (such as events eg.)
-    if (last.tag !== right.tag) {
+    if (last.tag !== next.tag) {
         return [{
             type: REPLACE,
             source: last,
-            changed: right
+            changed: next
         }];
     }
 
-    const style = diff(last.props.style, right.props.style);
+    const style = diff(last.props.style, next.props.style);
     if (!isEmpty(style)) {
         dif.push({
             type: STYLE,
@@ -55,7 +55,7 @@ export default function diffItem(last, right) {
         });
     }
 
-    const props = diff(last.props, right.props);
+    const props = diff(last.props, next.props);
     if (!isEmpty(props)) {
         dif.push({
             type: PROPS,
@@ -64,11 +64,11 @@ export default function diffItem(last, right) {
     }
 
     if (VComponent.isInstance(last)) {
-        const children = diff(last.children, right.children);
+        const children = diff(last.children, next.children);
         if (!isEmpty(children)) {
             dif.push({
                 type: MODIFY_BODY,
-                changed: right.children
+                changed: next.children
             });
         }
     }
@@ -83,15 +83,15 @@ export default function diffItem(last, right) {
         return returnValue;
     };
     
-    if (hasLinks(last) && hasLinks(right)) {
+    if (hasLinks(last) && hasLinks(next)) {
         const links = someLinks(last.links, (name, lastLink) => {
-            const rightLink = right.links[name];
-            if (lastLink.binding.context !== rightLink.binding.context) {
+            const nextLink = next.links[name];
+            if (lastLink.binding.context !== nextLink.binding.context) {
                 debug('context 不匹配，需要重新链接');
                 return {
                     type: RELINK,
                     source: last,
-                    changed: right
+                    changed: next
                 };
             }
         });
@@ -99,12 +99,12 @@ export default function diffItem(last, right) {
         if (links) {
             dif.push(links);
         }
-    } else if (hasLinks(last) || hasLinks(right)) {
+    } else if (hasLinks(last) || hasLinks(next)) {
         debug('link 函数被删除或添加，需要重新链接');
         dif.push({
             type: RELINK,
             source: last,
-            changed: right
+            changed: next
         });
     }
     return dif;

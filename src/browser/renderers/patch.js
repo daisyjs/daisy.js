@@ -1,6 +1,7 @@
 import {createElement, setProps, setStyle} from './createElement';
 import {debug} from '../../shared/helper';
 import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from '../../shared/constant';
+import Element from '../../shared/Element';
 import link from '../../shared/link';
 
 function walkDOM(tree, fn, index = -1) {
@@ -21,13 +22,20 @@ export default function patch(dom, patches) {
     function patchElement(node, parent, nextElement) {
         return (currentPatch) => {
             const {type, changed, source} = currentPatch;
+            let origin;
+
+            if (Element.isInstance(changed)) {
+                origin = changed.origin;
+            } else if (typeof changed === 'string') {
+                origin = changed;
+            }
 
             switch (type) {
             case RELINK:
                 if (source.ondestroy) {
                     source.ondestroy();
                 }
-                link(node, changed);
+                link(node, origin);
                 break;
 
             case STYLE:
@@ -43,14 +51,14 @@ export default function patch(dom, patches) {
                 break;
 
             case NEW:
-                parent.insertBefore(createElement(changed), nextElement);
+                parent.insertBefore(createElement(origin), nextElement);
                 break;
 
             case REPLACE:
                 if (source.ondestroy) {
                     source.ondestroy();
                 }
-                parent.replaceChild(createElement(changed), node);
+                parent.replaceChild(createElement(origin), node);
                 break;
 
             case REMOVE:

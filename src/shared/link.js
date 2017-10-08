@@ -1,4 +1,6 @@
 // link element or Component as vElement
+import {uid} from './helper';
+
 export default function link(node, element) {
     const {links} = element;
     const ondestroy = Object.keys(links).map(
@@ -11,4 +13,6 @@ export default function link(node, element) {
     element.ondestroy = () => {
         ondestroy.forEach(item => item());
     };
+
+    element.ondestroy.id = uid();
 }

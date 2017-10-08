@@ -1,5 +1,7 @@
 import VComponent from '../shared/VComponent';
-import {debug} from '../shared/helper';
+import {debug, uid} from '../shared/helper';
+
+const id = uid();
 
 export default {
     // eslint-disable-next-line
@@ -11,7 +13,8 @@ export default {
         const doSomthing = (e) => {
             return value({e});
         };
-            
+
+        doSomthing.id = id();
         const event = name.slice(3);
         
         if (VComponent.isInstance(vnode)) {

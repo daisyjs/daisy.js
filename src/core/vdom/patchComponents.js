@@ -8,18 +8,18 @@ import diffVElement from './diffItem';
 
 
 function copyVElementState (from, to) {
-    if (Element.isInstance(to)) {
-
-        if (to.ondestroy === void 0
-            && from !== void 0
-            && from !== null
-        ) {
-            to.ondestroy = from.ondestroy;
+    if (
+        Element.isInstance(to)
+        && Element.isInstance(from)
+        && !from.copyed
+    ) {
+        to.ondestroy = from.ondestroy;
+        
+        if (VComponent.isInstance(from) && VComponent.isInstance(to)) {
+            to.ref = from.ref;
         }
-    }
 
-    if (VComponent.isInstance(from) && VComponent.isInstance(to)) {
-        to.ref = from.ref;
+        from.copyed = true;
     }
 }
 
@@ -32,7 +32,7 @@ export default function patchComponents(lastT, nextT) {
             const result = diffVElement(last, next);
             result.forEach(
                 item => 
-                    updateComponent(Object.assign({}, item, {
+                    patchComponent(Object.assign({}, item, {
                         source: last,
                         target: next
                     }))
@@ -59,7 +59,7 @@ export default function patchComponents(lastT, nextT) {
 
 
 
-export function updateComponent({
+export function patchComponent({
     type, source, changed, target
 }) {
     const component = source.ref;

@@ -173,3 +173,11 @@ export function assignPrimitive(target, changed) {
         }
     }
 }
+
+
+export function uid () {
+    let id =  -1;
+    return () => {
+        return ++id;
+    };
+}

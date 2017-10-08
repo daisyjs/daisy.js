@@ -23,6 +23,7 @@ function getVTree(vTree) {
             const copy = Element.clone(item);
             const children = getVTree(item.children);
             copy.children = children;
+            copy.origin = item;
             temp.push(copy);
         } else { //  if (typeof item === 'string')
             temp.push(item);
@@ -35,8 +36,8 @@ function getVTree(vTree) {
 export default function diffVDOM(lastT, nextT) { // 讲 virtual dom 的组件全部替换为 节点之后，再 diff
     const patches = {};
     const vLastT = getVTree(lastT);
-    
     patchComponents(lastT, nextT);
+
     const vNextT = getVTree(nextT);
 
     walkVDOM(vLastT, vNextT, (last, next, i) => {
