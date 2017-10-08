@@ -6,12 +6,10 @@ module.exports = {
     watch: {
         include: path.join(__dirname, '**')
     },
-    output: [
-        {
-            file: path.join(__dirname, 'dist.js'),
-            format: ['umd'],
-            sourceMap: 'inline'
-        }
-    ],
+    output: {
+        file: path.join(__dirname, 'dist.js'),
+        format: ['umd'],
+        sourcemap: 'inline'
+    },
     plugins: []
 };

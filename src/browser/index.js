@@ -193,8 +193,8 @@ Daisy.directive(directives);
 
 Daisy.verison = '1.0.0';
 
-export default Daisy;
+Daisy.Lexer = Lexer;
 
-export {
-    Lexer, Parser
-};
+Daisy.Parser = Parser;
+
+export default Daisy;

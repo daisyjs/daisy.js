@@ -15,8 +15,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup --config rollup.config.js",
     "dev": "npm run build -- -w",
-    "exampleBuild": "rollup --config ./examples/rollup.config.js",
-    "exampleDev": "npm run exampleBuild -- -w",
     "lint": "eslint --fix ."
   },
   "repository": {
@@ -24,7 +22,10 @@
     "url": "git+https://github.com/ImHype/Daisy.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "ImHype",
+  "contributors": [
+    "ImHype"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ImHype/Daisy/issues"
