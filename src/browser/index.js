@@ -25,11 +25,13 @@ class Daisy {
     constructor({
         state,
         body,
-        context
+        context,
+        render = this.render
     } = {}) {
         this.compose({state, body, context});
 
-        const template = this.render();
+        
+        const template = render();
 
         try {
             this[AST] = Parser(template);
@@ -54,7 +56,6 @@ class Daisy {
         };
         
         this[VDOM] = this.render();
-
 
         this[EVENTS].forEach(({name, handler}) => {
             this.on(name, handler.bind(this));

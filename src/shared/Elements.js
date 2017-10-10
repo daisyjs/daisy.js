@@ -21,4 +21,9 @@ export default class Elements extends Array {
         }
         return this;
     }
+
+    static isInstance(elements) {
+        console.log('isTrue',Array.isArray(elements))
+        return Array.isArray(elements);
+    }
 }

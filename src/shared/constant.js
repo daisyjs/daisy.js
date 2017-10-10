@@ -5,9 +5,9 @@ export const COMPONENTS = Symbol('components');
 export const EVENTS = Symbol('events');
 
 export const AST = Symbol('ast');
-export const VDOM = Symbol('vDOM');
-export const RDOM = Symbol('rDOM');
-export const EVENT = Symbol('event');
+export const VDOM = 'vDOM';  // Symbol('vDOM');
+export const RDOM = 'rDOM';  // Symbol('rDOM');
+export const EVENT = 'event'; //Symbol('event');
 
 export const BLOCK = 'block';
 

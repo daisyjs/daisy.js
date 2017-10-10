@@ -19,7 +19,7 @@ export default class Element {
         return Object.assign(newElement, element);
     }
 
-    static isInstance(something) {
-        return something instanceof Element;
+    static isInstance(element) {
+        return element.tag && element.context;
     }
 }
