@@ -20,6 +20,6 @@ export default class Element {
     }
 
     static isInstance(element) {
-        return element.tag && element.context;
+        return element && element.tag && element.context;
     }
 }

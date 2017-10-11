@@ -2,16 +2,15 @@ import Lexer from '../core/parser/Lexer';
 import Parser from '../core/parser/Parser';
 import patch from './renderers/patch';
 import directives from '../extensions/directives';
+import events from '../extensions/events';
 
 import diffVDOM from '../core/vdom/diff';
 import createVDOM from '../core/vdom/create';
 import {createElements} from './renderers/createElement';
-import {createDirective, createEvent, getProppertyObject, getRootElement} from '../shared/helper';
+import {noop, mixin, createDirective, createEvent, getProppertyObject, getRootElement} from '../shared/helper';
 import {allInherits, inheritable, setInheritCache} from '../core/inherit';
 import Events from 'events';
-import {
-    STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT
-} from '../shared/constant';
+import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT} from '../shared/constant';
 
 class Daisy {
     render() {
@@ -30,7 +29,6 @@ class Daisy {
     } = {}) {
         this.compose({state, body, context});
 
-        
         const template = render();
 
         try {
@@ -54,7 +52,7 @@ class Daisy {
                 components, directives, state, methods, context: this, body
             });
         };
-        
+
         this[VDOM] = this.render();
 
         this[EVENTS].forEach(({name, handler}) => {
@@ -102,26 +100,6 @@ class Daisy {
         }
     }
 
-    on(...args) {
-        return this[EVENT].on(...args);
-    }
-
-    once(...args) {
-        return this[EVENT].once(...args);
-    }
-
-    emit(...args) {
-        return this[EVENT].emit(...args);
-    }
-
-    removeListener(...args) {
-        return this[EVENT].removeListener(...args);
-    }
-
-    removeAllListeners(...args) {
-        return this[EVENT].removeAllListeners(...args);
-    }
-
     getState() {
         return this[STATE];
     }
@@ -134,7 +112,6 @@ class Daisy {
     }
 
     mount(node) {
-        this.mountNode = node;
         createElements(this[VDOM], node, this);
         this[RDOM] = node.childNodes;
         this.mounted(this[RDOM]);  // vDOM, realDOM
@@ -144,51 +121,41 @@ class Daisy {
         if (state === this[STATE]) {
             return false;
         }
-        // setState
+
         Object.assign(this[STATE], state);
 
-        const dif = getRootElement(this).diffPatch();
+        const dif = getRootElement(this).patchDiff();
 
         this.patched(dif);
     }
 
-    diffPatch() {
-        // create virtualDOM
+    patchDiff() {
         const {[VDOM]: lastVDOM} = this;
 
         this[VDOM] = this.render();
 
-        // diff virtualDOMs
         const dif = diffVDOM(lastVDOM, this[VDOM]);
 
         patch(this[RDOM], dif);
 
         return dif;
     }
-
-    parsed() {}   // hook
-    ready() {}   // hook
-    mounted() {}  // hook
-    patched() {}  // hook
-
-    static directive(...args) {
-        setInheritCache(this,DIRECTIVES)(...args);
-    }
-
-    static component(...args) {
-        setInheritCache(this, COMPONENTS)(...args);
-    }
-
-    static method(...args) {
-        setInheritCache(this, METHODS)(...args);
-    }
-
-    static event(...args) {
-        setInheritCache(this, EVENTS)(...args);
-    }
 }
 
 inheritable(Daisy);
+
+Daisy.directive = setInheritCache(Daisy, DIRECTIVES);
+Daisy.component = setInheritCache(Daisy, COMPONENTS);
+Daisy.method = setInheritCache(Daisy, METHODS);
+Daisy.event = setInheritCache(Daisy, EVENTS);
+
+mixin(Daisy, events);
+
+const hooks = {
+    parsed: noop, ready: noop, mounted: noop, patched: noop
+};
+
+mixin(Daisy, hooks); // hook
 
 Daisy.directive(directives);
 

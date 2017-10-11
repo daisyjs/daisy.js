@@ -23,7 +23,6 @@ export default class Elements extends Array {
     }
 
     static isInstance(elements) {
-        console.log('isTrue',Array.isArray(elements))
         return Array.isArray(elements);
     }
 }

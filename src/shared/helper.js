@@ -137,7 +137,7 @@ export const createEvent = ({name, value: handler}) => ({
     handler
 });
 
-export function getProppertyObject (list) {
+export const getProppertyObject = (list) => {
     return list.reduce((prev, {name, value}) => {
         return Object.assign(prev, {
             [name]: value
@@ -160,7 +160,7 @@ export function isPrimitive(value) {
 
 const isNull =  (target) => target[name] === void 0 || target[name] === null;
 
-export function assignPrimitive(target, changed) {
+export const assignPrimitive = (target, changed) => {
     for (let name in changed) {
         if (changed.hasOwnProperty(name)) {
             const changedValue = changed[name];
@@ -175,9 +175,15 @@ export function assignPrimitive(target, changed) {
 }
 
 
-export function uid () {
+export const uid = () => {
     let id =  -1;
     return () => {
         return ++id;
     };
 }
+
+export const mixin = (klass, impl) => {
+    return Object.assign(klass.prototype, impl);
+}
+
+export const noop = () => {};
