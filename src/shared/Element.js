@@ -2,6 +2,7 @@ import {getProppertyObject} from './helper';
 
 export default class Element {
     constructor(tag = '', props = [], context = {}, children = [], links = {}, key) {
+        this.isElament = true;
         this.tag = tag;
         this.props = Array.isArray(props) ? getProppertyObject(props): props;
         this.context = context;
@@ -20,6 +21,6 @@ export default class Element {
     }
 
     static isInstance(element) {
-        return element && element.tag && element.context;
+        return element && element.isElament;
     }
 }

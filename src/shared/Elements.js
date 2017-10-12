@@ -3,6 +3,7 @@ import Element from './Element';
 export default class Elements extends Array {
     constructor() {
         super();
+        this.isElements = true;
     }
 
     static create() {
@@ -23,6 +24,6 @@ export default class Elements extends Array {
     }
 
     static isInstance(elements) {
-        return Array.isArray(elements);
+        return elements && elements.isElements;
     }
 }
