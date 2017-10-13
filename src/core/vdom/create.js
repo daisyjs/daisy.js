@@ -104,8 +104,8 @@ function createVElement(node, viewContext) {
         const elements = Elements.create();
         const list = evalExpression(node.test, viewContext);
         const {item, index} = node.init;
-        const itemName = codeGen(item);
-        const indexName = codeGen(index);
+        const itemName = item.type === Expression ? codeGen(item): item;
+        const indexName = index.type === Expression ? codeGen(index): index;
 
         list.forEach(
             (item, index) => {
