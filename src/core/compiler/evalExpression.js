@@ -48,7 +48,7 @@ export function codeGen(expression) {
     }
 
     case 'Literal':
-        return expression.raw;
+        return expression.value;
 
     case 'CallExpression': {
         const callee = codeGen(expression.callee);
