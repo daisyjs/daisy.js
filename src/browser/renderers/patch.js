@@ -1,4 +1,4 @@
-import {createElement, setProps, setStyle} from './createElement';
+import {appendElement, createElement, setProps, setStyle} from './createElement';
 import {debug} from '../../shared/helper';
 import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from '../../shared/constant';
 import Element from '../../shared/Element';
@@ -52,6 +52,7 @@ export default function patch(dom, patches) {
 
             case NEW:
                 parent.insertBefore(createElement(origin), nextElement);
+                // appendElement(origin, parent);
                 break;
 
             case REPLACE:

@@ -1,6 +1,6 @@
 import {debug, isEmpty} from '../../shared/helper';
 import diff from '../../shared/diff';
-import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW,  MODIFY_BODY} from '../../shared/constant';
+import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW,  MODIFY_BODY, STATE} from '../../shared/constant';
 import VComponent from '../../shared/VComponent';
 
 export default function diffItem(last, next) {
@@ -86,6 +86,7 @@ export default function diffItem(last, next) {
     if (hasLinks(last) && hasLinks(next)) {
         const links = someLinks(last.links, (name, lastLink) => {
             const nextLink = next.links[name];
+            // const dif = JSON.stringify(lastLink.binding.state) !== JSON.stringify(nextLink.binding.state);
             if (lastLink.binding.context !== nextLink.binding.context) {
                 debug('context 不匹配，需要重新链接');
                 return {
@@ -95,7 +96,7 @@ export default function diffItem(last, next) {
                 };
             }
         });
-
+        
         if (links) {
             dif.push(links);
         }

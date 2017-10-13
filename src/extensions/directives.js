@@ -10,8 +10,8 @@ export default {
         debug('name:');
         debug(name);
 
-        const doSomthing = (e) => {
-            return value({e});
+        const doSomthing = ($event) => {
+            return value({$event});
         };
 
         doSomthing.id = id();

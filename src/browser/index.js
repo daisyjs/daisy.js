@@ -7,7 +7,7 @@ import events from '../extensions/events';
 import diffVDOM from '../core/vdom/diff';
 import createVDOM from '../core/vdom/create';
 import {createElements} from './renderers/createElement';
-import {noop, mixin, createDirective, createEvent, getProppertyObject, getRootElement} from '../shared/helper';
+import {noop, mixin, createDirective, createEvent, getProppertyObject, getRootElement, clone} from '../shared/helper';
 import {allInherits, inheritable, setInheritCache} from '../core/inherit';
 import Events from 'events';
 import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT} from '../shared/constant';
@@ -115,6 +115,8 @@ class Daisy {
         createElements(this[VDOM], node, this);
         this[RDOM] = node.childNodes;
         this.mounted(this[RDOM]);  // vDOM, realDOM
+
+        return this;
     }
 
     setState(state) {
@@ -122,8 +124,8 @@ class Daisy {
             return false;
         }
 
-        Object.assign(this[STATE], state);
-
+        this[STATE] = Object.assign(this[STATE], state); // @todo clone state
+        
         const dif = getRootElement(this).patchDiff();
 
         this.patched(dif);

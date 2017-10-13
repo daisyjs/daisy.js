@@ -53,6 +53,7 @@ function createVElement(node, viewContext) {
                             binding: {
                                 context,
                                 name: pattern,
+                                state,
                                 value: (state = {}) => {
                                     const value = directives[pattern];
                                     if (value.type === Expression) {

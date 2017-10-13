@@ -1,6 +1,6 @@
 import link from '../../shared/link';
 import {assignPrimitive} from '../../shared/helper';
-import {VDOM, PROPS, REPLACE, RELINK, REMOVE, STATE, MODIFY_BODY} from '../../shared/constant';
+import {NEW, VDOM, PROPS, REPLACE, RELINK, REMOVE, STATE, MODIFY_BODY} from '../../shared/constant';
 import walkVDOM from './walk';
 import Element from '../../shared/Element';
 import VComponent from '../../shared/VComponent';
@@ -58,7 +58,7 @@ export default function patchComponents(lastT, nextT) {
 
 
 export function patchComponent({
-    type, source, changed, target
+    type, source = {}, changed = {}, target
 }) {
     const component = source.ref;
     const patch = [];
@@ -70,6 +70,10 @@ export function patchComponent({
     case PROPS:
         // component[STATE] = Object.assign(component.state, target.props);
         assignPrimitive(component[STATE], changed);
+        break;
+
+    case NEW:
+        target.create();
         break;
 
     case RELINK:

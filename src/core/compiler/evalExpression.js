@@ -43,7 +43,7 @@ export function codeGen(expression) {
 
     case 'Compound': {
         // eslint-disable-next-line
-        debugger
+        // debugger
         break;
     }
 
@@ -69,7 +69,7 @@ export function codeGen(expression) {
         const test = codeGen(expression.test);
         const consequent = codeGen(expression.consequent);
         const alternate = codeGen(expression.alternate);
-        return `${test}?${consequent}:${alternate}`;
+        return `(${test}?${consequent}:${alternate})`;
     }
 
     case 'ArrayExpression':

@@ -1,7 +1,9 @@
 import Header from './Header';
-import TodoList from './TodoList';
-import TodoItem from './TodoItem';
-import NoTodoList from './NoTodoList';
+import Todo from './Todo';
+import Footer from './Footer';
+import Info from './Info';
+import Main from './Main';
+
 
 // eslint-disable-next-line
 export default class Component extends Daisy {
@@ -9,61 +11,73 @@ export default class Component extends Daisy {
         return Object.assign(
             super.state, {
                 history: [],
+                status: 2,
                 todoList: [
                     {
                         name: 'ast -> virtual nodes 2017-10-3',
-                        status: true
+                        status: 0
                     }, {
                         name: 'virtual dom 2017-10-4',
-                        status: false
+                        status: 0
                     }, {
                         name: 'events 2017-10-5',
-                        status: false
+                        status: 0
                     }, {
                         name: 'directive 2017-10-6',
-                        status: false
+                        status: 0
                     }, {
                         name: 'component 2017-10-7',
-                        status: false
+                        status: 0
+                    }
+                ],
+                statusList: [
+                    {
+                        name: 'All',
+                        type: 2
+                    },
+                    {
+                        name: 'Active',
+                        type: 0
+                    },
+                    {
+                        name: 'completed',
+                        type: 1
                     }
                 ]
             }
         );
     }
     render() {
-        return `<Header
-            length={{todoList.length}}
-        ></Header>
-        
-        <block :if = "{{todoList.length > 0}}">
-            <TodoList
-                todoList={{todoList}}
-                @on-delete={{this.onDelete(e)}}>
-                <li 
-                    :for={{todoList}} 
-                    :for-item={{todo}} 
-                    :for-index={{todoIndex}}
-                    @on-click={{this.onButtonClick(todo, todoIndex)}}>
-                    <Todo
-                        status={{todo.status}}
-                        name={{todo.name}}
-                        @on-delete={{this.onDelete(todoIndex)}}
-                        todoIndex={{todoIndex}}></Todo>
-                </li>
-            </TodoList>
-        </block>
-        <block :else>
-            <NoTodoList></NoTodoList>
-        </block>
-        <div style="text-align: center; margin-top: 20px;">
-            <input 
-                type="text" 
-                placeholder="input your plan"
-                @ref="input"
-            > 
-            <button @on-click={{this.onAdd()}}>add</button>
-            <button @on-click={{this.onReset()}}>reset</button>
-        </div>`;
+        return `<section class="todoapp">
+            <Header>
+                <input 
+                    autofocus="autofocus" 
+                    autocomplete="off" 
+                    placeholder="What needs to be done?" 
+                    class="new-todo" 
+                    @on-keydown={{this.onKeyDown($event)}}
+                    @ref="input"
+                >
+            </Header>
+            <Main>
+                <Todo 
+                    :for={{todoList}}
+                    :if={{filter(item.status, status)}}
+                    name={{item.name}} 
+                    status={{item.status}}
+                    @on-click={{this.onTodoClick(item)}}
+                    @on-destroy={{this.onDestroy(index)}}
+                ></Todo>
+            </Main>
+            <Footer
+                :if={{todoList.length > 0}}
+                size={{size(todoList, status)}}
+                status={{status}}
+                statusList={{statusList}}
+                @on-change={{this.onStatusChange($event)}}
+                @on-clear={{this.onClear()}}
+            ></Footer>
+        </section>`;
     }
     constructor(options) {
         super(options);
@@ -72,6 +86,65 @@ export default class Component extends Daisy {
             console.log('deleted: ' + msg.name);
         });
     }
+    onKeyDown({keyCode}) {
+        if (keyCode === 13) {
+            const value = this.refs.input.value;
+            this.add(value);
+        }
+    }
+
+    onTodoClick(todo) {
+        let todoList = this.getState().todoList;
+        const index = todoList.indexOf(todoList.filter(({name}) => name === todo.name )[0]);
+ 
+        this.setState({
+            todoList: [
+                ...todoList.slice(0, index),
+                Object.assign({}, todo, {
+                    status: Number(!todo.status)
+                }),
+                ...todoList.slice(index+1)
+            ]
+        });
+    }
+
+    onDestroy(index) {
+        let todoList = this.getState().todoList;
+        this.setState({
+            todoList: [
+                ...todoList.slice(0, index),
+                ...todoList.slice(index+1)
+            ]
+        });
+    }
+
+    add(value) {
+        const todoList = this.getState().todoList;
+        this.setState({
+            todoList: [
+                ...todoList,
+                {
+                    name: value,
+                    status: 0
+                }
+            ]
+        });
+    }
+
+    onStatusChange(status) {
+        this.setState({
+            status
+        });
+    }
+
+    onClear() {
+        const todoList = this.getState().todoList;
+        
+        this.setState({
+            todoList: todoList.map((item) => Object.assign({}, item, {status: 0}))
+        });
+    }
+
     parsed() {
         // eslint-disable-next-line
         console.log('-- afterParsed --');
@@ -92,53 +165,21 @@ export default class Component extends Daisy {
         // eslint-disable-next-line
         console.log(dom);
     }
-    onHeaderClick() {
-        // eslint-disable-next-line
-        console.log('-- onHeaderClick --');
-    }
-
-    onButtonClick(todo, index) {
-        const todoList = this.getState().todoList;
-
-        todoList[index].status = !todoList[index].status;
-        this.setState({
-            todoList: todoList
-        });
-    }
-
-    onAdd() {
-        const input = this.refs.input;
-        const value = input.value;
-        const todoList = this.getState().todoList;
-
-        this.setState({
-            todoList: [
-                ...todoList,
-                {
-                    name: value,
-                    status: false
-                }
-            ]
-        });
-    }
     onReset() {
         this.setState({
             todoList: this.state.todoList
         });
     }
-
-    onDelete(index) {
-        const todoList = this.getState().todoList;
-        this.setState({
-            todoList: [
-                ...todoList.slice(0, index),
-                ...todoList.slice(index + 1, todoList.length)
-            ]
-        });
-    }
 }
+const filter = (status, s) => (s === 2 ? true : (status === s));
+const list = (list, s) => list.filter(item => filter(item.status, s));
+
+Component.method('filter', filter);
+Component.method('size', (li, s) => list(li, s).length);
 
 Component.component('Header', Header);
-Component.component('TodoList', TodoList);
-Component.component('Todo', TodoItem);
-Component.component('NoTodoList', NoTodoList);
+Component.component('Todo', Todo);
+Component.component('Footer', Footer);
+Component.component('Info', Info);
+Component.component('Main', Main);
+

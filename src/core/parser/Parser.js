@@ -119,9 +119,9 @@ export default function Parser(source) {
             return type === Types.If;
         });
 
+        element = wrapIncludeStatement(element, statements);
+        
         const lastIfNode = ifNodeList[ifNodeList.length - 1];
-
-        element = wrapForStatement(element, statements);
 
         element = wrapElseStatement(element, statements, lastIfNode);
 
@@ -131,7 +131,8 @@ export default function Parser(source) {
             nodes.splice(nodes.indexOf(lastIfNode) + 1);
         }
 
-        element = wrapIncludeStatement(element, statements);
+        element = wrapForStatement(element, statements);
+        
 
         consume(END_TAG);
 
@@ -181,8 +182,8 @@ export default function Parser(source) {
         let value = statements[FOR_STATEMENT];
         if (value) {
             return For(value, {
-                item: statements[FOR_ITEM_STATEMENT],
-                index: statements[FOR_ITEM_INDEX_STATEMENT],
+                item: statements[FOR_ITEM_STATEMENT] || Expression(expression('item')),
+                index: statements[FOR_ITEM_INDEX_STATEMENT] || Expression(expression('index')),
             }, element);
         }
         return element;
