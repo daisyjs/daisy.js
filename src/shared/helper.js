@@ -143,7 +143,7 @@ export const getProppertyObject = (list) => {
             [name]: value
         });
     }, {});
-}
+};
 
 export const getRootElement = (element) => {
     while (element.context) {
@@ -172,7 +172,7 @@ export const assignPrimitive = (target, changed) => {
             }
         }
     }
-}
+};
 
 
 export const uid = () => {
@@ -180,10 +180,10 @@ export const uid = () => {
     return () => {
         return ++id;
     };
-}
+};
 
 export const mixin = (klass, impl) => {
     return Object.assign(klass.prototype, impl);
-}
+};
 
 export const noop = () => {};
