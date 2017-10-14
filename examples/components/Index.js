@@ -50,7 +50,7 @@ export default class Component extends Daisy {
     render() {
         return `<section class="todoapp">
             <Header
-                title={{'daisy'}}
+                title={{todos}}
             >
                 <input 
                     autofocus="autofocus" 
@@ -174,7 +174,7 @@ const list = (list, s) => list.filter(item => filter(item.status, s));
 
 Component.method('filter', filter);
 Component.method('size', (li, s) => list(li, s).length);
-Component.computed('hello', () => 'Hello World!');
+Component.computed('todos', () => 'todos');
 
 Component.component('Header', Header);
 Component.component('Todo', Todo);
