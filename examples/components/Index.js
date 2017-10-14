@@ -13,22 +13,6 @@ export default class Component extends Daisy {
                 history: [],
                 status: 2,
                 todoList: [
-                    {
-                        name: 'ast -> virtual nodes 2017-10-3',
-                        status: 0
-                    }, {
-                        name: 'virtual dom 2017-10-4',
-                        status: 0
-                    }, {
-                        name: 'events 2017-10-5',
-                        status: 0
-                    }, {
-                        name: 'directive 2017-10-6',
-                        status: 0
-                    }, {
-                        name: 'component 2017-10-7',
-                        status: 0
-                    }
                 ],
                 statusList: [
                     {
@@ -52,20 +36,20 @@ export default class Component extends Daisy {
             <Header
                 title={{todos}}
             >
-                <input 
-                    autofocus="autofocus" 
-                    autocomplete="off" 
-                    placeholder="What needs to be done?" 
-                    class="new-todo" 
+                <input
+                    autofocus="autofocus"
+                    autocomplete="off"
+                    placeholder="What needs to be done?"
+                    class="new-todo"
                     @on-keydown={{this.onKeyDown($event)}}
                     @ref="input"
                 >
             </Header>
             <Main>
-                <Todo 
+                <Todo
                     :for={{todoList}}
                     :if={{filter(item.status, status)}}
-                    name={{item.name}} 
+                    name={{item.name}}
                     status={{item.status}}
                     @on-click={{this.onTodoClick(item)}}
                     @on-destroy={{this.onDestroy(index)}}
@@ -98,7 +82,7 @@ export default class Component extends Daisy {
     onTodoClick(todo) {
         let todoList = this.getState().todoList;
         const index = todoList.indexOf(todoList.filter(({name}) => name === todo.name )[0]);
- 
+
         this.setState({
             todoList: [
                 ...todoList.slice(0, index),
@@ -141,7 +125,7 @@ export default class Component extends Daisy {
 
     onClear() {
         const todoList = this.getState().todoList;
-        
+
         this.setState({
             todoList: todoList.map((item) => Object.assign({}, item, {status: 0}))
         });

@@ -1,6 +1,15 @@
 {
+  "name": "daisy-example",
+  "version": "1.0.0",
   "dependencies": {
     "todomvc-app-css": "^2.1.0",
     "todomvc-common": "^1.0.4"
+  },
+  "scripts": {
+    "dev": "rollup -c rollup.config.js",
+    "mvjs": "cp -r node_modules/_todomvc-common@1.0.4@todomvc-common/ libs/todomvc-common/ && cp -r node_modules/_todomvc-app-css@2.1.0@todomvc-app-css libs/todomvc-app-css/"
+  },
+  "devDependencies": {
+    "rollup": "^0.50.0"
   }
 }

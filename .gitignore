@@ -1,6 +1,4 @@
 node_modules/
-dist/**
 **.DS_Store**
 foxman.config.js
 npm-debug.log
-examples/dist.js
