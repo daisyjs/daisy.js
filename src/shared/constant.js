@@ -3,6 +3,7 @@ export const METHODS = Symbol('methods');
 export const DIRECTIVES = Symbol('directives');
 export const COMPONENTS = Symbol('components');
 export const EVENTS = Symbol('events');
+export const COMPUTED = 'computed';
 
 export const AST = Symbol('ast');
 export const VDOM = 'vDOM';  // Symbol('vDOM');

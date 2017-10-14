@@ -1,8 +1,16 @@
-import {warn} from '../../shared/helper';
+import {warn, debug} from '../../shared/helper';
 
 const expressionMap = new Map();
+const compute = (computed) => {
+    const computedResult = Object.keys(computed).reduce((result, item) => {
+        return Object.assign(result, {
+            [item]: typeof computed[item] === 'function'? computed[item](): computed[item]
+        });
+    }, {});
+    return computedResult;
+};
 
-export function evalExpression(expression, {state, methods, context}) {
+export function evalExpression(expression, {state, methods, context, computed = {}}) {
     // cache expression
     if (!expressionMap.get(expression)) {
         const expr = codeGen(expression);
@@ -15,7 +23,9 @@ export function evalExpression(expression, {state, methods, context}) {
     }
 
     const codeFn = expressionMap.get(expression);
-    return codeFn.call(context, Object.assign({}, methods, state));
+    const scope = Object.assign({}, methods, state, compute(computed));
+    debug(codeFn);
+    return codeFn.call(context, scope);
 }
 
 export function codeGen(expression) {
@@ -48,7 +58,7 @@ export function codeGen(expression) {
     }
 
     case 'Literal':
-        return expression.value;
+        return expression.raw;
 
     case 'CallExpression': {
         const callee = codeGen(expression.callee);

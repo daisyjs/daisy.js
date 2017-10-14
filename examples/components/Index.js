@@ -7,7 +7,7 @@ import Main from './Main';
 
 // eslint-disable-next-line
 export default class Component extends Daisy {
-    get state() {
+    state() {
         return Object.assign(
             super.state, {
                 history: [],
@@ -49,7 +49,9 @@ export default class Component extends Daisy {
     }
     render() {
         return `<section class="todoapp">
-            <Header>
+            <Header
+                title={{'daisy'}}
+            >
                 <input 
                     autofocus="autofocus" 
                     autocomplete="off" 
@@ -145,26 +147,22 @@ export default class Component extends Daisy {
         });
     }
 
+    // eslint-disable-next-line
     parsed() {
-        // eslint-disable-next-line
-        console.log('-- afterParsed --');
     }
+
+    // eslint-disable-next-line
     ready() {
-        // eslint-disable-next-line
-        console.log('-- afterInited --');
     }
+
+    // eslint-disable-next-line
     mounted(dom) {
-        // eslint-disable-next-line
-        console.log('-- afterMounted --');
-        // eslint-disable-next-line
-        console.log(dom);
     }
+
+    // eslint-disable-next-line
     patched(dom) {
-        // eslint-disable-next-line
-        console.log('-- afterPatched --');
-        // eslint-disable-next-line
-        console.log(dom);
     }
+
     onReset() {
         this.setState({
             todoList: this.state.todoList
@@ -176,10 +174,10 @@ const list = (list, s) => list.filter(item => filter(item.status, s));
 
 Component.method('filter', filter);
 Component.method('size', (li, s) => list(li, s).length);
+Component.computed('hello', () => 'Hello World!');
 
 Component.component('Header', Header);
 Component.component('Todo', Todo);
 Component.component('Footer', Footer);
 Component.component('Info', Info);
 Component.component('Main', Main);
-

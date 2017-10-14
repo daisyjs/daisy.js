@@ -59,12 +59,11 @@ function createVElement(node, viewContext) {
                                     if (value.type === Expression) {
                                         return evalExpression(value, 
                                             Object.assign(viewContext, {
-                                                state: Object.assign({}, viewContext.state, state) // merge state into 
+                                                computed: Object.assign({}, viewContext.computed, state) // merge state into 
                                             }));
                                     }
                                     return value;
                                 }
-                                    
                             }
                         }
                     });
@@ -107,15 +106,15 @@ function createVElement(node, viewContext) {
         const {item, index} = node.init;
         const itemName = item.type === Expression ? codeGen(item): item;
         const indexName = index.type === Expression ? codeGen(index): index;
-
+        
         list.forEach(
             (item, index) => {
                 elements.push(createVElement(node.body, Object.assign({},
                     viewContext, {
-                        state: Object.assign({}, state, {
-                            [itemName]: item,
-                            [indexName]: index
-                        })
+                        computed: {
+                            [itemName]: () => evalExpression(node.test, viewContext)[index],
+                            [indexName]: () => index
+                        }
                     }
                 )));
             }

@@ -31,12 +31,6 @@ export default function patch(dom, patches) {
             }
 
             switch (type) {
-            case RELINK:
-                if (source.ondestroy) {
-                    source.ondestroy();
-                }
-                link(node, origin);
-                break;
 
             case STYLE:
                 setStyle(node.style, changed);

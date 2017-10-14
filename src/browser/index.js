@@ -7,17 +7,17 @@ import events from '../extensions/events';
 import diffVDOM from '../core/vdom/diff';
 import createVDOM from '../core/vdom/create';
 import {createElements} from './renderers/createElement';
-import {noop, mixin, createDirective, createEvent, getProppertyObject, getRootElement, clone} from '../shared/helper';
+import {noop, mixin, createDirective, createEvent, getProppertyObject, getRootElement} from '../shared/helper';
 import {allInherits, inheritable, setInheritCache} from '../core/inherit';
 import Events from 'events';
-import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT} from '../shared/constant';
+import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, COMPUTED} from '../shared/constant';
 
 class Daisy {
     render() {
         return '';
     }
 
-    get state() {
+    state() {
         return {};
     }
 
@@ -45,11 +45,12 @@ class Daisy {
                 [STATE]: state,
                 [DIRECTIVES]: directives,
                 [COMPONENTS]: components,
+                [COMPUTED]: computed,
                 body
             } = this;
 
             return createVDOM(this[AST], {
-                components, directives, state, methods, context: this, body
+                components, directives, state, methods, context: this, body, computed
             });
         };
 
@@ -67,7 +68,7 @@ class Daisy {
         body = [],
         context
     }) {
-        this[STATE] = Object.assign({}, this.state, state);
+        this[STATE] = Object.assign({}, this.state(), state);
         this.body = body;
         this.context = context;
         this[EVENT] = new Events();
@@ -76,17 +77,20 @@ class Daisy {
         this[DIRECTIVES] = [];
         this[COMPONENTS] = {};
         this[EVENTS] = [];
+        this[COMPUTED] = [];
         this.refs = {};
 
         for (let [Componet, {
             [METHODS]: methods = [],
             [DIRECTIVES]: directives = [],
             [COMPONENTS]: components = [],
+            [COMPUTED]: computed = [],
             [EVENTS]: events = []
         }] of allInherits(this.constructor)) {
             if (this instanceof Componet) {
                 Object.assign(this[METHODS], getProppertyObject(methods));
                 Object.assign(this[COMPONENTS], getProppertyObject(components));
+                Object.assign(this[COMPUTED], getProppertyObject(computed));
 
                 this[DIRECTIVES] = [
                     ...this[DIRECTIVES], ...directives.map((item) => createDirective(item))
@@ -150,6 +154,7 @@ Daisy.directive = setInheritCache(Daisy, DIRECTIVES);
 Daisy.component = setInheritCache(Daisy, COMPONENTS);
 Daisy.method = setInheritCache(Daisy, METHODS);
 Daisy.event = setInheritCache(Daisy, EVENTS);
+Daisy.computed = setInheritCache(Daisy, COMPUTED);
 
 mixin(Daisy, events);
 

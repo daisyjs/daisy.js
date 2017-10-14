@@ -15,7 +15,7 @@ export default class TodoItem extends Daisy {
             </li>`;
     }
 
+    // eslint-disable-next-line
     parsed(ast) {
-        console.log(ast)
     }
 }

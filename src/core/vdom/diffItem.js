@@ -73,40 +73,5 @@ export default function diffItem(last, next) {
         }
     }
 
-    const hasLinks = (element) => element.links && Object.keys(element.links).length > 0;
-    const someLinks = (links, fn) => {
-        let returnValue;
-        Object.keys(links).some((name, i) => {
-            const link = links[name];
-            return (returnValue = fn(name, link, i));
-        });
-        return returnValue;
-    };
-    
-    if (hasLinks(last) && hasLinks(next)) {
-        const links = someLinks(last.links, (name, lastLink) => {
-            const nextLink = next.links[name];
-            // const dif = JSON.stringify(lastLink.binding.state) !== JSON.stringify(nextLink.binding.state);
-            if (lastLink.binding.context !== nextLink.binding.context) {
-                debug('context 不匹配，需要重新链接');
-                return {
-                    type: RELINK,
-                    source: last,
-                    changed: next
-                };
-            }
-        });
-        
-        if (links) {
-            dif.push(links);
-        }
-    } else if (hasLinks(last) || hasLinks(next)) {
-        debug('link 函数被删除或添加，需要重新链接');
-        dif.push({
-            type: RELINK,
-            source: last,
-            changed: next
-        });
-    }
     return dif;
 }

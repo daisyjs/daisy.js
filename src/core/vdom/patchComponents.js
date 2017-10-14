@@ -76,13 +76,6 @@ export function patchComponent({
         target.create();
         break;
 
-    case RELINK:
-        if (source.ondestroy) {
-            source.ondestroy();
-        }
-        link(component, changed);
-        break;
-
     case REPLACE:
         if (VComponent.isInstance(source) && VComponent.isInstance(target)) {
             component.destroy();
