@@ -1,7 +1,6 @@
 import {isEmpty} from '../../shared/helper';
 import diff from '../../shared/diff';
-import {TEXT, STYLE, PROPS, REPLACE, REMOVE, NEW,  MODIFY_BODY, RELINK} from '../../shared/constant';
-import VComponent from '../../shared/VComponent';
+import {TEXT, STYLE, PROPS, REPLACE, REMOVE, NEW, RELINK} from '../../shared/constant';
 
 export default function diffItem(last, next) {
     if (last === void 0) {
@@ -61,16 +60,6 @@ export default function diffItem(last, next) {
             type: PROPS,
             changed: props
         });
-    }
-
-    if (VComponent.isInstance(last)) {
-        const children = diff(last.children, next.children);
-        if (!isEmpty(children)) {
-            dif.push({
-                type: MODIFY_BODY,
-                changed: next.children
-            });
-        }
     }
 
     if (last.links.context !== next.links.context) {

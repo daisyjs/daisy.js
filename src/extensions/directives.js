@@ -1,4 +1,3 @@
-import VComponent from '../shared/VComponent';
 import {debug, uid} from '../shared/helper';
 
 const id = uid();

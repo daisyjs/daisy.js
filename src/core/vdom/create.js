@@ -3,9 +3,9 @@ import {warn, isEmpty, getDirective} from '../../shared/helper';
 import {Types} from '../../shared/NodeTypes';
 import Elements from '../../shared/Elements';
 import Element from '../../shared/Element';
-import VComponent from '../../shared/VComponent';
 import {BLOCK, VDOM, STATE} from '../../shared/constant';
 import {getProppertyObject} from '../../shared/helper';
+import link from '../../shared/link';
 
 const {Program, If, For, Element: ElementType, Expression, Text, Attribute, Include} = Types;
 
@@ -96,21 +96,20 @@ function createVElement(node, viewContext) {
                 context: viewContext.context
             });
 
-            let element;
-            if (componentInstance[VDOM].length === 1) {
-                element = componentInstance[VDOM][0];
-                element.componentInstance = componentInstance;
-            } else {
-                element = Element.create(
-                    'div',
-                    [],
-                    componentInstance,
-                    componentInstance[VDOM],
-                    links,
-                    componentInstance
-                );
-            }
 
+            let element;
+
+            element = Element.create(
+                'daisy-component',
+                [],
+                componentInstance,
+                componentInstance[VDOM],
+                links,
+                componentInstance
+            );
+
+            link(componentInstance, element);
+            
             return element;
         }
 
