@@ -1,4 +1,3 @@
-import getVTree from '../../shared/getVTree';
 import {VDOM} from '../../shared/constant';
 import Element from '../../shared/Element';
 
@@ -30,9 +29,7 @@ export function getProps(node, props) {
 export default function() {
     return {
         renderToString(app) {
-            const vDom = app[VDOM];
-            const vTree = getVTree(vDom);
-            return createElements(vTree);
+            return createElements(app[VDOM]);
         }
     };
 }
