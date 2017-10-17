@@ -25,9 +25,10 @@ class Daisy {
         state,
         body,
         context,
+        computed = {},
         render = this.render
     } = {}) {
-        this.compose({state, body, context});
+        this.compose({state, body, context, computed});
 
         const template = render();
 
@@ -45,12 +46,12 @@ class Daisy {
                 [STATE]: state,
                 [DIRECTIVES]: directives,
                 [COMPONENTS]: components,
-                [COMPUTED]: computed,
+                [COMPUTED]: _computed,
                 body
             } = this;
 
             return createVDOM(this[AST], {
-                components, directives, state, methods, context: this, body, computed
+                components, directives, state, methods, context: this, body, computed: Object.assign({}, _computed, computed)
             });
         };
 
@@ -66,7 +67,8 @@ class Daisy {
     compose({
         state = {},
         body = [],
-        context
+        context,
+        computed: _computed = []
     }) {
         this[STATE] = Object.assign({}, this.state(), state);
         this.body = body;
@@ -90,7 +92,7 @@ class Daisy {
             if (this instanceof Componet) {
                 Object.assign(this[METHODS], getProppertyObject(methods));
                 Object.assign(this[COMPONENTS], getProppertyObject(components));
-                Object.assign(this[COMPUTED], getProppertyObject(computed));
+                Object.assign(this[COMPUTED], getProppertyObject(computed), _computed);
 
                 this[DIRECTIVES] = [
                     ...this[DIRECTIVES], ...directives.map((item) => createDirective(item))

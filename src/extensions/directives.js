@@ -16,22 +16,21 @@ export default {
 
         doSomthing.id = id();
         const event = name.slice(3);
-        
-        if (VComponent.isInstance(vnode)) {
-            elem.on(event, doSomthing);
+        if (vnode.componentInstance) {
+            vnode.componentInstance.on(event, doSomthing);
             return () => {
-                elem.removeListener(event, doSomthing);
+                vnode.componentInstance.removeListener(event, doSomthing); 
             };
         } else {
             elem.addEventListener(event, doSomthing);
             return () => {
-                elem.removeEventListener(event, doSomthing); 
+                elem.removeEventListener(event, doSomthing);
             };
         }
     },
     // eslint-disable-next-line
-    ref(elem, binding, vnode) {
-        const {value, context} = binding;
+    ref(elem, binding, vnode, context) {
+        const {value} = binding;
         
         context.refs[value()] = elem;
         return () => {

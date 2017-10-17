@@ -16,7 +16,8 @@ function copyVElementState (from, to) {
         to.ondestroy = from.ondestroy;
         
         if (VComponent.isInstance(from) && VComponent.isInstance(to)) {
-            to.ref = from.ref;
+            to.componentInstance = from.componentInstance;
+            // from.computed = to.computed;
         }
     }
 }
@@ -42,12 +43,12 @@ export default function patchComponents(lastT, nextT) {
                 next: emptyarray
             };
 
-            if (last && last.ref) {
-                vDOM.last = last.ref[VDOM];
+            if (last && last.componentInstance) {
+                vDOM.last = last.componentInstance[VDOM];
             }
 
-            if (next && next.ref) {
-                next.ref[VDOM] = vDOM.next = next.ref.render(next.props);
+            if (next && next.componentInstance) {
+                next.componentInstance[VDOM] = vDOM.next = next.componentInstance.render(next.props);
             }
 
             patchComponents(vDOM.last, vDOM.next);
@@ -60,38 +61,38 @@ export default function patchComponents(lastT, nextT) {
 export function patchComponent({
     type, source = {}, changed = {}, target
 }) {
-    const component = source.ref;
+    const {componentInstance} = source || {};
     const patch = [];
     switch (type) {
     case MODIFY_BODY:
-        target.ref.body = changed;
-        break;
-
-    case PROPS:
-        // component[STATE] = Object.assign(component.state, target.props);
-        assignPrimitive(component[STATE], changed);
+        target.componentInstance.body = changed;
         break;
 
     case NEW:
         target.create();
         break;
 
+    case PROPS:
+        // component[STATE] = Object.assign(component.state, target.props);
+        assignPrimitive(componentInstance[STATE], changed);
+        break;
+
     case REPLACE:
         if (VComponent.isInstance(source) && VComponent.isInstance(target)) {
-            component.destroy();
+            componentInstance.destroy();
             target.create();
         } else if (VComponent.isInstance(source) && !VComponent.isInstance(target)) {
-            component.destroy();
+            componentInstance.destroy();
         } else {
             target.create();
         }
         break;
         
     case REMOVE:
-        component.destroy();
+        componentInstance.destroy();
         break;
     default:
-        target.ref = component;
+        // target.componentInstance = componentInstance;
     }
 
     return patch;

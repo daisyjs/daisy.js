@@ -1,7 +1,7 @@
 import {getProppertyObject} from './helper';
 
 export default class Element {
-    constructor(tag = '', props = [], context = {}, children = [], links = {}, key) {
+    constructor(tag = '', props = [], context = {}, children = [], links = {}, componentInstance, key) {
         this.isElament = true;
         this.tag = tag;
         this.props = Array.isArray(props) ? getProppertyObject(props): props;
@@ -9,6 +9,7 @@ export default class Element {
         this.children = children;
         this.links = links;
         this.key = key;
+        this.componentInstance = componentInstance;
     }
 
     static create(...args) {

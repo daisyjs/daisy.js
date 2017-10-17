@@ -7,10 +7,10 @@ export default function getVTree(vTree) {
 
     vTree.forEach((item) => {
         if (VComponent.isInstance(item)) {
-            if (item.ref) {
+            if (item.componentInstance) {
                 temp = [
                     ...temp,
-                    ...getVTree(item.ref[VDOM])
+                    ...getVTree(item.componentInstance[VDOM])
                 ];
             } else {
                 temp.push(item);

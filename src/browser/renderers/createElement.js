@@ -12,7 +12,9 @@ export function createElements(elements, parent) {
 
 export function appendElement(element, parent) {
     if (VComponent.isInstance(element)) {
-        element.create().mount(parent);
+        const node = document.createElement('div');
+        element.create().mount(node);
+        parent.appendChild(node);
     } else {
         parent.appendChild(createElement(element, parent));
     }

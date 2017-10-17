@@ -51,7 +51,7 @@ export default class Component extends Daisy {
                     :if={{filter(item.status, status)}}
                     name={{item.name}}
                     status={{item.status}}
-                    @on-click={{this.onTodoClick(item)}}
+                    @on-click={{this.onTodoClick(item, $event)}}
                     @on-destroy={{this.onDestroy(index)}}
                 ></Todo>
             </Main>
@@ -79,10 +79,11 @@ export default class Component extends Daisy {
         }
     }
 
-    onTodoClick(todo) {
+    onTodoClick(todo, name) {
         let todoList = this.getState().todoList;
         const index = todoList.indexOf(todoList.filter(({name}) => name === todo.name )[0]);
-
+        debugger
+        
         this.setState({
             todoList: [
                 ...todoList.slice(0, index),

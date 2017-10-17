@@ -4,11 +4,11 @@ import link from './link';
 export default class VComponent extends Element {
     constructor(...args) {
         super(...args); 
-    }
+        const computed = args[5];
+        const constructor = args[6];
 
-    setConstructor(constructor) {
+        this.computed = computed;
         this.constructor = constructor;
-        return this;
     }
 
     create() {
@@ -22,7 +22,7 @@ export default class VComponent extends Element {
 
         link(component, this);
     
-        this.ref = component;
+        this.componentInstance = component;
 
         return component;
     }

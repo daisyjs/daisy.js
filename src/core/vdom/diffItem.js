@@ -1,6 +1,6 @@
-import {debug, isEmpty} from '../../shared/helper';
+import {isEmpty} from '../../shared/helper';
 import diff from '../../shared/diff';
-import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW,  MODIFY_BODY, STATE} from '../../shared/constant';
+import {TEXT, STYLE, PROPS, REPLACE, REMOVE, NEW,  MODIFY_BODY, RELINK} from '../../shared/constant';
 import VComponent from '../../shared/VComponent';
 
 export default function diffItem(last, next) {
@@ -71,6 +71,14 @@ export default function diffItem(last, next) {
                 changed: next.children
             });
         }
+    }
+
+    if (last.links.context !== next.links.context) {
+        dif.push({
+            type: RELINK,
+            source: last,
+            changed: next //.links.context
+        });
     }
 
     return dif;

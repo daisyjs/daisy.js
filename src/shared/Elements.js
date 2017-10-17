@@ -15,7 +15,7 @@ export default class Elements extends Array {
             element instanceof Element || typeof element === 'string'
         ) {
             super.push(element);
-        } else if (element instanceof Elements) {
+        } else if (element instanceof Array) {
             element.forEach(
                 item => super.push(item)
             );

@@ -7,7 +7,7 @@ export default class TodoItem extends Daisy {
                     <input type="checkbox" 
                         class="toggle" 
                         checked={{!!status}} 
-                        @on-click={{this.emit('click')}}
+                        @on-click={{this.emit('click', name)}}
                     >
                     <label>{{name}}</label> <button class="destroy" @on-click={{this.emit('destroy')}}></button>    
                 </div>

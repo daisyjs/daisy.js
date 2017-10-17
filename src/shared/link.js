@@ -3,10 +3,11 @@ import {uid} from './helper';
 
 export default function link(node, element) {
     const {links} = element;
-    const ondestroy = Object.keys(links).map(
+    const {directives, context} = links;
+    const ondestroy = Object.keys(directives).map(
         (name) =>  {
-            const {link, binding} = links[name];
-            return link(node, binding, element);
+            const {link, binding} = directives[name];
+            return link(node, binding, element, context);
         }
     );
 

@@ -4,7 +4,9 @@ import {Types} from '../../shared/NodeTypes';
 import Elements from '../../shared/Elements';
 import Element from '../../shared/Element';
 import VComponent from '../../shared/VComponent';
-import {BLOCK} from '../../shared/constant';
+import {BLOCK, VDOM, STATE} from '../../shared/constant';
+import {getProppertyObject} from '../../shared/helper';
+
 const {Program, If, For, Element: ElementType, Expression, Text, Attribute, Include} = Types;
 
 
@@ -42,43 +44,74 @@ function createVElement(node, viewContext) {
 
         const attributeList = attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item);
 
-
-        let links = isEmpty(directives)
+        let _directives = isEmpty(directives)
             ? {}
             : Object.keys(directives).reduce(
                 (prev, pattern) => {
+                    const binding = {
+                        name: pattern,
+                        state,
+                        value: (state = {}) => {
+                            const value = directives[pattern];
+                            if (value.type === Expression) {
+                                return evalExpression(value, 
+                                    Object.assign({}, viewContext, {
+                                        context: links.context,
+                                        state: links.context[STATE],
+                                        computed: Object.assign(
+                                            {}, 
+                                            viewContext.computed,
+                                            state
+                                        ) // merge state into 
+                                    }));
+                            }
+                            return value;
+                        }
+                    };
+
                     return Object.assign(prev, {
                         [pattern]: {
                             link: getDirective(pattern, thisDirectives),
-                            binding: {
-                                context,
-                                name: pattern,
-                                state,
-                                value: (state = {}) => {
-                                    const value = directives[pattern];
-                                    if (value.type === Expression) {
-                                        return evalExpression(value, 
-                                            Object.assign(viewContext, {
-                                                computed: Object.assign({}, viewContext.computed, state) // merge state into 
-                                            }));
-                                    }
-                                    return value;
-                                }
-                            }
+                            binding
                         }
                     });
                 },
                 {}
             );
 
+        const links = {
+            context,
+            directives: _directives
+        };
+
         if (Object.keys(components).includes(name)) {
-            return new VComponent(
-                name,
-                attributeList,
-                viewContext.context,
-                createVGroup(children, viewContext),
-                links
-            ).setConstructor(components[name]);
+            const Component = components[name];
+            const state = getProppertyObject(attributeList);
+            const body = createVGroup(children, viewContext);
+            
+            const componentInstance = new Component({
+                body,
+                state: Object.assign({}, state),
+                computed: viewContext.computed,
+                context: viewContext.context
+            });
+
+            let element;
+            if (componentInstance[VDOM].length === 1) {
+                element = componentInstance[VDOM][0];
+                element.componentInstance = componentInstance;
+            } else {
+                element = Element.create(
+                    'div',
+                    [],
+                    componentInstance,
+                    componentInstance[VDOM],
+                    links,
+                    componentInstance
+                );
+            }
+
+            return element;
         }
 
         return Element.create(
@@ -106,17 +139,19 @@ function createVElement(node, viewContext) {
         const {item, index} = node.init;
         const itemName = item.type === Expression ? codeGen(item): item;
         const indexName = index.type === Expression ? codeGen(index): index;
-        
+
         list.forEach(
             (item, index) => {
-                elements.push(createVElement(node.body, Object.assign({},
+                const withComputed = Object.assign({},
                     viewContext, {
                         computed: {
-                            [itemName]: () => evalExpression(node.test, viewContext)[index],
+                            [itemName]: () => item,
                             [indexName]: () => index
                         }
                     }
-                )));
+                );
+                const element = createVElement(node.body, withComputed);
+                elements.push(element);
             }
         );
 

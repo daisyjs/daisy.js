@@ -22,13 +22,6 @@ export default function patch(dom, patches) {
     function patchElement(node, parent, nextElement) {
         return (currentPatch) => {
             const {type, changed, source} = currentPatch;
-            let origin;
-
-            if (Element.isInstance(changed)) {
-                origin = changed.origin;
-            } else if (typeof changed === 'string') {
-                origin = changed;
-            }
 
             switch (type) {
 
@@ -45,15 +38,14 @@ export default function patch(dom, patches) {
                 break;
 
             case NEW:
-                parent.insertBefore(createElement(origin), nextElement);
-                // appendElement(origin, parent);
+                parent.insertBefore(createElement(changed), nextElement);
                 break;
 
             case REPLACE:
                 if (source.ondestroy) {
                     source.ondestroy();
                 }
-                parent.replaceChild(createElement(origin), node);
+                parent.replaceChild(createElement(changed), node);
                 break;
 
             case REMOVE:
@@ -61,6 +53,13 @@ export default function patch(dom, patches) {
                     source.ondestroy();
                 }
                 parent.removeChild(node);
+                break;
+            case RELINK:
+                // source.links.context = changed;
+                if (source.ondestroy) {
+                    source.ondestroy();
+                }
+                link(node, changed);
                 break;
             default:
             }

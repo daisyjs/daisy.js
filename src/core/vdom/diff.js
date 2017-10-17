@@ -6,12 +6,8 @@ import getVTree from '../../shared/getVTree';
 
 export default function diffVDOM(lastT, nextT) { // 讲 virtual dom 的组件全部替换为 节点之后，再 diff
     const patches = {};
-    const vLastT = getVTree(lastT);
-    patchComponents(lastT, nextT);
 
-    const vNextT = getVTree(nextT);
-
-    walkVDOM(vLastT, vNextT, (last, next, i) => {
+    walkVDOM(lastT, nextT, (last, next, i) => {
         const result = diffVElement(last, next);
 
         if (!patches[i]) {
