@@ -1,16 +1,16 @@
-import Lexer from '../core/parser/Lexer';
-import Parser from '../core/parser/Parser';
+import Lexer from '../../core/parser/Lexer';
+import Parser from '../../core/parser/Parser';
 import patch from './renderers/patch';
-import directives from '../extensions/directives';
-import events from '../extensions/events';
+import directives from '../../builtin/directives';
+import events from '../../builtin/events';
 
-import diffVDOM from '../core/vdom/diff';
-import createVDOM from '../core/vdom/create';
+import diffVDOM from '../../core/vdom/diff';
+import createVDOM from '../../core/vdom/create';
 import {createElements} from './renderers/createElement';
-import {noop, mixin, createDirective, createEvent, getProppertyObject, getRootElement} from '../shared/helper';
-import {allInherits, inheritable, setInheritCache} from '../core/inherit';
+import {noop, mixin, createDirective, createEvent, getProppertyObject} from '../../shared/helper';
+import {allInherits, inheritable, setInheritCache} from '../../core/inherit';
 import Events from 'events';
-import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, COMPUTED} from '../shared/constant';
+import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, COMPUTED} from '../../shared/constant';
 
 class Daisy {
     render() {

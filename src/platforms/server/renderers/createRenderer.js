@@ -1,5 +1,5 @@
-import {VDOM} from '../../shared/constant';
-import Element from '../../shared/Element';
+import {VDOM} from '../../../shared/constant';
+import Element from '../../../shared/Element';
 
 function createElements(elements) {
     const fragment = elements.map(

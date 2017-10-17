@@ -48,7 +48,7 @@ const plugins = [
 ];
 const daisy = {
     name: 'Daisy',
-    input: 'src/browser/index.js',
+    input: 'src/platforms/browser/index.js',
     watch: {
         include: 'src/**'
     },
@@ -64,7 +64,7 @@ const daisy = {
 
 const serverRender = {
     name: 'Daisy',
-    input: 'src/server/index.js',
+    input: 'src/platforms/server/index.js',
     watch: {
         include: 'src/**'
     },

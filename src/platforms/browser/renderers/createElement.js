@@ -1,6 +1,6 @@
-import Element from '../../shared/Element';
-import Elements from '../../shared/Elements';
-import link from '../../shared/link';
+import Element from '../../../shared/Element';
+import Elements from '../../../shared/Elements';
+import link from '../../../shared/link';
 
 export function createElements(elements, parent) {
     elements.forEach(
