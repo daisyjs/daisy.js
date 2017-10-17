@@ -23,7 +23,7 @@ export function createElement(element) {
         createElements(children, node); // children
         link(node, element);         // links
         setProps(node, props);       // props
-    } else if (element instanceof Elements) {
+    } else if (Elements.isInstance(element)) {
         const node = document.createDocumentFragment(); // package
         createElements(element, node);
     } else {

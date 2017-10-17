@@ -41,7 +41,6 @@ function createVElement(node, viewContext) {
         if (name.toLowerCase() === BLOCK) {
             return createVGroup(children, viewContext);
         }
-
         const attributeList = attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item);
 
         let _directives = isEmpty(directives)
@@ -86,12 +85,10 @@ function createVElement(node, viewContext) {
 
         if (Object.keys(components).includes(name)) {
             const Component = components[name];
-            const state = getProppertyObject(attributeList);
-            const body = createVGroup(children, viewContext);
             
             const componentInstance = new Component({
-                body,
-                state: Object.assign({}, state),
+                body: createVGroup(children, viewContext),
+                state: Object.assign({}, getProppertyObject(attributeList)),
                 computed: viewContext.computed,
                 context: viewContext.context
             });
@@ -150,7 +147,7 @@ function createVElement(node, viewContext) {
                     }
                 );
                 const element = createVElement(node.body, withComputed);
-                elements.push(element);
+                elements.append(element);
             }
         );
 
@@ -178,7 +175,8 @@ function createVGroup(nodes, viewContext) {
     const elements = Elements.create();
 
     nodes.forEach((node) => {
-        elements.push(createVElement(node, viewContext));
+        const vNode = createVElement(node, viewContext);
+        elements.append(vNode);
     });
 
     return elements;

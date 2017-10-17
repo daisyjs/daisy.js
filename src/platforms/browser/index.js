@@ -3,15 +3,18 @@ import Parser from '../../core/parser/Parser';
 import patch from './renderers/patch';
 import directives from '../../builtin/directives';
 import events from '../../builtin/events';
+import annotations from '../../builtin/annotations';
 
 import diffVDOM from '../../core/vdom/diff';
 import createVDOM from '../../core/vdom/create';
 import {createElements} from './renderers/createElement';
 import {noop, mixin, createDirective, createEvent, getProppertyObject} from '../../shared/helper';
-import {allInherits, inheritable, setInheritCache} from '../../core/inherit';
+import {allInherits, setInheritCache} from '../../core/inherit';
 import Events from 'events';
 import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, COMPUTED} from '../../shared/constant';
 
+const {directive} = annotations;
+@directive(directives)
 class Daisy {
     render() {
         return '';
@@ -150,14 +153,6 @@ class Daisy {
     }
 }
 
-inheritable(Daisy);
-
-Daisy.directive = setInheritCache(Daisy, DIRECTIVES);
-Daisy.component = setInheritCache(Daisy, COMPONENTS);
-Daisy.method = setInheritCache(Daisy, METHODS);
-Daisy.event = setInheritCache(Daisy, EVENTS);
-Daisy.computed = setInheritCache(Daisy, COMPUTED);
-
 mixin(Daisy, events);
 
 const hooks = {
@@ -166,12 +161,12 @@ const hooks = {
 
 mixin(Daisy, hooks); // hook
 
-Daisy.directive(directives);
-
 Daisy.verison = '1.0.0';
 
 Daisy.Lexer = Lexer;
 
 Daisy.Parser = Parser;
+
+Daisy.annotations = annotations;
 
 export default Daisy;

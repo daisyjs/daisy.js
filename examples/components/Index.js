@@ -3,13 +3,26 @@ import Todo from './Todo';
 import Footer from './Footer';
 import Info from './Info';
 import Main from './Main';
+import filter from '../methods/filter';
+import list from '../methods/list';
+import size from '../methods/size';
 
+const {component, method, directive, event, computed} = Daisy.annotations;
 
+@component({Todo, Header, Footer, Info, Main})
+@method({filter, size, list})
+@directive()
+@event()
+@computed({ 
+    todos() {
+        return 'todos';
+    }
+})
 // eslint-disable-next-line
 export default class Component extends Daisy {
     state() {
         return Object.assign(
-            super.state, {
+            super.state(), {
                 history: [],
                 status: 2,
                 todoList: [
@@ -153,19 +166,3 @@ export default class Component extends Daisy {
         });
     }
 }
-const filter = (status, s) => (s === 2 ? true : (status === s));
-const list = (list, s) => list.filter(item => filter(item.status, s));
-const size = (li, s) => list(li, s).length;
-const todos = function() {
-    return 'todos';
-};
-
-Component.method({
-    filter, size, list
-});
-
-Component.computed({todos});
-
-Component.component({
-    Header, Todo, Footer, Info, Main
-});

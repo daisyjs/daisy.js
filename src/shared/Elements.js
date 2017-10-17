@@ -1,29 +1,31 @@
 import Element from './Element';
 
-export default class Elements extends Array {
-    constructor() {
-        super();
-        this.isElements = true;
-    }
 
-    static create() {
-        return new Elements();
+function append(elements, element) {
+    if (
+        element instanceof Element || typeof element === 'string'
+    ) {
+        elements.push(element);
+    } else if (element instanceof Array) {
+        element.forEach(
+            item => elements.push(item)
+        );
     }
-
-    push(element) {
-        if (
-            element instanceof Element || typeof element === 'string'
-        ) {
-            super.push(element);
-        } else if (element instanceof Array) {
-            element.forEach(
-                item => super.push(item)
-            );
-        }
-        return this;
-    }
-
-    static isInstance(elements) {
-        return elements && elements.isElements;
-    }
+    return this;
 }
+
+function create() {
+    const elements = new Array();
+
+    elements.isElements = true;
+    elements.append = (element) => append(elements, element);
+    
+    return elements;
+}
+function isInstance(elements) {
+    return elements && elements.isElements;
+}
+
+export default {
+    create, isInstance
+};
