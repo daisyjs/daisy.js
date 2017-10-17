@@ -79,10 +79,9 @@ export default class Component extends Daisy {
         }
     }
 
-    onTodoClick(todo, name) {
+    onTodoClick(todo) {
         let todoList = this.getState().todoList;
         const index = todoList.indexOf(todoList.filter(({name}) => name === todo.name )[0]);
-        debugger
         
         this.setState({
             todoList: [
@@ -156,13 +155,17 @@ export default class Component extends Daisy {
 }
 const filter = (status, s) => (s === 2 ? true : (status === s));
 const list = (list, s) => list.filter(item => filter(item.status, s));
+const size = (li, s) => list(li, s).length;
+const todos = function() {
+    return 'todos';
+};
 
-Component.method('filter', filter);
-Component.method('size', (li, s) => list(li, s).length);
-Component.computed('todos', () => 'todos');
+Component.method({
+    filter, size, list
+});
 
-Component.component('Header', Header);
-Component.component('Todo', Todo);
-Component.component('Footer', Footer);
-Component.component('Info', Info);
-Component.component('Main', Main);
+Component.computed({todos});
+
+Component.component({
+    Header, Todo, Footer, Info, Main
+});

@@ -132,7 +132,7 @@ class Daisy {
 
         this[STATE] = Object.assign(this[STATE], state); // @todo clone state
         
-        const dif = getRootElement(this).patchDiff();
+        const dif = this.patchDiff();
 
         this.patched(dif);
     }
