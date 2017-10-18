@@ -2,7 +2,7 @@
   "name": "daisy",
   "description": "",
   "version": "0.1.0",
-  "main": ".eslintrc.js",
+  "main": "src/platforms/browser/index",
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-decorators": "^6.24.1",
