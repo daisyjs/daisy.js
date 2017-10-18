@@ -1,8 +1,11 @@
 {
   "name": "daisy.js",
   "description": "",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "src/platforms/browser/index",
+  "files": [
+    "dist/daisy.js"
+  ],
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-decorators": "^6.24.1",
