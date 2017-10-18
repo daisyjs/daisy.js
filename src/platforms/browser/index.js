@@ -3,7 +3,7 @@ import Parser from '../../core/parser/Parser';
 import patch from './renderers/patch';
 import directives from '../../builtin/directives';
 import events from '../../builtin/events';
-import annotations from '../../builtin/annotations';
+import annotations from '../../shared/annotations';
 
 import diffVDOM from '../../core/vdom/diff';
 import createVDOM from '../../core/vdom/create';
