@@ -19,7 +19,7 @@ const {component, method, directive, event, computed} = Daisy.annotations;
     }
 })
 // eslint-disable-next-line
-export default class Component extends Daisy {
+export default class Component extends Daisy.Component {
     state() {
         return Object.assign(
             super.state(), {

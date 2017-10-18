@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-export default class Info extends Daisy {
+export default class Info extends Daisy.Component {
     render() {
         return `<footer class="info">
 			<p>Double-click to edit a todo</p>

@@ -45,7 +45,7 @@ const daisy = {
         file: 'dist/daisy.js',
         format: ['umd'],
         sourcemap: 'inline',
-        exports: 'default',
+        // exports: 'default',
     },
     plugins
 };

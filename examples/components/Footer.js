@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-export default class Footer extends Daisy{
+export default class Footer extends Daisy.Component{
     render() {
         return `
         <footer class="footer">

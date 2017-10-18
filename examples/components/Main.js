@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-export default class Main extends Daisy {
+export default class Main extends Daisy.Component {
     render() {
         return `<section class="main"><input type="checkbox" class="toggle-all"> 
             <ul class="todo-list">

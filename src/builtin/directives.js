@@ -30,8 +30,12 @@ export default {
     // eslint-disable-next-line
     ref(elem, binding, vnode, context) {
         const {value} = binding;
-        
+        if (vnode.componentInstance) {
+            elem = vnode.componentInstance;
+        }
+
         context.refs[value()] = elem;
+
         return () => {
             context.refs[value] = null;
         };

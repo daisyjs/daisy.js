@@ -15,7 +15,7 @@ import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, 
 
 const {directive} = annotations;
 @directive(directives)
-class Daisy {
+class Component {
     render() {
         return '';
     }
@@ -153,20 +153,16 @@ class Daisy {
     }
 }
 
-mixin(Daisy, events);
+mixin(Component, events);
 
 const hooks = {
     parsed: noop, ready: noop, mounted: noop, patched: noop
 };
 
-mixin(Daisy, hooks); // hook
+mixin(Component, hooks); // hook
 
-Daisy.verison = '1.0.0';
+const verison = '1.0.0';
 
-Daisy.Lexer = Lexer;
-
-Daisy.Parser = Parser;
-
-Daisy.annotations = annotations;
-
-export default Daisy;
+export {
+    Component, annotations, Lexer, Parser, verison
+};
