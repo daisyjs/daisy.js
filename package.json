@@ -1,7 +1,7 @@
 {
   "name": "daisy.js",
   "description": "## Credits * expression parser based on [jsep](https://github.com/soney/jsep)",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "src/platforms/browser/index",
   "files": [
     "dist/daisy.js"
