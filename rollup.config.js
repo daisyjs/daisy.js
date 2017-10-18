@@ -26,7 +26,7 @@ const plugins = [
             './lib/**',
         ],
         exclude: [],
-        extensions: ['.js', '.coffee'],
+        extensions: ['.js'],
         ignoreGlobal: false,
         sourceMap: true,
         namedExports: {
@@ -35,43 +35,14 @@ const plugins = [
     })
 ];
 
-const daisy = {
-    name: 'Daisy',
-    input: 'src/platforms/browser/index.js',
-    watch: {
-        include: 'src/**'
-    },
-    output: {
-        file: 'dist/daisy.js',
-        format: ['umd'],
-        sourcemap: 'inline',
-        exports: 'default',
-    },
-    plugins
-};
-
-const serverRender = {
-    name: 'Daisy',
-    input: 'src/platforms/server/index.js',
-    watch: {
-        include: 'src/**'
-    },
-    output: {
-        file: 'dist/ssr.js',
-        format: ['umd'],
-        sourcemap: 'inline',
-    },
-    plugins
-};
-
 const exampleRender = {
     name: 'Daisy',
-    input: 'examples/index.js',
+    input: 'src/todomvc.js',
     watch: {
-        include: 'examples/**'
+        include: 'src/**'
     },
     output: {
-        file: 'examples/dist.js',
+        file: 'dist/todomvc.js',
         format: ['umd'],
         sourcemap: 'inline',
     },
@@ -79,5 +50,5 @@ const exampleRender = {
 };
 
 export default [
-    daisy, serverRender, exampleRender
+    exampleRender
 ];
