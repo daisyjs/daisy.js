@@ -1,5 +1,5 @@
 {
-  "name": "daisy",
+  "name": "daisy.js",
   "description": "",
   "version": "0.1.0",
   "main": "src/platforms/browser/index",
