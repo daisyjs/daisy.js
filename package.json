@@ -1,7 +1,7 @@
 {
   "name": "daisy.js",
   "description": "",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "src/platforms/browser/index",
   "files": [
     "dist/daisy.js"
