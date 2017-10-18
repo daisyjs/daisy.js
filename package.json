@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "main": "src/platforms/browser/index",
   "devDependencies": {
+    "babel-eslint": "^8.0.1",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-decorators": "^6.24.1",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
