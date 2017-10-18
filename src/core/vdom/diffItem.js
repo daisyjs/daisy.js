@@ -58,7 +58,8 @@ export default function diffItem(last, next) {
     if (!isEmpty(props)) {
         dif.push({
             type: PROPS,
-            changed: props
+            changed: props,
+            source: last
         });
     }
 

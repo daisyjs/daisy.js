@@ -1,4 +1,4 @@
-import {createElement, setProps, setStyle} from './createElement';
+import {createElement, setProps, setStyle} from './dom';
 import {debug} from '../../../shared/helper';
 import {TEXT, STYLE, PROPS, REPLACE, RELINK, REMOVE, NEW} from '../../../shared/constant';
 import link from '../../../shared/link';
@@ -29,7 +29,9 @@ export default function patch(dom, patches) {
                 break;
 
             case PROPS:
-                setProps(node, changed);
+                setProps(node, {
+                    tag: source.tag, type: source.props.type, props: changed
+                });
                 break;
 
             case TEXT:

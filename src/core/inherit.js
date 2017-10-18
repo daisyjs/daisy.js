@@ -30,5 +30,5 @@ export function setInheritCache(cacheName) {
                 name, value
             });
         };
-    }
+    };
 }

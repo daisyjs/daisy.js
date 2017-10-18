@@ -22,7 +22,9 @@ export function createElement(element) {
 
         createElements(children, node); // children
         link(node, element);         // links
-        setProps(node, props);       // props
+        setProps(node, {
+            tag, type: props.type , props
+        });       // props
     } else if (Elements.isInstance(element)) {
         const node = document.createDocumentFragment(); // package
         createElements(element, node);
@@ -33,12 +35,21 @@ export function createElement(element) {
     return node;
 }
 
-export function setProps(node, props) {
+const acceptValue = (tag) => ['input', 'textarea', 'option', 'select', 'progress'].includes(tag);
+const mustUseProp = (tag, type, attr) => (
+    (attr === 'value' && acceptValue(tag)) && type !== 'button' ||
+    (attr === 'selected' && tag === 'option') ||
+    (attr === 'checked' && tag === 'input') ||
+    (attr === 'muted' && tag === 'video')
+);
+
+
+export function setProps(node, {tag, type, props}) {
     Object.keys(props).forEach((name) => {
-        if (props[name] !== undefined) {
-            node.setAttribute(name, props[name]);
+        if (mustUseProp(tag, type, name)) {
+            node[name] = props[name];
         } else {
-            node.removeAttribute(name);
+            node.setAttribute(name, props[name]);
         }
     });
 }

@@ -7,13 +7,14 @@ import annotations from '../../builtin/annotations';
 
 import diffVDOM from '../../core/vdom/diff';
 import createVDOM from '../../core/vdom/create';
-import {createElements} from './renderers/createElement';
+import {createElements} from './renderers/dom';
 import {noop, mixin, createDirective, createEvent, getProppertyObject} from '../../shared/helper';
-import {allInherits, setInheritCache} from '../../core/inherit';
+import {allInherits} from '../../core/inherit';
 import Events from 'events';
 import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, COMPUTED} from '../../shared/constant';
 
 const {directive} = annotations;
+
 @directive(directives)
 class Component {
     render() {
