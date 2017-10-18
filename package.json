@@ -1,6 +1,6 @@
 {
   "name": "daisy.js",
-  "description": "",
+  "description": "## Credits * expression parser based on [jsep](https://github.com/soney/jsep)",
   "version": "0.1.2",
   "main": "src/platforms/browser/index",
   "files": [
@@ -18,6 +18,7 @@
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.1",
     "rollup-plugin-node-builtins": "^2.1.2",
+    "babel-core": "^6.26.0",
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "scripts": {
@@ -28,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ImHype/Daisy.git"
+    "url": "git+https://github.com/daisyjs/daisy.js.git"
   },
   "keywords": [],
   "author": "ImHype",
@@ -37,11 +38,14 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ImHype/Daisy/issues"
+    "url": "https://github.com/daisyjs/daisy.js/issues"
   },
-  "homepage": "https://github.com/ImHype/Daisy#readme",
+  "homepage": "https://github.com/daisyjs/daisy.js#readme",
   "dependencies": {
-    "babel-core": "^6.26.0",
     "events": "^1.1.1"
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
   }
 }
