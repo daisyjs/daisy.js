@@ -91,6 +91,7 @@ export default class Component extends Daisy.Component {
         if (keyCode === 13) {
             const value = this.refs.input.value;
             this.add(value);
+            this.refs.input.value = '';
         }
     }
 
@@ -99,13 +100,7 @@ export default class Component extends Daisy.Component {
         const index = todoList.indexOf(todoList.filter(({name}) => name === todo.name )[0]);
         
         this.setState({
-            todoList: [
-                ...todoList.slice(0, index),
-                Object.assign({}, todo, {
-                    status: Number(!todo.status)
-                }),
-                ...todoList.slice(index+1)
-            ]
+            [`todoList.${index}.status`]: Number(!todo.status)
         });
     }
 
@@ -122,13 +117,10 @@ export default class Component extends Daisy.Component {
     add(value) {
         const todoList = this.getState().todoList;
         this.setState({
-            todoList: [
-                ...todoList,
-                {
-                    name: value,
-                    status: 0
-                }
-            ]
+            [`todoList.${todoList.length + 1}`]: {
+                name: value,
+                status: 0
+            }
         });
     }
 
@@ -142,7 +134,9 @@ export default class Component extends Daisy.Component {
         const todoList = this.getState().todoList;
 
         this.setState({
-            todoList: todoList.map((item) => Object.assign({}, item, {status: 0}))
+            todoList: todoList.map((item) => Object.assign(item, {
+                status: 0
+            }))
         });
     }
 
