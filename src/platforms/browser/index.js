@@ -8,7 +8,7 @@ import annotations from '../../builtin/annotations';
 import diffVDOM from '../../core/vdom/diff';
 import createVDOM from '../../core/vdom/create';
 import {createElements} from './renderers/dom';
-import {noop, mixin, createDirective, createEvent, getProppertyObject} from '../../shared/helper';
+import {noop, mixin, createDirective, createEvent, getProppertyObject, setKeyPath} from '../../shared/helper';
 import {allInherits} from '../../core/inherit';
 import Events from 'events';
 import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, COMPUTED} from '../../shared/constant';
@@ -130,27 +130,21 @@ class Component {
     }
 
     setState(state) {
-        if (state === this[STATE]) {
-            return false;
+        if (state !== this[STATE]) {
+            Object.keys(state).forEach(
+                path => setKeyPath(this[STATE], path, state[path])
+            );
         }
-
-        this[STATE] = Object.assign(this[STATE], state); // @todo clone state
         
-        const dif = this.patchDiff();
-
-        this.patched(dif);
-    }
-
-    patchDiff() {
         const {[VDOM]: lastVDOM} = this;
-
+        
         this[VDOM] = this.render();
 
-        const dif = diffVDOM(lastVDOM, this[VDOM]);
+        const differences = diffVDOM(lastVDOM, this[VDOM]);
 
-        patch(this[RDOM], dif);
+        patch(this[RDOM], differences);
 
-        return dif;
+        this.patched(differences);
     }
 }
 

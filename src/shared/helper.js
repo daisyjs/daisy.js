@@ -189,3 +189,18 @@ export const mixin = (klass, impl) => {
 export const noop = () => {};
 
 export const clone = (json) => JSON.parse(JSON.stringify(json));
+
+export const setKeyPath = (state, path, value) => {
+    const pathes = path.split('.');
+    const property = pathes.pop();
+    const finalState = pathes.reduce((state, item) => {
+        if (
+            item === ''
+        ) {
+            return state;
+        }
+        return state[item];
+    }, state);
+
+    finalState[property] = value;  
+};
