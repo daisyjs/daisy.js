@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-export default class TodoItem extends Daisy {
+export default class TodoItem extends Daisy.Component {
     render() {
         return `
             <li class="todo {{!!status ? 'completed': ''}}">

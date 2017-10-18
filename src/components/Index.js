@@ -7,6 +7,7 @@ import filter from '../methods/filter';
 import list from '../methods/list';
 import size from '../methods/size';
 
+// eslint-disable-next-line
 const {component, method, directive, event, computed} = Daisy.annotations;
 
 @component({Todo, Header, Footer, Info, Main})
@@ -18,8 +19,9 @@ const {component, method, directive, event, computed} = Daisy.annotations;
         return 'todos';
     }
 })
+
 // eslint-disable-next-line
-export default class Component extends Daisy {
+export default class Component extends Daisy.Component {
     state() {
         return Object.assign(
             super.state(), {
