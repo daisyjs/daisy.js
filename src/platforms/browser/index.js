@@ -21,7 +21,7 @@ class Component {
         return '';
     }
 
-    state(props) {
+    state(props = {}) {
         return props;
     }
 
