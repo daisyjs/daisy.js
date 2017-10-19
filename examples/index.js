@@ -1,11 +1,13 @@
 import Index from './components/Index';
 const index = new Index({
-    state: {}
+    props: {
+        todoList: [{
+            status: 0,
+            name: 'default todo',
+        }]   
+    }
 }).mount(document.querySelector('#app'));
 
 index.setState({
-    'todoList.0': {
-        status: 0,
-        name: 'Hello world',
-    },
+    'todoList.0.name': 'sample todo'
 });

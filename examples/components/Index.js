@@ -22,29 +22,27 @@ const {component, method, directive, event, computed} = Daisy.annotations;
 
 // eslint-disable-next-line
 export default class Component extends Daisy.Component {
-    state() {
-        return Object.assign(
-            super.state(), {
-                history: [],
-                status: 2,
-                todoList: [
-                ],
-                statusList: [
-                    {
-                        name: 'All',
-                        type: 2
-                    },
-                    {
-                        name: 'Active',
-                        type: 0
-                    },
-                    {
-                        name: 'completed',
-                        type: 1
-                    }
-                ]
-            }
-        );
+    state(props = {}) {
+        return Object.assign({
+            history: [],
+            status: 2,
+            todoList: [
+            ],
+            statusList: [
+                {
+                    name: 'All',
+                    type: 2
+                },
+                {
+                    name: 'Active',
+                    type: 0
+                },
+                {
+                    name: 'completed',
+                    type: 1
+                }
+            ]
+        }, props);
     }
     render() {
         return `<section class="todoapp">

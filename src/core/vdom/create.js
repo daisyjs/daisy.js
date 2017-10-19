@@ -88,7 +88,7 @@ function createVElement(node, viewContext) {
             
             const componentInstance = new Component({
                 body: createVGroup(children, viewContext),
-                state: Object.assign({}, getProppertyObject(attributeList)),
+                props: getProppertyObject(attributeList),
                 computed: viewContext.computed,
                 context: viewContext.context
             });

@@ -21,18 +21,18 @@ class Component {
         return '';
     }
 
-    state() {
-        return {};
+    state(props) {
+        return props;
     }
 
     constructor({
-        state,
+        props,
         body,
         context,
         computed = {},
         render = this.render
     } = {}) {
-        this.compose({state, body, context, computed});
+        this.composeIntoInstance({props, body, context, computed});
 
         const template = render();
 
@@ -50,12 +50,12 @@ class Component {
                 [STATE]: state,
                 [DIRECTIVES]: directives,
                 [COMPONENTS]: components,
-                [COMPUTED]: _computed,
+                [COMPUTED]: computed,
                 body
             } = this;
 
             return createVDOM(this[AST], {
-                components, directives, state, methods, context: this, body, computed: Object.assign({}, _computed, computed)
+                components, directives, state, methods, context: this, body, computed
             });
         };
 
@@ -68,13 +68,13 @@ class Component {
         this.ready(this[VDOM]);
     }
 
-    compose({
-        state = {},
+    composeIntoInstance({
+        props = {},
         body = [],
         context,
         computed: _computed = []
     }) {
-        this[STATE] = Object.assign({}, this.state(), state);
+        this[STATE] = this.state(props);
         this.body = body;
         this.context = context;
         this[EVENT] = new Events();
