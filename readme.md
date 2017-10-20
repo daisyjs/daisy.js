@@ -1,5 +1,5 @@
 ## Daisy
->  a virtual dom based framework, which using one-way data flow and registering method/computed/etc. with annotations
+>  a virtual dom based framework, which using one-way data flow and using annotations to register method/computed/etc.
 
 <a href="https://www.npmjs.com/package/daisy.js">
 <img src="https://img.shields.io/npm/v/daisy.js.svg?style=flat-square" alt="NPM version">
