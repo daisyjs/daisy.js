@@ -1,4 +1,4 @@
-const Daisy = require('../src/Daisy');
+const Daisy = require('../dist/daisy');
 
 const component = new Daisy({
     template: `

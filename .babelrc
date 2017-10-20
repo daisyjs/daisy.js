@@ -8,8 +8,14 @@
       ]
     ],
     "plugins": [
-        "transform-decorators-legacy",
-        "transform-decorators",
-        "external-helpers"
-    ]
+      "transform-decorators-legacy",
+      "transform-decorators",
+      "external-helpers",
+      "transform-runtime"
+    ],
+    "env": {
+      "test": {
+        "presets": ["env"]
+      }
+    }
   }

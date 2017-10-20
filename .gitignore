@@ -4,3 +4,4 @@ foxman.config.js
 npm-debug.log
 examples/dist.js
 dist/**
+coverage/**
