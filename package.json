@@ -26,6 +26,10 @@
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**"
+    ],
     "transform": {
       ".*": "babel-jest"
     },
