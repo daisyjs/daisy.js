@@ -17,7 +17,7 @@ export function isTagClosed(tokens) {
                     stack.push(token);
                 }
             }
-        } else if (type === END_TAG) {
+        } else if (type === END_TAG && stack.length > 0) {
             const stackTop = stack[stack.length - 1];
             if (stackTop.content === content) {
                 stack.pop();

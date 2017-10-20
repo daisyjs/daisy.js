@@ -1,5 +1,5 @@
-import Lexer from '../../core/parser/Lexer';
-import Parser from '../../core/parser/Parser';
+import lexer from '../../core/parser/lexer';
+import parser from '../../core/parser/parser';
 import patch from './renderers/patch';
 import directives from '../../builtin/directives';
 import events from '../../builtin/events';
@@ -37,7 +37,7 @@ class Component {
         const template = render();
 
         try {
-            this[AST] = Parser(template);
+            this[AST] = parser(template);
         } catch (e) {
             throw new Error('Error in Parser: \n\t' + e.stack);
         }
@@ -159,5 +159,5 @@ mixin(Component, hooks); // hook
 const verison = '1.0.0';
 
 export {
-    Component, annotations, Lexer, Parser, verison
+    Component, annotations, lexer, parser, verison
 };

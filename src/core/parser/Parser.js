@@ -1,4 +1,4 @@
-import Lexer from './Lexer';
+import lexer from './lexer';
 import {END_TAG, COMMENT, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from'../../shared/StateTypes';
 import {Program, Include, If, For, Element, Comment, Attribute, Expression, Text, Types} from'../../shared/NodeTypes';
 import {Expression as expression, isIncludeExpr} from'./ParseExpression';
@@ -18,7 +18,7 @@ export default function Parser(source) {
     let tokens;
 
     try {
-        tokens = Lexer(source);
+        tokens = lexer(source);
     } catch (e) {
         return error('Error in Lexer: \n' + (e.stack || e));
     }
