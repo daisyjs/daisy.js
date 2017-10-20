@@ -1,7 +1,4 @@
-
-const {
-    Parser, Lexer
-} = require('../dist/daisy');
+const {Parser, Lexer} = require('../dist/daisy');
 
 const FormatJSON = (str) => JSON.stringify(str, null, 2);
 

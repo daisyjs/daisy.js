@@ -1,4 +1,4 @@
-const {Expression} = require('../src/Expression');
+const {Expression} = require('../dist/daisy');
 
 // console.log();
 // const result = Expression('1{{ a+1 }}12122121');

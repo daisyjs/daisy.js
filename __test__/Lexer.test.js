@@ -1,6 +1,4 @@
-const {
-    Lexer
-} = require('../dist/daisy');
+const Lexer = require('../src/core/parser/Lexer');
 const JSONStringify = str => JSON.stringify(str);
 
 const StringifyLexer = (str, isFormat = 0) => {

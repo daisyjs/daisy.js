@@ -44,7 +44,7 @@ const daisy = {
     output: {
         file: 'dist/daisy.js',
         format: ['umd'],
-        sourcemap: 'inline',
+        // sourcemap: 'inline',
         // exports: 'default',
     },
     plugins
