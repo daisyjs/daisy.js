@@ -10,12 +10,17 @@
     "plugins": [
       "transform-decorators-legacy",
       "transform-decorators",
-      "external-helpers",
-      "transform-runtime"
+      "external-helpers"
     ],
     "env": {
       "test": {
-        "presets": ["env"]
+        "presets": ["env"],
+        "plugins": [
+          "transform-decorators-legacy",
+          "transform-decorators",
+          "external-helpers",
+          "transform-runtime"
+        ]
       }
     }
   }

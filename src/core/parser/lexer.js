@@ -1,6 +1,6 @@
 import {COMMENT, END_TAG, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from '../../shared/StateTypes';
 import {isSlash, isSpace, isOpenTag, isExclamationMark, isDash, isCloseTag, isEqual, isQuote, isTagClosed} from '../../shared/helper';
-import {isOpenExpr, isCloseExpr, getExpressionBounds} from './ParseExpression';
+import {starts, ends, getBoundsSize} from './expression';
 
 function createToken(tokenType, temp = []) {
     const content = temp.join('');
@@ -14,7 +14,9 @@ export default function Lexer(source) {
     let pos = 0;
     let tokens = [];
     let length = source.length;
-    const {open: EXPR_OPEN_BOUNDS, close: EXPR_CLOSE_BOUNDS} = getExpressionBounds();
+    const {
+        start: EXPRESSION_STARTING_SIZE, end: EXPRESSION_ENDING_SIZE
+    } = getBoundsSize();
 
 
     function consumeSpaces(pos) {
@@ -265,7 +267,7 @@ export default function Lexer(source) {
         pos++;
         while (pos < length) {
             letter = source[pos];
-            if (isOpenTag(letter) || isOpenExpr(letter, source[pos + 1])) {
+            if (isOpenTag(letter) || starts(source.substr(pos))) {
                 return {
                     pos: pos,
                     token: createToken(TEXT, temp)
@@ -285,18 +287,18 @@ export default function Lexer(source) {
     function consumeExpression(pos) {
         let letter = source[pos];
         let temp = [];
-        if (isOpenExpr(letter, source[pos + 1])) {
-            pos += EXPR_OPEN_BOUNDS.length;
+        if (starts(source.substr(pos))) {
+            pos += EXPRESSION_STARTING_SIZE;
             while (pos < length) {
                 letter = source[pos];
                 if (
-                    isOpenExpr(letter, source[pos + 1])
+                    starts(letter, source[pos + 1])
                 ) {
                     return false;
                 } else if (
-                    isCloseExpr(letter, source[pos + 1])
+                    ends(source.substr(pos))
                 ) {
-                    pos += EXPR_CLOSE_BOUNDS.length;
+                    pos += EXPRESSION_ENDING_SIZE;
                     return {
                         pos: pos,
                         token: createToken(EXPR, temp)

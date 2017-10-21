@@ -1,7 +1,7 @@
 import lexer from './lexer';
 import {END_TAG, COMMENT, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from'../../shared/StateTypes';
 import {Program, Include, If, For, Element, Comment, Attribute, Expression, Text, Types} from'../../shared/NodeTypes';
-import {Expression as expression, isIncludeExpr} from'./ParseExpression';
+import {expression, contains as containExpr} from'./expression';
 import {isSelfClose, error, isVoidTag} from'../../shared/helper';
 
 const STATEMENT_MARK = ':';
@@ -196,7 +196,7 @@ export default function Parser(source) {
 
         for (let attr of attrNodes) {
             let {name, value = ''} = attr;
-            if (value.type !== Types.Expression && isIncludeExpr(value)) {
+            if (value.type !== Types.Expression && containExpr(value)) {
                 value = Expression(expression(value));
             }
 
