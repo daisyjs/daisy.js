@@ -1,4 +1,4 @@
-import { evalExpression, codeGen } from '../compiler/evalExpression';
+import { evalExpression, codeGen } from '../compiler/expression';
 import { warn, isEmpty, getDirective } from '../../shared/helper';
 import { Types } from '../../shared/NodeTypes';
 import Elements from '../../shared/Elements';

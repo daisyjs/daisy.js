@@ -17,7 +17,6 @@ export function evalExpression(
     expression,
     { state, methods, context, computed = {} }
 ) {
-    // cache expression
     if (!expressionMap.get(expression)) {
         const expr = codeGen(expression);
         const content = `
@@ -59,7 +58,7 @@ export function codeGen(expression) {
 
     case 'Compound': {
         // eslint-disable-next-line
-            // debugger
+        // debugger
         break;
     }
 

@@ -3,34 +3,37 @@ import parse from '../../../lib/jsep';
 let STARTING_BOUND = '{{';
 let ENDING_BOUND = '}}';
 
-function splitExpressionContent(source, startsPos) {
-    const exprCloseBoundsIndex = source.indexOf(ENDING_BOUND, startsPos);
+function pickExpr(words, startsPos) {
+    const exprEndsIndex = words.indexOf(ENDING_BOUND, startsPos);
     const content =
         '(' +
-        source.substring(
+        words.substring(
             startsPos + STARTING_BOUND.length,
-            exprCloseBoundsIndex
+            exprEndsIndex
         ) +
         ')';
 
     return {
         content,
-        pos: exprCloseBoundsIndex + ENDING_BOUND.length
+        pos: exprEndsIndex + ENDING_BOUND.length
     };
 }
 
-function splitStringContent(source, startsPos) {
-    let stringEndIndex = source.indexOf(STARTING_BOUND, startsPos);
-    if (!~stringEndIndex) {
-        stringEndIndex = source.length;
+function pickStr(words, startsPos) {
+    let strEndsIndex = words.indexOf(STARTING_BOUND, startsPos);
+    let content;
+
+    if (!~strEndsIndex) {
+        strEndsIndex = words.length;
     }
-    let content = source.substring(startsPos, stringEndIndex);
+
+    content = words.substring(startsPos, strEndsIndex);
     if (content) {
         content = '"' + content + '"';
     }
     return {
         content,
-        pos: stringEndIndex
+        pos: strEndsIndex
     };
 }
 
@@ -58,19 +61,21 @@ export function setBounds({ start, end }) {
     ENDING_BOUND = end;
 }
 
-export function expression(source = '') {
-    if (contains(source)) {
+export function expression(words = '') {
+    if (contains(words)) {
         let stack = [];
         let i = 0;
-        while (i < source.length) {
-            const { content, pos } = starts(source.substr(i))
-                ? splitExpressionContent(source, i)
-                : splitStringContent(source, i);
+
+        while (i < words.length) {
+            const { content, pos } = starts(words.substr(i))
+                ? pickExpr(words, i)
+                : pickStr(words, i);
             if (content) stack.push(content);
             i = pos;
         }
+
         return parse(stack.join('+'));
     } else {
-        return parse(source);
+        return parse(words);
     }
 }

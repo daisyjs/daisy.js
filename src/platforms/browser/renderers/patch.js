@@ -55,8 +55,8 @@ export default function patch(dom, patches) {
                 }
                 parent.removeChild(node);
                 break;
+
             case RELINK:
-                // source.links.context = changed;
                 if (source.ondestroy) {
                     source.ondestroy();
                 }
