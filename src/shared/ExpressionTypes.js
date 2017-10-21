@@ -11,7 +11,7 @@ const COMPOUND = 'Compound',
     ARRAY_EXP = 'ArrayExpression';
 
 function createBinaryExpression(operator, left, right) {
-    var type = (operator === '||' || operator === '&&') ? LOGICAL_EXP : BINARY_EXP;
+    var type = operator === '||' || operator === '&&' ? LOGICAL_EXP : BINARY_EXP;
     return {
         type: type,
         operator: operator,
@@ -52,7 +52,7 @@ function createCallExpression(args, callee) {
 function createIdentifier(identifier) {
     return {
         type: IDENTIFIER,
-        name: identifier,
+        name: identifier
     };
 }
 

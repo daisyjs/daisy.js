@@ -17,7 +17,10 @@
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.1",
     "eslint": "^4.7.2",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-prettier": "^2.3.1",
     "jest": "^21.2.1",
+    "prettier-eslint-cli": "^4.4.0",
     "regenerator-runtime": "^0.11.0",
     "rollup": "^0.50.0",
     "rollup-plugin-babel": "^3.0.2",
@@ -43,7 +46,7 @@
     "jest": "jest --no-cache",
     "build": "rollup --config rollup.config.js",
     "dev": "npm run build -- -w",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix ./src/**/*.js"
   },
   "repository": {
     "type": "git",

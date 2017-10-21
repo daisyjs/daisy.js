@@ -1,4 +1,4 @@
-import {EVENT} from '../shared/constant';
+import { EVENT } from '../shared/constant';
 
 export default {
     on(...args) {

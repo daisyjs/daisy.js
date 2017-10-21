@@ -1,8 +1,8 @@
 const inherit = Symbol('inherit');
-export const allInherits = (Component) => Component[inherit];
+export const allInherits = Component => Component[inherit];
 
 export function setInheritCache(cacheName) {
-    return (Component) => {
+    return Component => {
         if (!Component[inherit]) {
             Component[inherit] = new Map();
         }
@@ -14,20 +14,21 @@ export function setInheritCache(cacheName) {
             instantce[cacheName] = [];
         }
         const cache = instantce[cacheName];
-    
+
         return (name, value) => {
             if (!value) {
-                Object.keys(name).forEach((item) => {
+                Object.keys(name).forEach(item => {
                     cache.push({
                         name: item,
-                        value: name[item] 
+                        value: name[item]
                     });
                 });
                 return;
             }
-    
+
             cache.push({
-                name, value
+                name,
+                value
             });
         };
     };

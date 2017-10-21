@@ -1,16 +1,22 @@
-import {warn, debug} from '../../shared/helper';
+import { warn, debug } from '../../shared/helper';
 
 const expressionMap = new Map();
-const compute = (computed) => {
+const compute = computed => {
     const computedResult = Object.keys(computed).reduce((result, item) => {
         return Object.assign(result, {
-            [item]: typeof computed[item] === 'function'? computed[item](): computed[item]
+            [item]:
+                typeof computed[item] === 'function'
+                    ? computed[item]()
+                    : computed[item]
         });
     }, {});
     return computedResult;
 };
 
-export function evalExpression(expression, {state, methods, context, computed = {}}) {
+export function evalExpression(
+    expression,
+    { state, methods, context, computed = {} }
+) {
     // cache expression
     if (!expressionMap.get(expression)) {
         const expr = codeGen(expression);
@@ -29,7 +35,7 @@ export function evalExpression(expression, {state, methods, context, computed = 
 }
 
 export function codeGen(expression) {
-    const {type} = expression;
+    const { type } = expression;
     switch (type) {
     case 'Expression':
         return codeGen(expression.value);
@@ -47,13 +53,13 @@ export function codeGen(expression) {
     case 'MemberExpression': {
         const object = codeGen(expression.object);
         let property = codeGen(expression.property);
-        property = (expression.computed) ? property: ('"'+property+'"');
+        property = expression.computed ? property : '"' + property + '"';
         return `${object}[${property}]`;
     }
 
     case 'Compound': {
         // eslint-disable-next-line
-        // debugger
+            // debugger
         break;
     }
 

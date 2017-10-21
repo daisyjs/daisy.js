@@ -22,7 +22,7 @@ export function If(test, consequent, alternate) {
         type: Types.If,
         test,
         alternate,
-        consequent,
+        consequent
     };
 }
 
@@ -31,7 +31,7 @@ export function For(test, init, body) {
         type: Types.For,
         test,
         init,
-        body,
+        body
     };
 }
 
@@ -67,7 +67,7 @@ export function Expression(value) {
     };
 }
 
-export function Text (text) {
+export function Text(text) {
     return {
         type: Types.Text,
         value: text

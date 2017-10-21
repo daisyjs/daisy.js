@@ -6,8 +6,8 @@ export const EVENTS = Symbol('events');
 export const COMPUTED = 'computed';
 
 export const AST = Symbol('ast');
-export const VDOM = 'vDOM';  // Symbol('vDOM');
-export const RDOM = 'rDOM';  // Symbol('rDOM');
+export const VDOM = 'vDOM'; // Symbol('vDOM');
+export const RDOM = 'rDOM'; // Symbol('rDOM');
 export const EVENT = 'event'; //Symbol('event');
 
 export const BLOCK = 'block';

@@ -7,13 +7,31 @@ import annotations from '../../shared/annotations';
 
 import diffVDOM from '../../core/vdom/diff';
 import createVDOM from '../../core/vdom/create';
-import {createElements} from './renderers/dom';
-import {noop, mixin, createDirective, createEvent, getProppertyObject, setKeyPath} from '../../shared/helper';
-import {allInherits} from '../../core/inherit';
+import { createElements } from './renderers/dom';
+import {
+    noop,
+    mixin,
+    createDirective,
+    createEvent,
+    getProppertyObject,
+    setKeyPath
+} from '../../shared/helper';
+import { allInherits } from '../../core/inherit';
 import Events from 'events';
-import {STATE, METHODS, DIRECTIVES, COMPONENTS, EVENTS, AST, VDOM, RDOM, EVENT, COMPUTED} from '../../shared/constant';
+import {
+    STATE,
+    METHODS,
+    DIRECTIVES,
+    COMPONENTS,
+    EVENTS,
+    AST,
+    VDOM,
+    RDOM,
+    EVENT,
+    COMPUTED
+} from '../../shared/constant';
 
-const {directive} = annotations;
+const { directive } = annotations;
 
 @directive(directives)
 class Component {
@@ -25,14 +43,10 @@ class Component {
         return props;
     }
 
-    constructor({
-        props,
-        body,
-        context,
-        computed = {},
-        render = this.render
-    } = {}) {
-        this.composeIntoInstance({props, body, context, computed});
+    constructor(
+        { props, body, context, computed = {}, render = this.render } = {}
+    ) {
+        this.composeIntoInstance({ props, body, context, computed });
 
         const template = render();
 
@@ -55,13 +69,19 @@ class Component {
             } = this;
 
             return createVDOM(this[AST], {
-                components, directives, state, methods, context: this, body, computed
+                components,
+                directives,
+                state,
+                methods,
+                context: this,
+                body,
+                computed
             });
         };
 
         this[VDOM] = this.render();
 
-        this[EVENTS].forEach(({name, handler}) => {
+        this[EVENTS].forEach(({ name, handler }) => {
             this.on(name, handler.bind(this));
         });
 
@@ -86,25 +106,33 @@ class Component {
         this[COMPUTED] = [];
         this.refs = {};
 
-        for (let [Componet, {
-            [METHODS]: methods = [],
-            [DIRECTIVES]: directives = [],
-            [COMPONENTS]: components = [],
-            [COMPUTED]: computed = [],
-            [EVENTS]: events = []
-        }] of allInherits(this.constructor)) {
+        for (let [
+            Componet,
+            {
+                [METHODS]: methods = [],
+                [DIRECTIVES]: directives = [],
+                [COMPONENTS]: components = [],
+                [COMPUTED]: computed = [],
+                [EVENTS]: events = []
+            }
+        ] of allInherits(this.constructor)) {
             if (this instanceof Componet) {
                 Object.assign(this[METHODS], getProppertyObject(methods));
                 Object.assign(this[COMPONENTS], getProppertyObject(components));
-                Object.assign(this[COMPUTED], getProppertyObject(computed), _computed);
+                Object.assign(
+                    this[COMPUTED],
+                    getProppertyObject(computed),
+                    _computed
+                );
 
                 this[DIRECTIVES] = [
-                    ...this[DIRECTIVES], ...directives.map((item) => createDirective(item))
+                    ...this[DIRECTIVES],
+                    ...directives.map(item => createDirective(item))
                 ];
 
                 this[EVENTS] = [
-                    ...this[EVENTS], 
-                    ...(events.map(item => createEvent(item)))
+                    ...this[EVENTS],
+                    ...events.map(item => createEvent(item))
                 ];
             }
         }
@@ -124,20 +152,20 @@ class Component {
     mount(node) {
         createElements(this[VDOM], node, this);
         this[RDOM] = node.childNodes;
-        this.mounted(this[RDOM]);  // vDOM, realDOM
+        this.mounted(this[RDOM]); // vDOM, realDOM
 
         return this;
     }
 
     setState(state) {
         if (state !== this[STATE]) {
-            Object.keys(state).forEach(
-                path => setKeyPath(this[STATE], path, state[path])
+            Object.keys(state).forEach(path =>
+                setKeyPath(this[STATE], path, state[path])
             );
         }
-        
-        const {[VDOM]: lastVDOM} = this;
-        
+
+        const { [VDOM]: lastVDOM } = this;
+
         this[VDOM] = this.render();
 
         const differences = diffVDOM(lastVDOM, this[VDOM]);
@@ -151,13 +179,14 @@ class Component {
 mixin(Component, events);
 
 const hooks = {
-    parsed: noop, ready: noop, mounted: noop, patched: noop
+    parsed: noop,
+    ready: noop,
+    mounted: noop,
+    patched: noop
 };
 
 mixin(Component, hooks); // hook
 
 const verison = '1.0.0';
 
-export {
-    Component, annotations, lexer, parser, verison
-};
+export { Component, annotations, lexer, parser, verison };

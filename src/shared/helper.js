@@ -1,18 +1,17 @@
-import {TAGNAME, END_TAG} from './StateTypes';
+import { TAGNAME, END_TAG } from './StateTypes';
 
 export function isTagClosed(tokens) {
     let stack = [];
     let i = 0;
-    while( i < tokens.length) {
+    while (i < tokens.length) {
         const token = tokens[i];
-        const {type, content} = token;
+        const { type, content } = token;
         const nextToken = tokens[i + 1];
         if (type === TAGNAME) {
             if (!isSelfClose(token)) {
-                if (!isVoidTag(content) ||
-                    (nextToken.type === END_TAG
-                        && nextToken.content === content
-                    )
+                if (
+                    !isVoidTag(content) ||
+          (nextToken.type === END_TAG && nextToken.content === content)
                 ) {
                     stack.push(token);
                 }
@@ -28,7 +27,7 @@ export function isTagClosed(tokens) {
                 };
             }
         }
-        i ++;
+        i++;
     }
 
     if (stack.length !== 0) {
@@ -39,17 +38,34 @@ export function isTagClosed(tokens) {
         };
     }
 
-    return {closed: true};
+    return { closed: true };
 }
 
-export const voidTagTypes = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr', 'r-content'];
-export const isVoidTag = (tag) => voidTagTypes.includes(tag);
+export const voidTagTypes = [
+    "area",
+    'base',
+    "br",
+    "col",
+    "embed",
+    'hr',
+    'img',
+    "input",
+    'keygen',
+    "link",
+    'menuitem',
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+    "r-content"
+];
+export const isVoidTag = tag => voidTagTypes.includes(tag);
 
-export const isSelfClose = ({type, isSelfClose}) => type === TAGNAME && isSelfClose;
+export const isSelfClose = ({ type, isSelfClose }) =>
+    type === TAGNAME && isSelfClose;
 
-export const returnUnclosedTagError = ({
-    content, line, column
-}) =>
+export const returnUnclosedTagError = ({ content, line, column }) =>
     `Unclosed TAG ${content} : \nline - ${line}, column - ${column}`;
 
 // a-zA-Z
@@ -68,7 +84,8 @@ export const isUpperCase = (letter = '') => {
     return code >= 65 && code <= 90;
 };
 // a-zA-Z
-export const isWord = (letter = '') => isLowerCase(letter) || isUpperCase(letter);
+export const isWord = (letter = '') =>
+    isLowerCase(letter) || isUpperCase(letter);
 //  0-9
 export const isNumber = (letter = '') => {
     const code = letter.charCodeAt(0);
@@ -94,21 +111,21 @@ export const isSlash = (letter = '') => 47 === letter.charCodeAt(0);
 export const isCloseTag = (letter = '') => 62 === letter.charCodeAt(0);
 
 // eslint-disable-next-line
-export const debug = (message) => {} //console.log('debug:', message);
+export const debug = message => {}; //console.log('debug:', message);
 
 // eslint-disable-next-line
-export const warn = (message) => console.warn(message);
+export const warn = message => console.warn(message);
 // eslint-disable-next-line
-export const error = (message) => console.error(message);
+export const error = message => console.error(message);
 
 export const isEmpty = o => Object.keys(o).length === 0;
 export const isObject = o => o != null && typeof o === 'object';
-export const properObject = o => isObject(o) && !o.hasOwnProperty ? Object.assign({}, o) : o;
+export const properObject = o =>
+    isObject(o) && !o.hasOwnProperty ? Object.assign({}, o) : o;
 export const isDate = d => d instanceof Date;
 
-
 export const getDirective = (pattern, directives) => {
-    const filtered = directives.filter(({test}) => {
+    const filtered = directives.filter(({ test }) => {
         return test(pattern);
     });
 
@@ -119,46 +136,46 @@ export const getDirective = (pattern, directives) => {
     }
 };
 
-export const createDirective = ({name, value: handler}) => {
-    const isRegExpLike = (item) => item.startsWith('/') && item.endsWith('/');
-    const createRegExp = (item) => new RegExp(item.slice(1, item.length-1));
+export const createDirective = ({ name, value: handler }) => {
+    const isRegExpLike = item => item.startsWith('/') && item.endsWith('/');
+    const createRegExp = item => new RegExp(item.slice(1, item.length - 1));
     return {
-        test: isRegExpLike(name) ? 
-            (pattern) => createRegExp(name).test(pattern)
-            : (pattern) => {
+        test: isRegExpLike(name)
+            ? pattern => createRegExp(name).test(pattern)
+            : pattern => {
                 return name === pattern;
             },
         handler
     };
 };
 
-export const createEvent = ({name, value: handler}) => ({
+export const createEvent = ({ name, value: handler }) => ({
     name: name,
     handler
 });
 
-export const getProppertyObject = (list) => {
-    return list.reduce((prev, {name, value}) => {
+export const getProppertyObject = list => {
+    return list.reduce((prev, { name, value }) => {
         return Object.assign(prev, {
             [name]: value
         });
     }, {});
 };
 
-export const getRootElement = (element) => {
+export const getRootElement = element => {
     while (element.context) {
         element = element.context;
     }
     return element;
 };
 
-
 export function isPrimitive(value) {
-    return value === null || (typeof value !== 'function' && typeof value !== 'object');
+    return (
+        value === null || (typeof value !== 'function' && typeof value !== 'object')
+    );
 }
 
-
-const isNull =  (target) => target[name] === void 0 || target[name] === null;
+const isNull = target => target[name] === void 0 || target[name] === null;
 
 export const assignPrimitive = (target, changed) => {
     for (let name in changed) {
@@ -174,9 +191,8 @@ export const assignPrimitive = (target, changed) => {
     }
 };
 
-
 export const uid = () => {
-    let id =  -1;
+    let id = -1;
     return () => {
         return ++id;
     };
@@ -188,19 +204,17 @@ export const mixin = (klass, impl) => {
 
 export const noop = () => {};
 
-export const clone = (json) => JSON.parse(JSON.stringify(json));
+export const clone = json => JSON.parse(JSON.stringify(json));
 
 export const setKeyPath = (state, path, value) => {
     const pathes = path.split('.');
     const property = pathes.pop();
     const finalState = pathes.reduce((state, item) => {
-        if (
-            item === ''
-        ) {
+        if (item === '') {
             return state;
         }
         return state[item];
     }, state);
 
-    finalState[property] = value;  
+    finalState[property] = value;
 };

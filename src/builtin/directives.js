@@ -1,16 +1,16 @@
-import {debug, uid} from '../shared/helper';
+import { debug, uid } from '../shared/helper';
 
 const id = uid();
 
 export default {
     // eslint-disable-next-line
     '/on-.*/': (elem, binding, vnode) => {
-        const {name, value} = binding;
+        const { name, value } = binding;
         debug('name:');
         debug(name);
 
-        const doSomthing = ($event) => {
-            return value({$event});
+        const doSomthing = $event => {
+            return value({ $event });
         };
 
         doSomthing.id = id();
@@ -18,7 +18,7 @@ export default {
         if (vnode.componentInstance) {
             vnode.componentInstance.on(event, doSomthing);
             return () => {
-                vnode.componentInstance.removeListener(event, doSomthing); 
+                vnode.componentInstance.removeListener(event, doSomthing);
             };
         } else {
             elem.addEventListener(event, doSomthing);
@@ -29,7 +29,7 @@ export default {
     },
     // eslint-disable-next-line
     ref(elem, binding, vnode, context) {
-        const {value} = binding;
+        const { value } = binding;
         if (vnode.componentInstance) {
             elem = vnode.componentInstance;
         }

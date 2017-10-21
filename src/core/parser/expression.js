@@ -5,7 +5,13 @@ let ENDING_BOUND = '}}';
 
 function splitExpressionContent(source, startsPos) {
     const exprCloseBoundsIndex = source.indexOf(ENDING_BOUND, startsPos);
-    const content = '(' + source.substring(startsPos + STARTING_BOUND.length, exprCloseBoundsIndex) + ')';
+    const content =
+        '(' +
+        source.substring(
+            startsPos + STARTING_BOUND.length,
+            exprCloseBoundsIndex
+        ) +
+        ')';
 
     return {
         content,
@@ -47,10 +53,7 @@ export function getBoundsSize() {
     };
 }
 
-export function setBounds({
-    start,
-    end
-}) {
+export function setBounds({ start, end }) {
     STARTING_BOUND = start;
     ENDING_BOUND = end;
 }
@@ -60,12 +63,10 @@ export function expression(source = '') {
         let stack = [];
         let i = 0;
         while (i < source.length) {
-            const {
-                content,
-                pos
-            } = starts(source.substr(i)) ? splitExpressionContent(source, i) : splitStringContent(source, i);
-            if (content)
-                stack.push(content);
+            const { content, pos } = starts(source.substr(i))
+                ? splitExpressionContent(source, i)
+                : splitStringContent(source, i);
+            if (content) stack.push(content);
             i = pos;
         }
         return parse(stack.join('+'));

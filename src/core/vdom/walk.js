@@ -1,7 +1,7 @@
 import Element from '../../shared/Element';
 
 function hasChild(element) {
-    return (Element.isInstance(element) && element.children.length > 0);
+    return Element.isInstance(element) && element.children.length > 0;
 }
 
 export default function walkVDOM(lastT = [], nextT = [], fn, index = -1) {
@@ -16,10 +16,7 @@ export default function walkVDOM(lastT = [], nextT = [], fn, index = -1) {
     });
 
     if (nextT.length > lastT.length) {
-        nextT.slice(lastT.length).forEach(
-            (next) =>
-                fn(void 0, next, index)
-        );
+        nextT.slice(lastT.length).forEach(next => fn(void 0, next, index));
     }
 
     return index;

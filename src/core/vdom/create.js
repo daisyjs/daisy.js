@@ -1,23 +1,31 @@
-import {evalExpression, codeGen} from '../compiler/evalExpression';
-import {warn, isEmpty, getDirective} from '../../shared/helper';
-import {Types} from '../../shared/NodeTypes';
+import { evalExpression, codeGen } from '../compiler/evalExpression';
+import { warn, isEmpty, getDirective } from '../../shared/helper';
+import { Types } from '../../shared/NodeTypes';
 import Elements from '../../shared/Elements';
 import Element from '../../shared/Element';
-import {BLOCK, VDOM, STATE} from '../../shared/constant';
-import {getProppertyObject} from '../../shared/helper';
+import { BLOCK, VDOM, STATE } from '../../shared/constant';
+import { getProppertyObject } from '../../shared/helper';
 import link from '../../shared/link';
 
-const {Program, If, For, Element: ElementType, Expression, Text, Attribute, Include} = Types;
-
+const {
+    Program,
+    If,
+    For,
+    Element: ElementType,
+    Expression,
+    Text,
+    Attribute,
+    Include
+} = Types;
 
 function createVElement(node, viewContext) {
-    const {state} = viewContext;
+    const { state } = viewContext;
     switch (node.type) {
     case Text:
         return node.value;
 
     case Attribute: {
-        const {value} = node;
+        const { value } = node;
         if (value.type === Expression) {
             const valueEvaluted = evalExpression(value, viewContext);
             if (valueEvaluted === false) {
@@ -31,52 +39,53 @@ function createVElement(node, viewContext) {
     }
 
     case ElementType: {
+        const { attributes, directives, children, name } = node;
         const {
-            attributes, directives, children, name
-        } = node;
-        const {
-            components, directives: thisDirectives, context
+            components,
+            directives: thisDirectives,
+            context
         } = viewContext;
 
         if (name.toLowerCase() === BLOCK) {
             return createVGroup(children, viewContext);
         }
-        const attributeList = attributes.map((attribute) => createVElement(attribute, viewContext)).filter(item => item);
+        const attributeList = attributes
+            .map(attribute => createVElement(attribute, viewContext))
+            .filter(item => item);
 
         let _directives = isEmpty(directives)
             ? {}
-            : Object.keys(directives).reduce(
-                (prev, pattern) => {
-                    const binding = {
-                        name: pattern,
-                        state,
-                        value: (state = {}) => {
-                            const value = directives[pattern];
-                            if (value.type === Expression) {
-                                return evalExpression(value, 
-                                    Object.assign({}, viewContext, {
-                                        context: links.context,
-                                        state: links.context[STATE],
-                                        computed: Object.assign(
-                                            {}, 
-                                            viewContext.computed,
-                                            state
-                                        ) // merge state into 
-                                    }));
-                            }
-                            return value;
+            : Object.keys(directives).reduce((prev, pattern) => {
+                const binding = {
+                    name: pattern,
+                    state,
+                    value: (state = {}) => {
+                        const value = directives[pattern];
+                        if (value.type === Expression) {
+                            return evalExpression(
+                                value,
+                                Object.assign({}, viewContext, {
+                                    context: links.context,
+                                    state: links.context[STATE],
+                                    computed: Object.assign(
+                                        {},
+                                        viewContext.computed,
+                                        state
+                                    ) // merge state into
+                                })
+                            );
                         }
-                    };
+                        return value;
+                    }
+                };
 
-                    return Object.assign(prev, {
-                        [pattern]: {
-                            link: getDirective(pattern, thisDirectives),
-                            binding
-                        }
-                    });
-                },
-                {}
-            );
+                return Object.assign(prev, {
+                    [pattern]: {
+                        link: getDirective(pattern, thisDirectives),
+                        binding
+                    }
+                });
+            }, {});
 
         const links = {
             context,
@@ -85,14 +94,13 @@ function createVElement(node, viewContext) {
 
         if (Object.keys(components).includes(name)) {
             const Component = components[name];
-            
+
             const componentInstance = new Component({
                 body: createVGroup(children, viewContext),
                 props: getProppertyObject(attributeList),
                 computed: viewContext.computed,
                 context: viewContext.context
             });
-
 
             let element;
 
@@ -106,7 +114,7 @@ function createVElement(node, viewContext) {
             );
 
             link(componentInstance, element);
-            
+
             return element;
         }
 
@@ -132,24 +140,21 @@ function createVElement(node, viewContext) {
     case For: {
         const elements = Elements.create();
         const list = evalExpression(node.test, viewContext);
-        const {item, index} = node.init;
-        const itemName = item.type === Expression ? codeGen(item): item;
-        const indexName = index.type === Expression ? codeGen(index): index;
+        const { item, index } = node.init;
+        const itemName = item.type === Expression ? codeGen(item) : item;
+        const indexName =
+                index.type === Expression ? codeGen(index) : index;
 
-        list.forEach(
-            (item, index) => {
-                const withComputed = Object.assign({},
-                    viewContext, {
-                        computed: {
-                            [itemName]: () => item,
-                            [indexName]: () => index
-                        }
-                    }
-                );
-                const element = createVElement(node.body, withComputed);
-                elements.append(element);
-            }
-        );
+        list.forEach((item, index) => {
+            const withComputed = Object.assign({}, viewContext, {
+                computed: {
+                    [itemName]: () => item,
+                    [indexName]: () => index
+                }
+            });
+            const element = createVElement(node.body, withComputed);
+            elements.append(element);
+        });
 
         return elements;
     }
@@ -174,7 +179,7 @@ function createVElement(node, viewContext) {
 function createVGroup(nodes, viewContext) {
     const elements = Elements.create();
 
-    nodes.forEach((node) => {
+    nodes.forEach(node => {
         const vNode = createVElement(node, viewContext);
         elements.append(vNode);
     });
@@ -184,7 +189,7 @@ function createVGroup(nodes, viewContext) {
 
 export default function createVDOM(ast, viewContext) {
     // create virtual dom
-    const {type, body} = ast;
+    const { type, body } = ast;
     if (type === Program) {
         return createVGroup(body, viewContext);
     } else {

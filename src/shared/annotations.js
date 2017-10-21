@@ -1,5 +1,11 @@
-import { METHODS, DIRECTIVES, COMPONENTS, EVENTS, COMPUTED } from '../shared/constant';
-import {setInheritCache} from '../core/inherit';
+import {
+    METHODS,
+    DIRECTIVES,
+    COMPONENTS,
+    EVENTS,
+    COMPUTED
+} from '../shared/constant';
+import { setInheritCache } from '../core/inherit';
 
 function register(setter) {
     return function(...args) {
@@ -12,22 +18,11 @@ function register(setter) {
 }
 
 const annotations = {
-    component: register(
-        setInheritCache(COMPONENTS)
-    ),
-    directive: register(
-        setInheritCache(DIRECTIVES)
-    ),
-    event: register(
-        setInheritCache(EVENTS)
-    ),
-    computed: register(
-        setInheritCache(COMPUTED)
-    ),
-    method: register(
-        setInheritCache(METHODS)
-    ),
+    component: register(setInheritCache(COMPONENTS)),
+    directive: register(setInheritCache(DIRECTIVES)),
+    event: register(setInheritCache(EVENTS)),
+    computed: register(setInheritCache(COMPUTED)),
+    method: register(setInheritCache(METHODS))
 };
-
 
 export default annotations;

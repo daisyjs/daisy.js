@@ -1,6 +1,26 @@
-import {COMMENT, END_TAG, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from '../../shared/StateTypes';
-import {isSlash, isSpace, isOpenTag, isExclamationMark, isDash, isCloseTag, isEqual, isQuote, isTagClosed} from '../../shared/helper';
-import {starts, ends, getBoundsSize} from './expression';
+import {
+    COMMENT,
+    END_TAG,
+    TAGNAME,
+    CLOSE_TAG,
+    EXPR,
+    TEXT,
+    ATTR,
+    VALUE,
+    EOF
+} from '../../shared/StateTypes';
+import {
+    isSlash,
+    isSpace,
+    isOpenTag,
+    isExclamationMark,
+    isDash,
+    isCloseTag,
+    isEqual,
+    isQuote,
+    isTagClosed
+} from '../../shared/helper';
+import { starts, ends, getBoundsSize } from './expression';
 
 function createToken(tokenType, temp = []) {
     const content = temp.join('');
@@ -15,13 +35,15 @@ export default function Lexer(source) {
     let tokens = [];
     let length = source.length;
     const {
-        start: EXPRESSION_STARTING_SIZE, end: EXPRESSION_ENDING_SIZE
+        start: EXPRESSION_STARTING_SIZE,
+        end: EXPRESSION_ENDING_SIZE
     } = getBoundsSize();
 
-
     function consumeSpaces(pos) {
-        while (isSpace(source[pos])) {pos++;}
-        return {pos};
+        while (isSpace(source[pos])) {
+            pos++;
+        }
+        return { pos };
     }
 
     function consumeCloseTag(pos) {
@@ -50,12 +72,17 @@ export default function Lexer(source) {
             while (pos < length) {
                 letter = source[pos];
                 if (
-                    isQuote(letter) && letter === temp[0] && source[pos - 1] !== '\\'
+                    isQuote(letter) &&
+                    letter === temp[0] &&
+                    source[pos - 1] !== '\\'
                 ) {
                     temp.push(letter);
                     return {
                         pos: pos + 1,
-                        token: createToken(VALUE, temp.slice(1, temp.length-1)) // remove ^" "$
+                        token: createToken(
+                            VALUE,
+                            temp.slice(1, temp.length - 1)
+                        ) // remove ^" "$
                     };
                 } else {
                     temp.push(letter);
@@ -73,12 +100,14 @@ export default function Lexer(source) {
                         token: createToken(VALUE, temp)
                     };
                     // eslint-disable-next-line
-                } else if (closeTagResult = consumeCloseTag(pos)) {
+                } else if ((closeTagResult = consumeCloseTag(pos))) {
                     if (temp.length > 0) {
                         const token = createToken(VALUE, temp);
                         return {
                             pos: pos,
-                            token: closeTagResult.isSelfClose ? setTokenSelfClose(token): token
+                            token: closeTagResult.isSelfClose
+                                ? setTokenSelfClose(token)
+                                : token
                         };
                     } else {
                         return;
@@ -103,19 +132,17 @@ export default function Lexer(source) {
                     group.push(createToken(ATTR, temp));
                     temp.length = 0;
                 }
-                pos ++;
+                pos++;
                 pos = consumeSpaces(pos).pos;
 
-                const {pos: posNext, token} = (consumeExpression(pos) || consumeValue(pos)) || {};
+                const { pos: posNext, token } =
+                    consumeExpression(pos) || consumeValue(pos) || {};
 
                 if (token) {
                     group.push(token);
                     pos = posNext;
                 }
-
-            } else if (
-                consumeCloseTag(pos)
-            ) {
+            } else if (consumeCloseTag(pos)) {
                 if (temp.length > 0) {
                     group.push(createToken(ATTR, temp));
                     temp.length = 0;
@@ -142,22 +169,22 @@ export default function Lexer(source) {
         let temp = [];
         let group = [];
 
-        if (isOpenTag(letter)
-        && !isSlash(source[pos + 1])
-        && !isSpace(source[pos + 1])
-        && !isOpenTag(source[pos + 1])
-        && !isCloseTag(source[pos + 1])
+        if (
+            isOpenTag(letter) &&
+            !isSlash(source[pos + 1]) &&
+            !isSpace(source[pos + 1]) &&
+            !isOpenTag(source[pos + 1]) &&
+            !isCloseTag(source[pos + 1])
         ) {
             ++pos;
             while (pos < length) {
                 letter = source[pos];
-                const {pos: posCloseTag, isSelfClose} = consumeCloseTag(pos) || {};
+                const { pos: posCloseTag, isSelfClose } =
+                    consumeCloseTag(pos) || {};
 
                 if (posCloseTag) {
                     if (group.length === 0) {
-                        group = [
-                            createToken(TAGNAME, temp)
-                        ];
+                        group = [createToken(TAGNAME, temp)];
                     }
 
                     if (isSelfClose) {
@@ -175,16 +202,13 @@ export default function Lexer(source) {
                 if (isSpace(letter)) {
                     pos = consumeSpaces(pos).pos;
 
-                    group = [
-                        createToken(TAGNAME, temp)
-                    ];
+                    group = [createToken(TAGNAME, temp)];
 
-                    let {token: attrs, pos: posAttrs} = consumeAttrs(pos) || {};
+                    let { token: attrs, pos: posAttrs } =
+                        consumeAttrs(pos) || {};
 
                     if (attrs) {
-                        group = [
-                            ...group, ...attrs
-                        ];
+                        group = [...group, ...attrs];
                         pos = posAttrs;
                     }
 
@@ -202,11 +226,9 @@ export default function Lexer(source) {
         let temp = [];
 
         if (
-            isOpenTag(letter) && isSlash(source[pos + 1]) &&
-        (
-            !isSpace(source[pos + 2]) &&
-          !isOpenTag(source[pos + 2])
-        )
+            isOpenTag(letter) &&
+            isSlash(source[pos + 1]) &&
+            (!isSpace(source[pos + 2]) && !isOpenTag(source[pos + 2]))
         ) {
             pos += 2;
 
@@ -215,8 +237,7 @@ export default function Lexer(source) {
                 // eslint-disable-next-line
                 if (isSpace(letter)) {
                     pos = consumeSpaces(pos).pos;
-                }
-                else if (isCloseTag(letter)) {
+                } else if (isCloseTag(letter)) {
                     const token = createToken(END_TAG, temp);
                     return {
                         pos: pos + 1,
@@ -224,7 +245,7 @@ export default function Lexer(source) {
                     };
                 } else {
                     temp.push(letter);
-                    pos ++;
+                    pos++;
                 }
             }
         }
@@ -234,21 +255,27 @@ export default function Lexer(source) {
         let letter = source[pos];
         let temp = [];
 
-        if (isOpenTag(letter)
-          && isExclamationMark(source[++pos])
-          && isDash(source[++pos])
-          && isDash(source[++pos])) {
+        if (
+            isOpenTag(letter) &&
+            isExclamationMark(source[++pos]) &&
+            isDash(source[++pos]) &&
+            isDash(source[++pos])
+        ) {
             ++pos;
             while (pos < length) {
                 letter = source[pos];
-                if (isDash(letter) && isDash(source[pos + 1]) && isCloseTag(source[pos + 2])) {
+                if (
+                    isDash(letter) &&
+                    isDash(source[pos + 1]) &&
+                    isCloseTag(source[pos + 2])
+                ) {
                     return {
                         pos: pos + 3,
                         token: createToken(COMMENT, temp)
                     };
                 } else {
                     temp.push(letter);
-                    pos ++;
+                    pos++;
                 }
             }
 
@@ -291,13 +318,9 @@ export default function Lexer(source) {
             pos += EXPRESSION_STARTING_SIZE;
             while (pos < length) {
                 letter = source[pos];
-                if (
-                    starts(letter, source[pos + 1])
-                ) {
+                if (starts(letter, source[pos + 1])) {
                     return false;
-                } else if (
-                    ends(source.substr(pos))
-                ) {
+                } else if (ends(source.substr(pos))) {
                     pos += EXPRESSION_ENDING_SIZE;
                     return {
                         pos: pos,
@@ -317,13 +340,12 @@ export default function Lexer(source) {
         });
     }
 
-
     function mergeTextTokens() {
         let index = 0;
         return tokens.reduce((list, token) => {
             const prevToken = list[index - 1];
 
-            if ((token.type === TEXT) && prevToken && (prevToken.type === TEXT)) {
+            if (token.type === TEXT && prevToken && prevToken.type === TEXT) {
                 prevToken.content += token.content;
             } else {
                 list.push(token);
@@ -336,18 +358,21 @@ export default function Lexer(source) {
     /* eslint-disable */
     while (pos < length) {
         const letter = source[pos];
-    /* eslint-enable */
-        const refs = consumeEndTag(pos) || consumeComment(pos) || consumeTag(pos) || consumeExpression(pos) || consumeText(pos);
+        /* eslint-enable */
+        const refs =
+            consumeEndTag(pos) ||
+            consumeComment(pos) ||
+            consumeTag(pos) ||
+            consumeExpression(pos) ||
+            consumeText(pos);
 
         if (!refs) {
             throw new Error('no avaliable token:\n' + source.substr(pos));
         } else {
-            const {pos: posNext, token} = refs;
+            const { pos: posNext, token } = refs;
             if (Array.isArray(token)) {
                 pos = posNext;
-                tokens = [
-                    ...tokens, ...token
-                ];
+                tokens = [...tokens, ...token];
             } else if (typeof token === 'object') {
                 pos = posNext;
                 tokens.push(token);
@@ -357,9 +382,12 @@ export default function Lexer(source) {
 
     tokens = mergeTextTokens();
 
-    tokens = [...tokens, {
-        type: EOF
-    }];
+    tokens = [
+        ...tokens,
+        {
+            type: EOF
+        }
+    ];
 
     let refs = isTagClosed(tokens);
     if (refs.message) {

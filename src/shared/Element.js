@@ -1,10 +1,18 @@
-import {getProppertyObject} from './helper';
+import { getProppertyObject } from './helper';
 
 export default class Element {
-    constructor(tag = '', props = [], context = {}, children = [], links = {}, componentInstance, key) {
+    constructor(
+        tag = '',
+        props = [],
+        context = {},
+        children = [],
+        links = {},
+        componentInstance,
+        key
+    ) {
         this.isElament = true;
         this.tag = tag;
-        this.props = Array.isArray(props) ? getProppertyObject(props): props;
+        this.props = Array.isArray(props) ? getProppertyObject(props) : props;
         this.context = context;
         this.children = children;
         this.links = links;

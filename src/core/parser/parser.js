@@ -1,8 +1,29 @@
 import lexer from './lexer';
-import {END_TAG, COMMENT, TAGNAME, CLOSE_TAG, EXPR, TEXT, ATTR, VALUE, EOF} from'../../shared/StateTypes';
-import {Program, Include, If, For, Element, Comment, Attribute, Expression, Text, Types} from'../../shared/NodeTypes';
-import {expression, contains as containExpr} from'./expression';
-import {isSelfClose, error, isVoidTag} from'../../shared/helper';
+import {
+    END_TAG,
+    COMMENT,
+    TAGNAME,
+    CLOSE_TAG,
+    EXPR,
+    TEXT,
+    ATTR,
+    VALUE,
+    EOF
+} from '../../shared/StateTypes';
+import {
+    Program,
+    Include,
+    If,
+    For,
+    Element,
+    Comment,
+    Attribute,
+    Expression,
+    Text,
+    Types
+} from '../../shared/NodeTypes';
+import { expression, contains as containExpr } from './expression';
+import { isSelfClose, error, isVoidTag } from '../../shared/helper';
 
 const STATEMENT_MARK = ':';
 const DIRECTIVE_MARK = '@';
@@ -30,7 +51,7 @@ export default function Parser(source) {
     function ll(k = 0) {
         pos += k;
 
-        if (pos > tokens.length - 1){
+        if (pos > tokens.length - 1) {
             return tokens[tokens.length - 1];
         }
 
@@ -47,9 +68,7 @@ export default function Parser(source) {
 
     function doPackage(condition) {
         const body = [];
-        while (
-            condition(la())
-        ) {
+        while (condition(la())) {
             const node = recurse(body);
 
             if (node) {
@@ -59,10 +78,9 @@ export default function Parser(source) {
         return body;
     }
 
-
     function recurse(nodes) {
         const token = ll();
-        const {type} = token;
+        const { type } = token;
         switch (type) {
         case TAGNAME:
             return element(nodes);
@@ -73,26 +91,25 @@ export default function Parser(source) {
         case COMMENT:
             return comment();
         default:
-            
             throw 'unknow token type!';
         }
     }
 
     function text() {
-        const {content} = ll();
+        const { content } = ll();
         next();
         return Text(content);
     }
 
     function comment() {
-        const {content} = ll();
+        const { content } = ll();
         next();
         return Comment(content);
     }
 
     function element(nodes) {
         const token = ll();
-        const {content} = token;
+        const { content } = token;
 
         next();
 
@@ -111,16 +128,14 @@ export default function Parser(source) {
             children = program();
         }
 
-        let element = Element(
-            content, attrNodes, directives, children
-        );
+        let element = Element(content, attrNodes, directives, children);
 
-        const ifNodeList = nodes.filter(({type}) => {
+        const ifNodeList = nodes.filter(({ type }) => {
             return type === Types.If;
         });
 
         element = wrapIncludeStatement(element, statements);
-        
+
         const lastIfNode = ifNodeList[ifNodeList.length - 1];
 
         element = wrapElseStatement(element, statements, lastIfNode);
@@ -132,7 +147,6 @@ export default function Parser(source) {
         }
 
         element = wrapForStatement(element, statements);
-        
 
         consume(END_TAG);
 
@@ -147,7 +161,7 @@ export default function Parser(source) {
         return element;
     }
 
-    function wrapElseStatement (element, statements, lastIfNode) {
+    function wrapElseStatement(element, statements, lastIfNode) {
         let elseIfValue = statements[ELSE_IF_STATEMENT];
 
         const keys = Object.keys(statements);
@@ -181,10 +195,18 @@ export default function Parser(source) {
     function wrapForStatement(element, statements) {
         let value = statements[FOR_STATEMENT];
         if (value) {
-            return For(value, {
-                item: statements[FOR_ITEM_STATEMENT] || Expression(expression('item')),
-                index: statements[FOR_ITEM_INDEX_STATEMENT] || Expression(expression('index')),
-            }, element);
+            return For(
+                value,
+                {
+                    item:
+                        statements[FOR_ITEM_STATEMENT] ||
+                        Expression(expression('item')),
+                    index:
+                        statements[FOR_ITEM_INDEX_STATEMENT] ||
+                        Expression(expression('index'))
+                },
+                element
+            );
         }
         return element;
     }
@@ -195,29 +217,33 @@ export default function Parser(source) {
         const directives = {};
 
         for (let attr of attrNodes) {
-            let {name, value = ''} = attr;
+            let { name, value = '' } = attr;
             if (value.type !== Types.Expression && containExpr(value)) {
                 value = Expression(expression(value));
             }
 
             if (name.startsWith(STATEMENT_MARK)) {
-                Object.assign(statements, ({
+                Object.assign(statements, {
                     [name]: value
-                }));
+                });
             } else if (name.startsWith(DIRECTIVE_MARK)) {
                 const directive = name.slice(1);
-                Object.assign(directives, ({
+                Object.assign(directives, {
                     [directive]: value
-                }));
+                });
             } else {
-                attrs.push(Object.assign({}, attr, {
-                    value
-                }));
+                attrs.push(
+                    Object.assign({}, attr, {
+                        value
+                    })
+                );
             }
         }
 
         return {
-            attrs, statements, directives
+            attrs,
+            statements,
+            directives
         };
     }
 
@@ -245,7 +271,7 @@ export default function Parser(source) {
     }
 
     function next() {
-        pos ++;
+        pos++;
     }
 
     function consume(type) {
