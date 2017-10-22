@@ -318,9 +318,10 @@ export default function Lexer(source) {
             pos += EXPRESSION_STARTING_SIZE;
             while (pos < length) {
                 letter = source[pos];
-                if (starts(letter, source[pos + 1])) {
+                const nextString = source.substr(pos);
+                if (starts(nextString)) {
                     return false;
-                } else if (ends(source.substr(pos))) {
+                } else if (ends(nextString)) {
                     pos += EXPRESSION_ENDING_SIZE;
                     return {
                         pos: pos,
