@@ -112,7 +112,7 @@ function createVElement(node, viewContext) {
                 links,
                 componentInstance
             );
-
+            
             link(componentInstance, element);
 
             return element;

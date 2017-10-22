@@ -7,9 +7,9 @@ export default class TodoItem extends Daisy.Component {
                     <input type="checkbox" 
                         class="toggle" 
                         checked={{!!status}} 
-                        @on-click={{this.emit('click', name)}}
+                        @onClick={{this.onClick(todo)}}
                     >
-                    <label>{{name}}</label> <button class="destroy" @on-click={{this.emit('destroy')}}></button>    
+                    <label>{{name}}</label> <button class="destroy" @onClick={{this.emit('destroy')}}></button>    
                 </div>
                 <input type="text" class="edit">
             </li>`;
@@ -17,5 +17,9 @@ export default class TodoItem extends Daisy.Component {
 
     // eslint-disable-next-line
     parsed(ast) {
+    }
+
+    onClick(todo) {
+        this.emit('click', todo.name)
     }
 }

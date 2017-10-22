@@ -218,3 +218,7 @@ export const setKeyPath = (state, path, value) => {
 
     finalState[property] = value;
 };
+
+export const isNormalElement = (element) => {
+    return !element.componentInstance;
+}

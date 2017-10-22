@@ -1,6 +1,7 @@
 import Element from '../../../shared/Element';
 import Elements from '../../../shared/Elements';
 import link from '../../../shared/link';
+import { isNormalElement } from '../../../shared/helper';
 
 export function createElements(elements, parent) {
     elements.forEach(
@@ -21,7 +22,11 @@ export function createElement(element) {
         node = document.createElement(tag);
 
         createElements(children, node); // children
-        link(node, element);         // links
+
+        if (isNormalElement(element)) { // only link normal nodes
+            link(node, element);
+        }
+
         setProps(node, {
             tag, type: props.type , props
         });       // props

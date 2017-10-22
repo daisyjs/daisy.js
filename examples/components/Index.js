@@ -54,7 +54,7 @@ export default class Component extends Daisy.Component {
                     autocomplete="off"
                     placeholder="What needs to be done?"
                     class="new-todo"
-                    @on-keydown={{this.onKeyDown($event)}}
+                    @onKeydown={{this.onKeyDown($event)}}
                     @ref="input"
                 >
             </Header>
@@ -64,8 +64,9 @@ export default class Component extends Daisy.Component {
                     :if={{filter(item.status, status)}}
                     name={{item.name}}
                     status={{item.status}}
-                    @on-click={{this.onTodoClick(item, $event)}}
-                    @on-destroy={{this.onDestroy(index)}}
+                    todo={{item}}
+                    @onClick={{this.onTodoClick(item, $event)}}
+                    @onDestroy={{this.onDestroy(index)}}
                 ></Todo>
             </Main>
             <Footer
@@ -73,8 +74,8 @@ export default class Component extends Daisy.Component {
                 size={{size(todoList, status)}}
                 status={{status}}
                 statusList={{statusList}}
-                @on-change={{this.onStatusChange($event)}}
-                @on-clear={{this.onClear()}}
+                @onChange={{this.onStatusChange($event)}}
+                @onClear={{this.onClear()}}
             ></Footer>
         </section>`;
     }
@@ -94,12 +95,15 @@ export default class Component extends Daisy.Component {
     }
 
     onTodoClick(todo) {
-        let todoList = this.getState().todoList;
-        const index = todoList.indexOf(todoList.filter(({name}) => name === todo.name )[0]);
+        const todoList = this.getState().todoList;
+        const index = todoList.indexOf(todo);
         
         this.setState({
             [`todoList.${index}.status`]: Number(!todo.status)
         });
+
+        console.log('checkbox-click', todo);
+        
     }
 
     onDestroy(index) {
@@ -115,7 +119,7 @@ export default class Component extends Daisy.Component {
     add(value) {
         const todoList = this.getState().todoList;
         this.setState({
-            [`todoList.${todoList.length + 1}`]: {
+            [`todoList.${todoList.length}`]: {
                 name: value,
                 status: 0
             }

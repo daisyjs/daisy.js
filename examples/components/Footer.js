@@ -6,10 +6,10 @@ export default class Footer extends Daisy.Component{
             <span class="todo-count"><strong>{{size}}</strong> items left</span>
             <ul class="filters">
                 <li :for={{statusList}}>
-                    <a href="#/all" class="{{item.type === status? 'selected': ''}}" @on-click={{this.onFilterClick(item.type)}}>{{item.name}}</a>
+                    <a href="#/all" class="{{item.type === status? 'selected': ''}}" @onClick={{this.onFilterClick(item.type)}}>{{item.name}}</a>
                 </li>
             </ul>
-            <button class="clear-completed" @on-click={{this.emit('clear')}}>Clear completed</button>
+            <button class="clear-completed" @onClick={{this.emit('clear')}}>Clear completed</button>
         </footer>`;
     }
 
