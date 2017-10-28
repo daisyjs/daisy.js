@@ -19,10 +19,15 @@ export default class TodoItem extends Daisy.Component {
                     >
                     <label
                         class={{status ? checkedClass : uncheckedClass}}
-                    >{{name}}</label> <button class="destroy" @onClick={{this.emit('destroy')}}></button>    
+                    >{{name}}</label> <button class="destroy" @onClick={{this.onDestory($event)}}></button>    
                 </div>
                 <input type="text" class="edit">
             </li>`;
+    }
+
+    onDestory(event) {
+        this.emit('destroy');
+        event.stopPropagation();
     }
 
     // eslint-disable-next-line
