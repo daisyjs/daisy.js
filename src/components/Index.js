@@ -29,7 +29,7 @@ export default class Component extends Daisy.Component {
     state(props = {}) {
         let lastState = {};
         if (localStorage.getItem('todoState')) {
-            lastState = localStorage.getItem('todoState');
+            lastState = JSON.parse(localStorage.getItem('todoState'));
         }
         return Object.assign({
             history: [],
