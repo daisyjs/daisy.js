@@ -23,6 +23,11 @@ const {component, method, directive, event, computed} = Daisy.annotations;
 // eslint-disable-next-line
 export default class Component extends Daisy.Component {
     state(props = {}) {
+        if (localStorage.getItem('todoState')) {
+            return JSON.parse(
+                localStorage.getItem('todoState')
+            );
+        }
         return Object.assign({
             history: [],
             status: 2,
@@ -79,13 +84,7 @@ export default class Component extends Daisy.Component {
             ></Footer>
         </section>`;
     }
-    constructor(options) {
-        super(options);
-        this.on('deleted', function(msg) {
-            // eslint-disable-next-line
-            console.log('deleted: ' + msg.name);
-        });
-    }
+    
     onKeyDown({keyCode}) {
         if (keyCode === 13) {
             const value = this.refs.input.value;
@@ -101,9 +100,6 @@ export default class Component extends Daisy.Component {
         this.setState({
             [`todoList.${index}.status`]: Number(!todo.status)
         });
-
-        console.log('checkbox-click', todo);
-        
     }
 
     onDestroy(index) {
@@ -156,6 +152,11 @@ export default class Component extends Daisy.Component {
 
     // eslint-disable-next-line
     patched(dom) {
+        localStorage.setItem('todoState', 
+            JSON.stringify(
+                this.getState()
+            )
+        );
     }
 
     onReset() {
