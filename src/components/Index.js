@@ -7,6 +7,10 @@ import filter from '../methods/filter';
 import list from '../methods/list';
 import size from '../methods/size';
 
+const ALL = 2;		
+const ACTIVE = 0;		
+const COMPLETED = 1;
+
 // eslint-disable-next-line
 const {component, method, directive, event, computed} = Daisy.annotations;
 
@@ -23,31 +27,31 @@ const {component, method, directive, event, computed} = Daisy.annotations;
 // eslint-disable-next-line
 export default class Component extends Daisy.Component {
     state(props = {}) {
+        let lastState = {};
         if (localStorage.getItem('todoState')) {
-            return JSON.parse(
-                localStorage.getItem('todoState')
-            );
+            lastState = localStorage.getItem('todoState');
         }
         return Object.assign({
             history: [],
             status: 2,
             todoList: [
             ],
+            activeStatus: ACTIVE,
             statusList: [
                 {
                     name: 'All',
-                    type: 2
+                    type: ALL
                 },
                 {
                     name: 'Active',
-                    type: 0
+                    type: ACTIVE
                 },
                 {
                     name: 'completed',
-                    type: 1
+                    type: COMPLETED
                 }
             ]
-        }, props);
+        }, props, lastState);
     }
     render() {
         return `<section class="todoapp">
@@ -76,7 +80,7 @@ export default class Component extends Daisy.Component {
             </Main>
             <Footer
                 :if={{todoList.length > 0}}
-                size={{size(todoList, status)}}
+                size={{size(todoList, activeStatus)}}
                 status={{status}}
                 statusList={{statusList}}
                 @onChange={{this.onStatusChange($event)}}
