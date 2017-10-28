@@ -10,10 +10,6 @@ import size from '../methods/size';
 // eslint-disable-next-line
 const {component, method, directive, event, computed} = Daisy.annotations;
 
-const ALL = 2;
-const ACTIVE = 0;
-const COMPLETED = 1;
-
 @component({Todo, Header, Footer, Info, Main})
 @method({filter, size, list})
 @directive()
@@ -23,29 +19,30 @@ const COMPLETED = 1;
         return 'todos';
     }
 })
+
 // eslint-disable-next-line
 export default class Component extends Daisy.Component {
-    state() {
-        return {
+    state(props = {}) {
+        return Object.assign({
             history: [],
-            status: ALL,
-            todoList: [],
-            activeStatus: ACTIVE,
-            filters: [
+            status: 2,
+            todoList: [
+            ],
+            statusList: [
                 {
                     name: 'All',
-                    type: ALL
+                    type: 2
                 },
                 {
                     name: 'Active',
-                    type: ACTIVE
+                    type: 0
                 },
                 {
                     name: 'completed',
-                    type: COMPLETED
+                    type: 1
                 }
             ]
-        };
+        }, props);
     }
     render() {
         return `<section class="todoapp">
@@ -57,7 +54,7 @@ export default class Component extends Daisy.Component {
                     autocomplete="off"
                     placeholder="What needs to be done?"
                     class="new-todo"
-                    @on-keydown={{this.onKeyDown($event)}}
+                    @onKeydown={{this.onKeyDown($event)}}
                     @ref="input"
                 >
             </Header>
@@ -67,17 +64,18 @@ export default class Component extends Daisy.Component {
                     :if={{filter(item.status, status)}}
                     name={{item.name}}
                     status={{item.status}}
-                    @on-click={{this.onTodoClick(item, $event)}}
-                    @on-destroy={{this.onDestroy(index)}}
+                    todo={{item}}
+                    @onClick={{this.onTodoClick(item, $event)}}
+                    @onDestroy={{this.onDestroy(index)}}
                 ></Todo>
             </Main>
             <Footer
                 :if={{todoList.length > 0}}
-                size={{size(todoList, activeStatus)}}
+                size={{size(todoList, status)}}
                 status={{status}}
-                filters={{filters}}
-                @on-change={{this.onStatusChange($event)}}
-                @on-clear={{this.onClear()}}
+                statusList={{statusList}}
+                @onChange={{this.onStatusChange($event)}}
+                @onClear={{this.onClear()}}
             ></Footer>
         </section>`;
     }
@@ -92,22 +90,20 @@ export default class Component extends Daisy.Component {
         if (keyCode === 13) {
             const value = this.refs.input.value;
             this.add(value);
+            this.refs.input.value = '';
         }
     }
 
     onTodoClick(todo) {
-        let todoList = this.getState().todoList;
-        const index = todoList.indexOf(todoList.filter(({name}) => name === todo.name )[0]);
+        const todoList = this.getState().todoList;
+        const index = todoList.indexOf(todo);
         
         this.setState({
-            todoList: [
-                ...todoList.slice(0, index),
-                Object.assign({}, todo, {
-                    status: Number(!todo.status)
-                }),
-                ...todoList.slice(index+1)
-            ]
+            [`todoList.${index}.status`]: Number(!todo.status)
         });
+
+        console.log('checkbox-click', todo);
+        
     }
 
     onDestroy(index) {
@@ -123,13 +119,10 @@ export default class Component extends Daisy.Component {
     add(value) {
         const todoList = this.getState().todoList;
         this.setState({
-            todoList: [
-                ...todoList,
-                {
-                    name: value,
-                    status: 0
-                }
-            ]
+            [`todoList.${todoList.length}`]: {
+                name: value,
+                status: 0
+            }
         });
     }
 
@@ -143,7 +136,9 @@ export default class Component extends Daisy.Component {
         const todoList = this.getState().todoList;
 
         this.setState({
-            todoList: todoList.filter((item) => item.status === ACTIVE)
+            todoList: todoList.map((item) => Object.assign(item, {
+                status: 0
+            }))
         });
     }
 
