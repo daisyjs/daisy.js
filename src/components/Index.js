@@ -129,12 +129,9 @@ export default class Component extends Daisy.Component {
     }
 
     onClear() {
-        const todoList = this.getState().todoList;
-
+        const todoList = this.getState().todoList.filter((item) => !item.status);
         this.setState({
-            todoList: todoList.map((item) => Object.assign(item, {
-                status: 0
-            }))
+            todoList
         });
     }
 
